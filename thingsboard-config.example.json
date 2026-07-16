@@ -1,0 +1,32 @@
+{
+  "warning": "Copy this file to thingsboard-config.json only for local use. Never commit a real device access token.",
+  "tlsWarning": "Use securePort 8883 only when tlsEnabled is true and the MQTT client validates the ThingsBoard Cloud certificate chain.",
+  "lab7": {
+    "brokerHost": "mqtt.thingsboard.cloud",
+    "port": 1883,
+    "securePort": 8883,
+    "tlsEnabled": false,
+    "qos": 1,
+    "username": "YOUR_DEVICE_ACCESS_TOKEN",
+    "password": "",
+    "clientId": "SMRTTECH3CC3-STUDENTNAME-LAB7",
+    "telemetryTopic": "v1/devices/me/telemetry",
+    "attributeTopic": "v1/devices/me/attributes",
+    "attributeResponseTopic": "v1/devices/me/attributes/response/+",
+    "attributeRequestTopic": "v1/devices/me/attributes/request/1"
+  },
+  "lab8": {
+    "brokerHost": "mqtt.thingsboard.cloud",
+    "port": 1883,
+    "securePort": 8883,
+    "tlsEnabled": false,
+    "qos": 1,
+    "username": "YOUR_DEVICE_ACCESS_TOKEN",
+    "password": "",
+    "clientId": "SMRTTECH3CC3-STUDENTNAME-LAB8",
+    "telemetryTopic": "v1/devices/me/telemetry",
+    "attributeTopic": "v1/devices/me/attributes",
+    "attributeResponseTopic": "v1/devices/me/attributes/response/+",
+    "attributeRequestTopic": "v1/devices/me/attributes/request/1"
+  }
+}

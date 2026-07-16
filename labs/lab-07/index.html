@@ -1,0 +1,934 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SMRTTECH 3CC3 Lab 7: ThingsBoard Cloud, MQTT, ultrasonic telemetry, and remote LED control.">
+    <title>Lab 7: Ultrasonic Sensor and Remote LED Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="../../assets/McMaster-logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;family=Roboto+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <style>
+        :root {
+            --mac-maroon: #7A003C;
+            --mac-gold: #FDBF57;
+            --mac-grey: #495965;
+            --mac-maroon-20: #E4CCDA;
+            --mac-maroon-80: #953360;
+            --mac-gold-20: #FFF2DD;
+            --mac-gold-60: #FED999;
+            --mac-grey-20: #DBDEE0;
+            --mac-grey-40: #B6BDC1;
+            --mac-grey-80: #6D7A82;
+            --lab-background: #F7F8FA;
+            --lab-surface: #FFFFFF;
+            --lab-text: #2D3338;
+            --success: #287A4B;
+            --danger: #B42318;
+            --content: 1180px;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        body { margin: 0; font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--lab-background); color: var(--lab-text); overflow-x: hidden; line-height: 1.6; }
+        a { color: inherit; }
+        button, input, select, textarea { font: inherit; }
+        code, pre, .font-mono { font-family: 'Roboto Mono', Consolas, monospace; }
+        pre { overflow-x: auto; white-space: pre-wrap; background: #282C34; color: #F8FAFC; border-radius: 12px; padding: 1rem; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+        .gradient-text { background: linear-gradient(135deg, var(--mac-maroon) 0%, var(--mac-maroon-80) 62%, var(--mac-gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stage-bar { position: fixed; inset: 0 0 auto 0; z-index: 40; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(73,89,101,0.12); box-shadow: 0 4px 20px rgba(0,0,0,0.04); max-width: 100vw; overflow: hidden; }
+        .stage-bar-inner { width: 100%; max-width: var(--content); margin: 0 auto; padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.65rem; overflow-x: auto; }
+        .stage-label { flex: 0 0 auto; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mac-grey-80); margin-right: 0.3rem; }
+        .stage-btn { flex: 0 0 auto; min-height: 38px; padding: 0.55rem 0.95rem; border-radius: 9px; border: 1px solid transparent; font-size: 0.83rem; font-weight: 700; color: var(--mac-grey); background: transparent; text-decoration: none; transition: all 0.2s ease; white-space: nowrap; cursor: pointer; }
+        .stage-btn:hover { background: var(--mac-grey-20); }
+        .stage-btn:focus-visible, .utility-button:focus-visible, .nav-button:focus-visible, details summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--mac-gold); outline-offset: 3px; }
+        .stage-btn.active, .stage-btn.page-current { color: white; background: var(--mac-maroon); box-shadow: 0 5px 13px rgba(122,0,60,0.28); }
+        .lab-stage-label { margin-left: 0.65rem; padding-left: 0.85rem; border-left: 1px solid rgba(73,89,101,0.18); }
+        .auto-score-chip { flex: 0 0 auto; margin-left: auto; padding: 0.45rem 0.7rem; border-radius: 999px; border: 1px solid var(--mac-gold-60); background: var(--mac-gold-20); color: #5B3900; font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
+        .page-header { padding: 0 0 2.2rem; }
+        h1, h2, h3 { line-height: 1.15; margin-top: 0; }
+        h1 { margin: 0 0 0.7rem; letter-spacing: 0; }
+        p { margin-top: 0; }
+        .card { background: var(--lab-surface); border: 1px solid rgba(73,89,101,0.10); border-radius: 16px; box-shadow: 0 10px 18px -8px rgba(0,0,0,0.16), 0 4px 8px -4px rgba(0,0,0,0.08); }
+        .section-card { padding: 1.75rem; margin-bottom: 2rem; }
+        .border-maroon { border-left: 4px solid var(--mac-maroon); }
+        .border-gold { border-left: 4px solid var(--mac-gold); }
+        .border-success { border-left: 4px solid var(--success); }
+        .stage-panel { display: block; padding-bottom: 2rem; }
+        .js-enabled .stage-panel { display: none; }
+        .js-enabled.stage-0 .stage-panel.stage-0,
+        .js-enabled.stage-1 .stage-panel.stage-1,
+        .js-enabled.stage-2 .stage-panel.stage-2,
+        .js-enabled.stage-3 .stage-panel.stage-3,
+        .js-enabled.stage-4 .stage-panel.stage-4,
+        .js-enabled.stage-5 .stage-panel.stage-5,
+        .js-enabled.stage-6 .stage-panel.stage-6,
+        .js-enabled.stage-7 .stage-panel.stage-7,
+        .js-enabled.stage-8 .stage-panel.stage-8,
+        .js-enabled.stage-9 .stage-panel.stage-9,
+        .js-enabled.stage-10 .stage-panel.stage-10,
+        .js-enabled.stage-11 .stage-panel.stage-11 { display: block; }
+        .grid-layout { display: grid; gap: 1rem; }
+        .grid-layout.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-layout.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid-layout.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .mini-card { border: 1px solid rgba(73,89,101,0.13); border-radius: 12px; padding: 1rem; background: #fff; }
+        .briefing-card { background: #F8FAFC; border-radius: 12px; padding: 18px; border-left: 4px solid var(--mac-maroon); }
+        .warning-card { background: var(--mac-gold-20); border: 1px solid var(--mac-gold-60); border-left: 5px solid var(--mac-gold); color: #5B3900; border-radius: 12px; padding: 16px; }
+        .danger-card { background: #FFF3F2; border: 1px solid #FECACA; border-left: 5px solid var(--danger); color: #7A271A; border-radius: 12px; padding: 16px; }
+        .success-card { background: #EFFAF3; border: 1px solid #B7E4C7; border-left: 5px solid var(--success); color: #174D2D; border-radius: 12px; padding: 16px; }
+        .chip-row { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 1rem 0; }
+        .chip-row.compact { margin: 0; }
+        .mt-block { margin-top: 1rem; }
+        .stage-summary-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.42rem 0.7rem; border-radius: 999px; background: var(--mac-gold-20); color: #5B3900; border: 1px solid rgba(253,191,87,0.35); font-size: 0.82rem; font-weight: 700; }
+        .signal-chain { display: grid; grid-template-columns: repeat(7, minmax(105px, 1fr)); gap: 0.7rem; margin-top: 1rem; }
+        .signal-step { min-height: 92px; padding: 0.85rem; border-radius: 12px; background: #fff; border: 1px solid rgba(122,0,60,0.16); color: var(--mac-maroon); font-weight: 800; }
+        .signal-step span { display: block; margin-top: 0.3rem; color: var(--mac-grey); font-size: 0.82rem; font-weight: 500; }
+        .completion-box { display: flex; align-items: flex-start; gap: 0.7rem; min-height: 44px; padding: 0.75rem; border-radius: 10px; border: 1px solid rgba(73,89,101,0.14); background: #fff; }
+        .completion-box input { margin-top: 0.25rem; min-width: 18px; min-height: 18px; accent-color: var(--mac-maroon); }
+        .response-field { display: grid; gap: 0.35rem; margin-bottom: 0.85rem; }
+        .response-field span { font-weight: 700; }
+        .response-input, .response-field textarea, .response-field input, .response-field select, table input, table select, table textarea { width: 100%; border: 1px solid #CBD5E1; border-radius: 9px; padding: 0.65rem 0.75rem; background: #fff; color: var(--lab-text); }
+        textarea { min-height: 92px; resize: vertical; }
+        details { border: 1px solid rgba(73,89,101,0.14); border-radius: 12px; background: #fff; margin: 0.75rem 0; }
+        details summary { cursor: pointer; padding: 0.9rem 1rem; font-weight: 800; color: var(--mac-maroon); }
+        details > div { padding: 0 1rem 1rem; }
+        .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(73,89,101,0.14); background: #fff; }
+        table { width: 100%; border-collapse: collapse; min-width: 720px; }
+        th, td { padding: 0.75rem; border-bottom: 1px solid rgba(73,89,101,0.12); text-align: left; vertical-align: top; }
+        th { background: #F3F4F6; color: var(--mac-grey); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; }
+        .diagram-card { padding: 1rem; border-radius: 14px; background: #fff; border: 1px solid rgba(73,89,101,0.14); }
+        .diagram-card img, .diagram-card svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+        .screenshot-placeholder { min-height: 150px; display: flex; align-items: center; justify-content: center; padding: 1.25rem; border: 2px dashed var(--mac-grey-40); border-radius: 10px; background: #F8FAFC; color: var(--mac-grey); text-align: center; font-weight: 700; }
+        figcaption { color: var(--mac-grey); font-size: 0.92rem; margin-top: 0.6rem; }
+        .logic-flow { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+        .logic-flow span { padding: 0.6rem 0.75rem; border-radius: 10px; background: #fff; border: 1px solid rgba(122,0,60,0.15); font-weight: 700; }
+        .logic-flow b { color: var(--mac-gold); }
+        .order-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+        .order-item { display: grid; grid-template-columns: auto 1fr; gap: 0.6rem; align-items: center; padding: 0.75rem; border-radius: 10px; background: #fff; border: 1px solid rgba(73,89,101,0.14); }
+        .sidebar { position: fixed; top: 0; height: 100vh; width: min(500px, calc(100vw - 48px)); background: white; box-shadow: 0 0 50px rgba(0,0,0,0.22); z-index: 60; transition: transform 0.38s cubic-bezier(0.25,1,0.5,1); display: flex; flex-direction: column; }
+        #hardwareSidebar { left: 0; transform: translateX(-100%); }
+        #hardwareSidebar.active { transform: translateX(0); }
+        #softwareSidebar { right: 0; transform: translateX(100%); }
+        #softwareSidebar.active { transform: translateX(0); }
+        .sidebar-handle { position: absolute; top: 50%; width: 34px; height: 62px; border: 0; background: var(--mac-maroon); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; z-index: 65; }
+        .sidebar-handle:hover { background: var(--mac-maroon-80); }
+        #handle-hw { right: -34px; border-radius: 0 9px 9px 0; box-shadow: 4px 0 12px rgba(0,0,0,0.16); }
+        #handle-sw { left: -34px; border-radius: 9px 0 0 9px; box-shadow: -4px 0 12px rgba(0,0,0,0.16); }
+        .handle-icon { transition: transform 0.4s ease; stroke-width: 3px; }
+        #hardwareSidebar.active #handle-hw .handle-icon, #softwareSidebar.active #handle-sw .handle-icon { transform: rotate(180deg); }
+        .utility-button, .nav-button { min-height: 42px; padding: 0.72rem 1rem; border-radius: 9px; font-size: 0.88rem; font-weight: 800; transition: all 0.2s ease; cursor: pointer; text-decoration: none; }
+        .utility-button, .nav-button.secondary { background: white; color: var(--mac-grey); border: 1px solid var(--mac-grey-40); }
+        .utility-button:hover, .nav-button.secondary:hover { background: var(--mac-grey-20); }
+        .nav-button.primary { background: var(--mac-maroon); color: white; border: 1px solid var(--mac-maroon); }
+        .nav-button.primary:hover { background: var(--mac-maroon-80); }
+        .stage-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #E5E7EB; }
+        .stage-message { display: none; width: 100%; margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.88rem; font-weight: 600; }
+        .stage-message.show { display: block; }
+        .stage-message.success { background: #EFFAF3; border: 1px solid #B7E4C7; color: #174D2D; }
+        .knowledge-skill-list { display: grid; gap: 0.55rem; margin: 0; padding: 0; list-style: none; }
+        .knowledge-skill-list a { display: block; padding: 0.7rem 0.8rem; border-radius: 10px; border: 1px solid #DDE3E8; background: white; color: var(--lab-text); font-weight: 700; text-decoration: none; }
+        .optional-card { border-left: 5px solid var(--mac-gold); }
+        @media (max-width: 980px) {
+            .grid-layout.two, .grid-layout.three, .grid-layout.four, .order-grid { grid-template-columns: 1fr; }
+            .signal-chain { grid-template-columns: 1fr; }
+            .auto-score-chip { margin-left: 0; }
+        }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.001ms !important; animation-duration: 0.001ms !important; } }
+        @media print {
+            .stage-bar, .sidebar { display: none !important; }
+            .stage-panel { display: block !important; break-inside: avoid; }
+            body { background: #fff; }
+            .card { box-shadow: none; }
+            a::after { content: " (" attr(href) ")"; font-size: 0.8em; }
+        }
+        /* Completion indicator: use a CSS escape so the glyph remains valid in every file encoding. */
+        .stage-btn.completed::after { content: "\2713"; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 6px; border: 1px solid #23834d; border-radius: 50%; color: #126b3a; background: #e3f5e9; font-size: 0.84rem; font-weight: 800; line-height: 1; }
+    </style>
+</head>
+<body class="pb-24 pt-24 stage-0">
+    <nav class="stage-bar" aria-label="Lab progress">
+        <div class="stage-bar-inner">
+            <span class="stage-label">Student Space</span>
+            <a class="stage-btn" href="../../index.html">Home</a>
+            <span class="stage-btn page-current" aria-current="page">Lab 7</span>
+            <span class="stage-label lab-stage-label">Lab Progress</span>
+            <button class="stage-btn active" id="btn-stage-0" type="button" data-stage="0">Prepare</button>
+            <button class="stage-btn" id="btn-stage-1" type="button" data-stage="1">Predict Flow</button>
+            <button class="stage-btn" id="btn-stage-2" type="button" data-stage="2">ThingsBoard</button>
+            <button class="stage-btn" id="btn-stage-3" type="button" data-stage="3">MQTT Test</button>
+            <button class="stage-btn" id="btn-stage-4" type="button" data-stage="4">Circuit</button>
+            <button class="stage-btn" id="btn-stage-5" type="button" data-stage="5">HMI</button>
+            <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">Publish</button>
+            <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Receive</button>
+            <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Dashboard</button>
+            <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Extend</button>
+            <button class="stage-btn" id="btn-stage-10" type="button" data-stage="10">Troubleshoot</button>
+            <button class="stage-btn" id="btn-stage-11" type="button" data-stage="11">Reflect</button>
+            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/12</strong></div>
+        </div>
+    </nav>
+
+    <aside id="hardwareSidebar" class="sidebar" aria-label="Lab hardware reference">
+        <button id="handle-hw" class="sidebar-handle" type="button" data-sidebar-toggle="hardwareSidebar" title="Open hardware reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            <span class="sr-only">Open hardware reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Sensor and LED</h3>
+            <p class="text-sm text-white/75 mt-1">HC-SR04 plus Arduino pin 12 LED output</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Pin Map</h4>
+                <dl class="grid grid-cols-2 gap-y-3 text-sm">
+                    <dt class="text-gray-500">HC-SR04 VCC</dt><dd class="font-semibold text-right">5 V rail</dd>
+                    <dt class="text-gray-500">HC-SR04 GND</dt><dd class="font-semibold text-right">GND rail</dd>
+                    <dt class="text-gray-500">Echo</dt><dd class="font-semibold text-right">Digital 9</dd>
+                    <dt class="text-gray-500">Trig</dt><dd class="font-semibold text-right">Digital 8</dd>
+                    <dt class="text-gray-500">LED output</dt><dd class="font-semibold text-right">Digital 12</dd>
+                    <dt class="text-gray-500">LED resistor</dt><dd class="font-semibold text-right">220 ohm</dd>
+                </dl>
+            </div>
+            <div class="danger-card text-sm"><strong>Before rewiring:</strong> disconnect Arduino USB, verify HC-SR04 pin order, and confirm the LED resistor is in series.</div>
+        </div>
+    </aside>
+
+    <aside id="softwareSidebar" class="sidebar" aria-label="Cloud and MQTT reference">
+        <button id="handle-sw" class="sidebar-handle" type="button" data-sidebar-toggle="softwareSidebar" title="Open cloud reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            <span class="sr-only">Open cloud reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">MQTT and ThingsBoard</h3>
+            <p class="text-sm text-white/75 mt-1">Broker, topics, device token, telemetry, and shared attributes</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Required Settings</h4>
+                <p><strong>Broker:</strong> <code>mqtt.thingsboard.cloud</code></p>
+                <p><strong>Initial port:</strong> <code>1883</code></p>
+                <p><strong>User name:</strong> device access token</p>
+                <p><strong>Password:</strong> leave blank</p>
+                <p><strong>QoS:</strong> <code>1</code> (at least once)</p>
+            </div>
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Topics</h4>
+                <p><strong>Publish telemetry:</strong></p>
+                <p class="font-mono text-sm">v1/devices/me/telemetry</p>
+                <p><strong>Receive live shared attributes:</strong></p>
+                <p class="font-mono text-sm">v1/devices/me/attributes</p>
+                <p><strong>Receive requested attributes:</strong></p>
+                <p class="font-mono text-sm">v1/devices/me/attributes/response/+</p>
+                <p><strong>Request current attributes:</strong></p>
+                <p class="font-mono text-sm">v1/devices/me/attributes/request/1</p>
+                <p class="text-sm text-gray-600 mt-3">Topics have no leading slash. Treat the device access token like a password.</p>
+            </div>
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Knowledge Links</h4>
+                <ul class="knowledge-skill-list">
+                    <li><a href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW interface</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=analog-input">Arduino I/O</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Troubleshooting sequence</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=technical-documentation">Documentation and source use</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <main class="max-w-[1180px] mx-auto px-5">
+        <header class="page-header">
+            <div class="card section-card border-maroon">
+                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                    <div>
+                        <p class="uppercase tracking-[0.24em] text-sm font-bold text-[#7A003C] mb-3">SMRTTECH 3CC3 &middot; Cloud Computing and Internet of Things</p>
+                        <h1 class="lab-page-title text-4xl md:text-5xl font-extrabold"><span class="lab-title-prefix">Lab 7:</span> <span class="lab-title-gradient">Ultrasonic Sensor and Remote LED Control</span></h1>
+                        <p class="text-xl text-gray-600 mt-3">ThingsBoard Cloud telemetry and shared-attribute control from local ultrasonic sensing to a remote LED command.</p>
+                    </div>
+                    <img src="../../assets/McMaster-logo.png" alt="McMaster University logo" class="h-20 w-auto object-contain">
+                </div>
+                <div class="chip-row">
+                    <span class="stage-summary-chip">Pre-lab: 30-45 min</span>
+                    <span class="stage-summary-chip">Lab time: 3 hours</span>
+                    <span class="stage-summary-chip">Post-lab: 45-60 min</span>
+                    <span class="stage-summary-chip">Software: LabVIEW 2026 Q1, Lab7_init.vi, ThingsBoard Cloud, MQTT</span>
+                    <span class="stage-summary-chip">Hardware: Arduino Mega, HC-SR04, LED, 220 ohm resistor</span>
+                </div>
+                <div class="warning-card mt-block"><strong>Central question:</strong> How does a local sensor measurement become cloud data, and how does a cloud command control a local actuator?</div>
+                <div class="flex flex-wrap gap-3 mt-block">
+                    <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
+                    <button class="utility-button" type="button" data-print>Print lab</button>
+                    <button class="utility-button" type="button" data-reset>Reset Lab 7 data</button>
+                </div>
+            </div>
+
+            <div class="card section-card border-gold">
+                <h2>Bidirectional IoT signal chain</h2>
+                <p>This lab introduces both IoT monitoring and IoT control. The distance path moves measured data upward to the cloud; the control path moves a cloud command back down to local hardware.</p>
+                <div class="signal-chain" aria-label="Distance monitoring signal chain">
+                    <div class="signal-step">Object distance<span>Physical target changes position.</span></div>
+                    <div class="signal-step">Ultrasonic sensor<span>Trig/Echo timing produces distance.</span></div>
+                    <div class="signal-step">Arduino/LabVIEW<span>LINX reads the sensor value.</span></div>
+                    <div class="signal-step">JSON object<span>LabVIEW formats telemetry.</span></div>
+                    <div class="signal-step">Telemetry topic<span>MQTT sends the JSON object.</span></div>
+                    <div class="signal-step">ThingsBoard telemetry<span><code>distance_cm</code> and <code>led_state</code> are stored.</span></div>
+                    <div class="signal-step">Dashboard gauge<span>Web HMI displays distance.</span></div>
+                </div>
+                <div class="signal-chain" aria-label="Remote control signal chain">
+                    <div class="signal-step">Dashboard switch<span>User changes web HMI.</span></div>
+                    <div class="signal-step">Shared attribute<span><code>led_switch</code> stores desired state.</span></div>
+                    <div class="signal-step">Attribute topic<span>LabVIEW receives JSON.</span></div>
+                    <div class="signal-step">Parse JSON<span>Read the Boolean command.</span></div>
+                    <div class="signal-step">Local logic<span>Resolve desired and safe local state.</span></div>
+                    <div class="signal-step">Digital pin 12<span>Arduino output is written.</span></div>
+                    <div class="signal-step">LED state<span>Local actuator turns on/off.</span></div>
+                </div>
+            </div>
+        </header>
+
+        <section class="stage-panel stage-0" id="prepare" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Prepare</p>
+                <h2>Scenario, outcomes, and setup</h2>
+                <p>You are building a cloud-connected distance-monitoring node. The Arduino Mega and LabVIEW measure distance locally, publish JSON telemetry to ThingsBoard Cloud, and receive a persistent shared-attribute command that controls a local LED. This is the first full monitoring-and-control IoT loop in the course.</p>
+                <div class="grid-layout three mt-block">
+                    <div class="mini-card"><h3>Cloud account</h3><p>Create an individual ThingsBoard Cloud tenant account with your student email and keep the device token private.</p></div>
+                    <div class="mini-card"><h3>Device model</h3><p>Create one device named <code>Lab7-Ultrasonic-StudentName</code>. One physical project normally equals one ThingsBoard device, not one device per sensor or actuator.</p></div>
+                    <div class="mini-card"><h3>Data model</h3><p>Publish <code>distance_cm</code> and actual <code>led_state</code> as telemetry. Receive desired <code>led_switch</code> as a shared attribute.</p></div>
+                </div>
+                <div class="briefing-card mt-block"><h3>Course software environment</h3><p>Use Windows 10 or 11, Arduino Mega 2560, LabVIEW 2026 Q1, NI-VISA 2026 Q1, and the LabVIEW Hobbyist Toolkit/LINX 2026 Q1. Prefer 64-bit LabVIEW unless the installed MQTT library specifically requires another bitness.</p></div>
+            </article>
+
+            <article class="section-card card border-gold">
+                <h2>Safety and setup checklist</h2>
+                <div class="grid-layout two">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="readiness-account"><span>I can reach ThingsBoard Cloud registration and have access to my student email for verification.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="readiness-token-safety"><span>I understand that the device access token is password-equivalent and must stay out of responses, screenshots, reports, HTML, repositories, and completion JSON.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="readiness-device-model"><span>I understand that one physical project uses one device named <code>Lab7-Ultrasonic-StudentName</code>, not one device per sensor or actuator.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="readiness-data-model"><span>I can distinguish telemetry keys <code>distance_cm</code>/<code>led_state</code> from shared attribute <code>led_switch</code>.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-lab7"><span><code>Lab7_init.vi</code> is downloaded and opened from Lab7.zip.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-broker"><span>Broker <code>mqtt.thingsboard.cloud</code>, initial port <code>1883</code>, unique client ID, blank password, and QoS 1 are confirmed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-circuit"><span>Arduino circuit will be checked before USB power is connected.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-stop"><span>I will use Stop, not Abort, and reset the maintained Stop button before rerunning.</span></label>
+                </div>
+                <div class="danger-card mt-block"><strong>Credential warning:</strong> a device access token is a credential. Anyone who possesses it may be able to send data as that device. Use <code>YOUR_DEVICE_ACCESS_TOKEN</code> in examples; never hardcode a real token in public GitHub repositories, screenshots, reports, shared documents, HTML, or completion JSON. If a configuration file is needed, distribute only a token-free <code>thingsboard-config.example.json</code>, keep the real local copy excluded by <code>.gitignore</code>, and clear saved front-panel defaults before distributing a LabVIEW VI.</div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-1" id="predict-flow" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Predict</p>
+                <h2>Sort the IoT data flow</h2>
+                <p>Number each event in the monitoring path and then the control path. This is a quick mental model check before you wire or configure anything.</p>
+                <div class="grid-layout two">
+                    <div>
+                        <h3>Distance path</h3>
+                        <div class="order-grid" data-dnd-order>
+                            <label class="order-item"><select class="persist-text order-select monitor-select" data-key="mon-sensor"></select><span>Sensor measures distance</span></label>
+                            <label class="order-item"><select class="persist-text order-select monitor-select" data-key="mon-labview"></select><span>LabVIEW reads the value</span></label>
+                            <label class="order-item"><select class="persist-text order-select monitor-select" data-key="mon-publish"></select><span>MQTT publish sends the value</span></label>
+                            <label class="order-item"><select class="persist-text order-select monitor-select" data-key="mon-variable"></select><span>ThingsBoard stores <code>distance_cm</code> telemetry</span></label>
+                            <label class="order-item"><select class="persist-text order-select monitor-select" data-key="mon-dashboard"></select><span>Dashboard gauge displays it</span></label>
+                        </div>
+                        <button class="utility-button mt-block" type="button" data-check-monitor>Check distance path</button>
+                        <p class="stage-message show" data-monitor-feedback aria-live="polite">Choose an order for every distance-path event.</p>
+                    </div>
+                    <div>
+                        <h3>Control path</h3>
+                        <div class="order-grid" data-dnd-order>
+                            <label class="order-item"><select class="persist-text order-select control-select" data-key="ctrl-dashboard"></select><span>Dashboard switch changes</span></label>
+                            <label class="order-item"><select class="persist-text order-select control-select" data-key="ctrl-variable"></select><span>Shared attribute <code>led_switch</code> updates</span></label>
+                            <label class="order-item"><select class="persist-text order-select control-select" data-key="ctrl-subscribe"></select><span>MQTT attribute subscription receives JSON</span></label>
+                            <label class="order-item"><select class="persist-text order-select control-select" data-key="ctrl-labview"></select><span>LabVIEW parses the Boolean desired state</span></label>
+                            <label class="order-item"><select class="persist-text order-select control-select" data-key="ctrl-write"></select><span>Digital Write commands pin 12</span></label>
+                            <label class="order-item"><select class="persist-text order-select control-select" data-key="ctrl-led"></select><span>LED turns on or off</span></label>
+                        </div>
+                        <button class="utility-button mt-block" type="button" data-check-control>Check control path</button>
+                        <p class="stage-message show" data-control-feedback aria-live="polite">Choose an order for every control-path event.</p>
+                    </div>
+                </div>
+            </article>
+
+            <article class="section-card card border-success">
+                <h2>ThingsBoard data model and topic practice</h2>
+                <div class="grid-layout three">
+                    <div class="mini-card"><h3>Telemetry</h3><p>Measurement or reported state sent by LabVIEW: <code>distance_cm</code> and <code>led_state</code>. Publish JSON to <code>v1/devices/me/telemetry</code>.</p></div>
+                    <div class="mini-card"><h3>Shared attribute</h3><p>Persistent desired state sent from ThingsBoard: <code>led_switch</code>. Receive live changes on <code>v1/devices/me/attributes</code>.</p></div>
+                    <div class="mini-card"><h3>Desired versus actual</h3><p><code>led_switch</code> is the dashboard user's desired state; <code>led_state</code> is the actual state LabVIEW reports after applying local logic.</p></div>
+                </div>
+                <pre aria-label="Lab 7 ThingsBoard telemetry JSON example"><code>{
+  "distance_cm": 42.7,
+  "led_state": true
+}</code></pre>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Prompt</th><th>Your answer</th><th>Expected check</th></tr></thead>
+                        <tbody>
+                            <tr><td>Publish topic for telemetry</td><td><input class="persist-text topic-input" data-key="topic-publish" data-expected="v1/devices/me/telemetry" data-case-sensitive></td><td data-topic-result="topic-publish"></td></tr>
+                            <tr><td>Subscribe topic for live shared-attribute changes</td><td><input class="persist-text topic-input" data-key="topic-subscribe" data-expected="v1/devices/me/attributes" data-case-sensitive></td><td data-topic-result="topic-subscribe"></td></tr>
+                            <tr><td>Subscribe topic for startup-request responses</td><td><input class="persist-text topic-input" data-key="topic-attribute-response" data-expected="v1/devices/me/attributes/response/+" data-case-sensitive></td><td data-topic-result="topic-attribute-response"></td></tr>
+                            <tr><td>Publish topic for startup request ID 1</td><td><input class="persist-text topic-input" data-key="topic-attribute-request" data-expected="v1/devices/me/attributes/request/1" data-case-sensitive></td><td data-topic-result="topic-attribute-request"></td></tr>
+                            <tr><td>Which pin sends the ultrasonic pulse?</td><td><input class="persist-text topic-input" data-key="topic-trig" data-expected="trig"></td><td data-topic-result="topic-trig"></td></tr>
+                            <tr><td>Which pin returns timing information?</td><td><input class="persist-text topic-input" data-key="topic-echo" data-expected="echo"></td><td data-topic-result="topic-echo"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <label class="response-field mt-block"><span>Security reflection: why must a ThingsBoard device access token stay out of public repositories, screenshots, saved VI defaults, and completion exports?</span><textarea class="persist-text" data-key="security-reflection"></textarea></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-2" id="thingsboard" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Build</p>
+                <h2>Create and Configure Your ThingsBoard Cloud Account</h2>
+                <ol>
+                    <li>Open <a href="https://thingsboard.cloud" target="_blank" rel="noopener noreferrer">ThingsBoard Cloud</a>, create an individual account with your student email address, and complete email verification if requested.</li>
+                    <li>Sign in and confirm that you are viewing your own tenant account.</li>
+                    <li>Open <strong>Entities &rarr; Devices</strong>, select <strong>Add Device</strong>, and create <code>Lab7-Ultrasonic-StudentName</code>. Leave the device profile as the default unless your instructor provides another profile.</li>
+                    <li>Create only one device for this physical laboratory setup. Do not create a separate device for the ultrasonic sensor and LED.</li>
+                    <li>Save the device, open its details or connectivity information, locate its device access token, and copy it temporarily to a private local location.</li>
+                    <li>Never enter the token into a response field on this page. Use the placeholder <code>YOUR_DEVICE_ACCESS_TOKEN</code> in documentation.</li>
+                </ol>
+                <div class="grid-layout four mt-block">
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for a ThingsBoard Cloud account registration screenshot">Screenshot required: ThingsBoard Cloud account registration</div><figcaption>Instructor capture required: account registration and email-verification entry point.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for the ThingsBoard Devices page screenshot">Screenshot required: ThingsBoard Entities &rarr; Devices page</div><figcaption>Instructor capture required: Devices navigation and device list.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for the ThingsBoard Add Device dialog screenshot">Screenshot required: ThingsBoard Add Device dialog</div><figcaption>Instructor capture required: device name and default device-profile fields.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for the ThingsBoard device access-token screen screenshot">Screenshot required: ThingsBoard device access-token screen</div><figcaption>Instructor capture required using a disposable demonstration token; never expose a real student or instructor credential.</figcaption></figure>
+                </div>
+            </article>
+
+            <article class="section-card card border-gold">
+                <h2>Evidence capture</h2>
+                <div class="grid-layout two">
+                    <label class="response-field"><span>ThingsBoard device name</span><input class="persist-text" data-key="evidence-device-label" placeholder="Lab7-Ultrasonic-StudentName" data-stage-required></label>
+                    <label class="response-field"><span>Planned telemetry keys and shared attribute (do not enter the token)</span><input class="persist-text" data-key="evidence-variable-labels" placeholder="distance_cm, led_state; led_switch"></label>
+                    <label class="response-field evidence-upload"><span>Device-list evidence with no token visible</span><input class="persist-file" data-key="thingsboard-device-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="thingsboard-device-screenshot">No file selected.</small></label>
+                </div>
+                <div class="grid-layout three mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="thingsboard-account-verified"><span>My ThingsBoard Cloud account is verified, and I confirmed I am viewing my own tenant.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="thingsboard-device-created"><span>The Lab 7 device exists with the intended name and device profile.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="thingsboard-token-private"><span>I copied the device access token to a private local location without entering it into this portal or evidence.</span></label>
+                </div>
+                <details><summary>Think it through</summary><div><ul><li>Does ThingsBoard measure distance, or does it store telemetry sent by LabVIEW?</li><li>Why is one physical project represented by one device?</li><li>Why is <code>led_switch</code> a shared attribute while <code>led_state</code> is telemetry?</li></ul></div></details>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-3" id="mqtt-test" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Build</p>
+                <h2>Configure LabVIEW MQTT and test publish/subscribe</h2>
+                <p>Download <code>Lab7.zip</code> from Avenue to Learn, extract it, and open <code>Lab7_init.vi</code>. On the MQTT tab, configure ThingsBoard authentication and topics. Use 64-bit LabVIEW 2026 Q1 unless your installed MQTT library requires otherwise.</p>
+                <div class="grid-layout two">
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW ThingsBoard MQTT configuration screenshot">Screenshot required: LabVIEW MQTT tab configured for ThingsBoard</div><figcaption>Instructor capture required: show the broker, port, unique client ID, QoS, and ThingsBoard topics with the token redacted.</figcaption></figure>
+                    <div class="mini-card">
+                        <h3>MQTT tab settings</h3>
+                        <ul>
+                            <li>Client ID: unique to every simultaneous connection, such as <code>SMRTTECH3CC3-STUDENTNAME-LAB7</code>.</li>
+                            <li>Broker: <code>mqtt.thingsboard.cloud</code>.</li>
+                            <li>Port: <code>1883</code>.</li>
+                            <li>User Name: the ThingsBoard device access token.</li>
+                            <li>Password: leave blank.</li>
+                            <li>QoS: <code>1</code>, at least once.</li>
+                            <li>Publish topic: <code>v1/devices/me/telemetry</code>.</li>
+                            <li>Subscribe topics: <code>v1/devices/me/attributes</code> and <code>v1/devices/me/attributes/response/+</code>.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="warning-card mt-block"><strong>Transport security:</strong> port <code>1883</code> is unencrypted and is provided for the controlled classroom setup or initial connectivity testing. If the MQTT library reliably supports TLS and certificate verification, explicitly enable TLS and use port <code>8883</code>. Entering <code>8883</code> alone does not enable or verify TLS.</div>
+            </article>
+
+            <article class="section-card card border-success">
+                <h2>First MQTT test</h2>
+                <ol>
+                    <li>Run the LabVIEW program.</li>
+                    <li>Press Connect and confirm the MQTT connection succeeds.</li>
+                    <li>Publish <code>{"distance_cm":42.7,"led_state":false}</code> to <code>v1/devices/me/telemetry</code>. Do not publish an unlabelled number such as <code>42</code>.</li>
+                    <li>Open <strong>Entities &rarr; Devices &rarr; your Lab 7 device &rarr; Latest Telemetry</strong> and confirm both keys appear.</li>
+                    <li>Subscribe to <code>v1/devices/me/attributes</code> and <code>v1/devices/me/attributes/response/+</code>. A subscribe-success indicator only confirms that the broker accepted the subscription.</li>
+                    <li>From the device's Shared Attributes tab, set <code>led_switch</code> to Boolean <code>true</code> or <code>false</code> after subscribing and confirm a message arrives.</li>
+                    <li>Use Stop, not Abort, so MQTT, LINX/VISA, queues, events, and other references can close cleanly.</li>
+                </ol>
+                <div class="grid-layout two mt-block">
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Latest Telemetry tab screenshot">Screenshot required: ThingsBoard Latest Telemetry tab</div><figcaption>Instructor capture required: <code>distance_cm</code> and <code>led_state</code> visible for the Lab 7 device.</figcaption></figure>
+                    <label class="response-field evidence-upload"><span>Latest Telemetry evidence showing both keys and no access token</span><input class="persist-file" data-key="mqtt-latest-telemetry-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="mqtt-latest-telemetry-screenshot">No file selected.</small></label>
+                </div>
+                <label class="response-field mt-block"><span>Record one <code>distance_cm</code> value successfully published to ThingsBoard</span><input class="persist-text" data-key="mqtt-published-value" data-stage-required></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-4" id="circuit" tabindex="-1">
+            <article class="section-card card border-gold">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Build</p>
+                <h2>Create the ultrasonic sensor and LED circuit</h2>
+                <p>Wire the local sensing and actuation hardware. The ultrasonic sensor provides distance measurement; the LED provides a visible actuator controlled locally and from the cloud.</p>
+                <div class="grid-layout two">
+                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-ultrasonic-led-schematic.png" alt="Source PDF schematic showing Arduino Mega connected to HC-SR04 ultrasonic sensor and LED with resistor."><figcaption>Source PDF circuit: Echo to D9, Trig to D8, LED output on D12 through 220 ohm resistor.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-ultrasonic-led-photo.jpg" alt="Source PDF photo of Arduino Mega breadboard ultrasonic sensor and LED circuit."><figcaption>Source PDF hardware photo: compare breadboard placement, Arduino wiring, sensor orientation, and LED path.</figcaption></figure>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-led-resistor"><span>Digital 12 connects to LED in series with a 220 ohm resistor.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-vcc-gnd"><span>HC-SR04 VCC and GND are connected to the correct rails.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-echo"><span>Echo is connected to Digital 9.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-trig"><span>Trig is connected to Digital 8.</span></label>
+                </div>
+                <details><summary>Think it through</summary><div><ul><li>What does the ultrasonic sensor physically measure?</li><li>What evidence would prove Trig and Echo are not swapped?</li><li>Why does the LED need a current-limiting resistor?</li></ul></div></details>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-5" id="hmi" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Measure</p>
+                <h2>Build the LabVIEW HMI and local sensor read</h2>
+                <p>On the HMI tab, add a Waveform Chart labelled <code>Distance (cm)</code> and a Push Button labelled <code>LED</code>. In the block diagram, use LINX Open, LINX Close, Digital Write, and the provided <code>Ultrasonic Read Fixed.vi</code> from the Lab7 folder. Keep sensing and actuation local; the cloud is not the inner loop of the controller.</p>
+                <div class="grid-layout two">
+                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-labview-hmi.png" alt="Source PDF LabVIEW front panel with Distance chart and LED push button."><figcaption>Source PDF front panel: add a Distance (cm) waveform chart and LED push button.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-labview-ultrasonic-block.png" alt="Source PDF LabVIEW block diagram showing LINX, ultrasonic read, and digital write logic."><figcaption>Source PDF block diagram: wire Centimetres to Distance (cm) and Digital Write Output Value to LED.</figcaption></figure>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <label class="response-field"><span>Local LED front-panel test result</span><input class="persist-text" data-key="hmi-led-test" placeholder="Example: LED toggles from the front panel"></label>
+                    <label class="response-field"><span>Observed distance range from hand or box test</span><input class="persist-text" data-key="hmi-distance-range" placeholder="Example: 5 cm to 40 cm"></label>
+                    <label class="response-field evidence-upload"><span>LabVIEW HMI front panel screenshot</span><input class="persist-file" data-key="hmi-front-panel" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="hmi-front-panel">No file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>LabVIEW block diagram screenshot</span><input class="persist-file" data-key="hmi-block-diagram" type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="hmi-block-diagram">No file selected.</small></label>
+                </div>
+                <div class="warning-card mt-block">Run the local Arduino/LabVIEW loop at approximately 100&ndash;250 ms. It must keep operating during internet loss. On an intentional stop, the safe shutdown state should normally turn the LED off and close all communication references.</div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-6" id="publish" tabindex="-1">
+            <article class="section-card card border-success">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Measure</p>
+                <h2>Publish ThingsBoard JSON telemetry</h2>
+                <p>Build one valid JSON object containing the measured distance and actual LED state, then publish it to <code>v1/devices/me/telemetry</code>. Use an existing course JSON utility or native LabVIEW string formatting, arithmetic, comparison, Boolean logic, Case Structures, and shift registers. Do not introduce a MathScript Node.</p>
+                <pre aria-label="Required Lab 7 telemetry payload"><code>{
+  "distance_cm": 42.7,
+  "led_state": true
+}</code></pre>
+                <p>If you use Format Into String, a format string may resemble <code>{"distance_cm":%.2f,"led_state":%s}</code>. Feed the final placeholder a lowercase JSON Boolean string (<code>true</code> or <code>false</code>), not quoted text and not LabVIEW's capitalized display form. Validate the complete payload before publishing.</p>
+                <div class="grid-layout two">
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW JSON telemetry construction screenshot">Screenshot required: LabVIEW JSON construction for <code>distance_cm</code> and <code>led_state</code></div><figcaption>Instructor capture required: native LabVIEW or the course JSON utility building a valid object.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW telemetry publish case screenshot">Screenshot required: LabVIEW publish case using <code>v1/devices/me/telemetry</code></div><figcaption>Instructor capture required: telemetry topic, payload source, and one-second publish timing.</figcaption></figure>
+                </div>
+                <div class="warning-card mt-block"><strong>Timing:</strong> keep the local Arduino/LabVIEW loop at approximately 100&ndash;250 ms, but publish ThingsBoard telemetry only about once per second. Do not publish every ultrasonic sample. Dashboard commands are event-driven.</div>
+                <label class="response-field mt-block"><span>Why must the MQTT payload be a labelled JSON object rather than an unlabelled number?</span><textarea class="persist-text" data-key="publish-format-why"></textarea></label>
+                <label class="response-field"><span>Evidence that ThingsBoard receives changing <code>distance_cm</code> plus actual <code>led_state</code> about once per second</span><textarea class="persist-text" data-key="publish-evidence" data-stage-required></textarea></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-7" id="receive" tabindex="-1">
+            <article class="section-card card border-gold">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Measure</p>
+                <h2>Receive <code>led_switch</code> and synchronize at startup</h2>
+                <p>Use <code>led_switch</code> as the desired dashboard state. Subscribe to live shared-attribute changes, request the current value after every connection, parse valid JSON with the course JSON utility or standard LabVIEW JSON functions, and apply the Boolean through local logic. Do not use MathScript.</p>
+                <div class="grid-layout two">
+                    <div class="mini-card">
+                        <h3>Live update</h3>
+                        <p>Subscribe to <code>v1/devices/me/attributes</code>.</p>
+                        <pre><code>{"led_switch":true}</code></pre>
+                        <p>The value may also be Boolean <code>false</code>.</p>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Startup/reconnection synchronization</h3>
+                        <p>Subscribe to <code>v1/devices/me/attributes/response/+</code>, then publish to <code>v1/devices/me/attributes/request/1</code>:</p>
+                        <pre><code>{"sharedKeys":"led_switch"}</code></pre>
+                    </div>
+                </div>
+                <p>The response may resemble:</p>
+                <pre aria-label="ThingsBoard shared attribute response JSON"><code>{
+  "shared": {
+    "led_switch": true
+  }
+}</code></pre>
+                <p>This request ensures LabVIEW receives the current dashboard state even if the switch changed while LabVIEW was offline. On reconnect, recreate the connection if needed, resubscribe to both topics, and request the current value again.</p>
+                <div class="grid-layout two">
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Shared Attributes tab screenshot">Screenshot required: ThingsBoard Shared Attributes tab showing <code>led_switch</code></div><figcaption>Instructor capture required: a Boolean shared attribute with no credential visible.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW shared attribute receive and startup synchronization screenshot">Screenshot required: LabVIEW shared-attribute receive, JSON parse, and startup request</div><figcaption>Instructor capture required: both subscriptions, request topic/payload, Boolean validation, and Digital Write path.</figcaption></figure>
+                </div>
+                <div class="briefing-card mt-block"><h3>Desired state versus actual state</h3><p><code>led_switch</code> is the desired state selected in ThingsBoard. <code>led_state</code> is the actual state after LabVIEW applies local rules and writes Arduino Digital 12; report it back as telemetry. Repeated QoS 1 messages must be idempotent and must not toggle the LED accidentally.</p></div>
+                <div class="warning-card mt-block">If JSON is malformed or <code>led_switch</code> is not a Boolean, display a readable error and retain the last valid command unless the documented design requires a safer fallback. Local sensing and control must continue during cloud loss; an intentional shutdown should turn the LED off.</div>
+                <div class="grid-layout two mt-block">
+                    <label class="response-field"><span>What can the live and startup-response JSON payloads contain, and how does LabVIEW validate <code>led_switch</code>?</span><textarea class="persist-text" data-key="rx-value-meaning"></textarea></label>
+                    <label class="response-field"><span>Explain how ThingsBoard desired <code>led_switch</code>, local LabVIEW logic, Arduino output, and reported <code>led_state</code> differ.</span><textarea class="persist-text" data-key="led-control-source" data-stage-required></textarea></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="shared-manual-change"><span>A manual edit in the device Shared Attributes tab produced a live <code>led_switch</code> message after subscription.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="shared-startup-sync"><span>The attribute request returned the current <code>led_switch</code> value after connection or reconnection.</span></label>
+                    <label class="response-field evidence-upload"><span>Shared Attributes evidence with no access token visible</span><input class="persist-file" data-key="shared-attribute-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="shared-attribute-screenshot">No file selected.</small></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-8" id="dashboard" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Explain</p>
+                <h2>Create the ThingsBoard dashboard</h2>
+                <ol>
+                    <li>Open <strong>Dashboards</strong>, create a dashboard, and name it <code>Lab 7 Ultrasonic Dashboard</code>.</li>
+                    <li>Open edit mode and create or select an entity alias that points to your <code>Lab7-Ultrasonic-StudentName</code> device.</li>
+                    <li>Add a gauge or numeric value card bound to telemetry key <code>distance_cm</code>.</li>
+                    <li>Add a time-series chart bound to telemetry key <code>distance_cm</code>.</li>
+                    <li>Add an actual-state indicator bound to telemetry key <code>led_state</code>.</li>
+                    <li>Add a control switch that reads and writes the <strong>shared attribute</strong> <code>led_switch</code>.</li>
+                    <li>Configure the switch initial state as <strong>Get shared attribute</strong> <code>led_switch</code>.</li>
+                    <li>Configure switch on as <strong>Set shared attribute</strong> <code>led_switch</code> to Boolean <code>true</code>, and switch off as Boolean <code>false</code>.</li>
+                    <li>Do not configure this switch to write telemetry, set a server-side attribute, add a time series, or execute RPC.</li>
+                    <li>Optionally add a device-activity or last-update indicator, save the dashboard, and exit edit mode.</li>
+                </ol>
+                <div class="grid-layout four mt-block">
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard dashboard creation page screenshot">Screenshot required: ThingsBoard dashboard creation page</div><figcaption>Instructor capture required: create and name <code>Lab 7 Ultrasonic Dashboard</code>.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard entity alias selection screenshot">Screenshot required: ThingsBoard entity alias selection</div><figcaption>Instructor capture required: alias bound to one Lab 7 device.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard telemetry widget configuration screenshot">Screenshot required: ThingsBoard telemetry widget configuration</div><figcaption>Instructor capture required: <code>distance_cm</code> gauge/time-series and <code>led_state</code> indicator bindings.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard shared attribute switch configuration screenshot">Screenshot required: ThingsBoard shared-attribute switch configuration</div><figcaption>Instructor capture required: get/set shared attribute <code>led_switch</code> with Boolean values.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for the completed Lab 7 ThingsBoard dashboard screenshot">Screenshot required: completed Lab 7 ThingsBoard dashboard</div><figcaption>Instructor capture required: distance value/gauge, time-series chart, LED switch, actual-state indicator, and optional activity indicator together.</figcaption></figure>
+                </div>
+                <div class="success-card mt-block"><strong>Verify cloud configuration first:</strong> toggle the dashboard switch and confirm that <code>led_switch</code> changes under the device's <strong>Shared Attributes</strong> tab. Complete this check before troubleshooting LabVIEW.</div>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-gauge"><span>The <code>distance_cm</code> numeric/gauge and time-series widgets update.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-switch"><span>The switch changes shared <code>led_switch</code>, and LabVIEW receives the command.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-autopublish"><span>LabVIEW publishes telemetry about once per second and resubscribes/requests current state after reconnecting.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-activity-indicator"><span>The optional activity/last-update indicator was added or intentionally omitted.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-shared-attribute"><span>The Shared Attributes tab proves the switch writes <code>led_switch</code>, not telemetry, RPC, or a server attribute.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-led-state"><span>The Arduino LED responds, and the separate <code>led_state</code> indicator reports actual state.</span></label>
+                </div>
+                <label class="response-field mt-block"><span>Dashboard URL or instructor demo evidence</span><input class="persist-text" data-key="dashboard-url"></label>
+                <label class="response-field evidence-upload"><span>Final ThingsBoard dashboard screenshot with no access token visible</span><input class="persist-file" data-key="thingsboard-dashboard-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="thingsboard-dashboard-screenshot">No file selected.</small></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-9" id="extend" tabindex="-1">
+            <article class="section-card card border-success">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Revise</p>
+                <h2>Extend automation below 5 cm</h2>
+                <p>Modify the local LabVIEW logic so the LED turns on automatically when distance is less than 5 cm. Decide whether this local rule should override, combine with, or be separate from desired <code>led_switch</code>. Publish the resulting physical output as actual <code>led_state</code>.</p>
+                <div class="logic-flow" aria-label="Automation logic">
+                    <span>Distance (cm)</span><b>&lt;</b><span>5 cm</span><b>OR</b><span>Dashboard switch ON</span><b>=</b><span>LED ON</span>
+                </div>
+                <div class="grid-layout three mt-block">
+                    <div class="mini-card optional-card">Add a local distance threshold slider instead of a fixed 5 cm threshold.</div>
+                    <div class="mini-card optional-card">Add an alert widget when an object is too close.</div>
+                    <div class="mini-card optional-card">Add a historical distance chart to show sensor behavior over time.</div>
+                    <div class="mini-card optional-card">Test the dashboard on a phone and describe the responsive layout.</div>
+                    <div class="mini-card optional-card">Document how repeated or stale cloud commands remain safe and idempotent.</div>
+                    <div class="mini-card optional-card">Reflect on the risk of sharing a dashboard link.</div>
+                </div>
+                <label class="response-field mt-block"><span>Describe your extension logic or paste pseudocode</span><textarea class="persist-text" data-key="extend-code" data-stage-required></textarea></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-10" id="troubleshoot" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Revise</p>
+                <h2>Troubleshooting matrix</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Observation</th><th>Likely cause</th><th>Test</th><th>Result</th><th>Next action</th></tr></thead>
+                        <tbody>
+                            <tr><td><input class="persist-text" data-key="tr-obs-1" data-stage-required aria-label="Troubleshooting row 1 - Observation"></td><td><input class="persist-text" data-key="tr-cause-1" data-stage-required aria-label="Troubleshooting row 1 - Likely cause"></td><td><input class="persist-text" data-key="tr-test-1" data-stage-required aria-label="Troubleshooting row 1 - Test"></td><td><input class="persist-text" data-key="tr-result-1" data-stage-required aria-label="Troubleshooting row 1 - Result"></td><td><input class="persist-text" data-key="tr-action-1" data-stage-required aria-label="Troubleshooting row 1 - Next action"></td></tr>
+                            <tr><td><input class="persist-text" data-key="tr-obs-2" aria-label="Troubleshooting row 2 - Observation"></td><td><input class="persist-text" data-key="tr-cause-2" aria-label="Troubleshooting row 2 - Likely cause"></td><td><input class="persist-text" data-key="tr-test-2" aria-label="Troubleshooting row 2 - Test"></td><td><input class="persist-text" data-key="tr-result-2" aria-label="Troubleshooting row 2 - Result"></td><td><input class="persist-text" data-key="tr-action-2" aria-label="Troubleshooting row 2 - Next action"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <details><summary>Publishing succeeds but no dashboard value appears</summary><div><ul><li>Confirm the topic is exactly <code>v1/devices/me/telemetry</code> with no leading slash.</li><li>Validate the payload as JSON and check exact key spelling: <code>distance_cm</code> and <code>led_state</code>.</li><li>Confirm the dashboard entity alias points to the correct device and its widgets use those telemetry keys.</li><li>Confirm the device access token belongs to that same device.</li></ul></div></details>
+                    <details><summary>The MQTT connection fails</summary><div><ul><li>Confirm broker <code>mqtt.thingsboard.cloud</code>, the intended port, token in User Name, blank password, and a unique client ID.</li><li>Check whether the campus firewall blocks MQTT.</li><li>Do not attempt TLS with a non-TLS client. For port <code>8883</code>, the library must explicitly enable TLS and certificate verification.</li></ul></div></details>
+                    <details><summary>Subscribe succeeds but no message arrives</summary><div><p>A subscribe-success indicator only means the broker accepted the subscription. Confirm the live topic is <code>v1/devices/me/attributes</code>, then change <code>led_switch</code> after subscribing. The dashboard widget must set a shared attribute, not telemetry, RPC, or a server attribute.</p></div></details>
+                    <details><summary>Forced shared-attribute receive test</summary><div><p>Subscribe to <code>v1/devices/me/attributes/response/+</code>. Publish <code>{"sharedKeys":"led_switch"}</code> to <code>v1/devices/me/attributes/request/1</code>. If the response arrives, the LabVIEW receive path works; inspect the dashboard and shared-attribute configuration.</p></div></details>
+                    <details><summary>The dashboard switch moves but LabVIEW receives nothing</summary><div><p>First confirm <code>led_switch</code> changes in the device Shared Attributes tab. Configure the widget action as <strong>Set shared attribute</strong>, not Execute RPC, Add time series, Set server attribute, or telemetry. Then verify the live subscription topic and exact key spelling.</p></div></details>
+                    <details><summary>LabVIEW stops receiving after reconnect</summary><div><p>Reconnect MQTT, recreate any invalid connection reference, resubscribe to both attribute topics, and request the current <code>led_switch</code> value. Do not assume subscriptions survive a disconnected session.</p></div></details>
+                    <details><summary>The received JSON is malformed or has the wrong type</summary><div><p>Display a readable parse/type error rather than stopping the complete VI. Retain the last valid command unless a documented safer fallback is required. Accept <code>led_switch</code> only as a Boolean.</p></div></details>
+                    <details><summary>Local sensor or LED behaviour is wrong</summary><div><ul><li>Verify LED polarity, the 220 ohm resistor, Digital 12, HC-SR04 power/ground, Trig D8, Echo D9, and Arduino USB.</li><li>Verify <code>Lab7_init.vi</code>, read-mode local variables, maintained Stop reset, valid JSON formatting, and graceful Stop rather than Abort.</li></ul></div></details>
+                </div>
+                <div class="briefing-card mt-block"><h3>Reliability, safety, and cleanup</h3><ul><li>Cloud communication is not deterministic and must not be the inner loop of a fast controller.</li><li>Keep local sensing and actuator logic running during internet loss; send telemetry about once per second and handle dashboard commands as events.</li><li>QoS 1 can repeat messages, so repeated or stale commands must not create unsafe actuator behaviour.</li><li>On Stop, turn the LED off and close MQTT, LINX/VISA, queues, events, and every other reference. Do not use Abort as the normal shutdown path.</li></ul></div>
+                <label class="completion-box mt-block"><input type="checkbox" class="persist-check" data-key="troubleshoot-internet-loss"><span>I tested or explained internet-loss behaviour: local logic continued, the last valid desired state was handled safely, and startup synchronization restored cloud state after reconnect.</span></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-11" id="reflect" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Reflect</p>
+                <h2>Deliverables</h2>
+                <div class="grid-layout two">
+                    <div class="mini-card"><h3>Submit or demonstrate</h3><ol><li>ThingsBoard account and Lab 7 device created.</li><li>Device token entered privately into LabVIEW and excluded from submitted evidence.</li><li>Test <code>distance_cm</code>/<code>led_state</code> telemetry visible under Latest Telemetry.</li><li>LabVIEW MQTT configuration with the token redacted.</li><li>Sensor/LED circuit and local LabVIEW HMI evidence.</li><li>JSON telemetry updating about once per second.</li><li>Manual shared <code>led_switch</code> update and startup request response.</li><li>Dashboard switch changes <code>led_switch</code>; LabVIEW receives it; Arduino LED responds.</li><li>Actual <code>led_state</code> returns to ThingsBoard separately from desired state.</li><li>Final dashboard screenshot or instructor demonstration.</li><li>Reconnect, malformed-message, safe-shutdown, and internet-loss behaviour.</li><li>System explanation, local extension, reflection, and suggestions.</li></ol></div>
+                    <div class="mini-card"><h3>Suggested weighting</h3><table><tbody><tr><td>ThingsBoard account, device, and credential safety</td><td>15%</td></tr><tr><td>MQTT/JSON configuration and evidence</td><td>20%</td></tr><tr><td>Sensor/LED hardware and local LabVIEW HMI</td><td>20%</td></tr><tr><td>Telemetry, shared-attribute, and startup-sync loop</td><td>20%</td></tr><tr><td>Dashboard and remote demo</td><td>15%</td></tr><tr><td>Extension, reliability, and reflection</td><td>10%</td></tr></tbody></table></div>
+                </div>
+                <div class="warning-card mt-block"><strong>Instructor screenshots still required:</strong> ThingsBoard account registration; Devices page; Add Device dialog; device access-token screen using a disposable/redacted token; Latest Telemetry tab; Shared Attributes tab; dashboard creation page; entity alias selection; telemetry widget configuration; shared-attribute switch configuration; completed dashboard; LabVIEW ThingsBoard MQTT configuration; LabVIEW JSON telemetry construction; LabVIEW telemetry publish case; and LabVIEW shared-attribute/startup-sync wiring.</div>
+            </article>
+
+            <article class="section-card card border-gold">
+                <h2>Submission questions</h2>
+                <label class="response-field"><span>1. Draw or describe a system block diagram with arrows showing data transfer between web HMI, sensors, and actuators.</span><textarea class="persist-text" data-key="reflect-1" data-stage-required></textarea></label>
+                <label class="response-field"><span>2. Explain ultrasonic sensor operation and the purpose of Trig and Echo pins.</span><textarea class="persist-text" data-key="reflect-2" data-stage-required></textarea></label>
+                <label class="response-field"><span>3. What are the advantages of using LabVIEW instead of Arduino IDE for this application?</span><textarea class="persist-text" data-key="reflect-3" data-stage-required></textarea></label>
+                <label class="response-field"><span>4. Include the new code or logic corresponding to the extension.</span><textarea class="persist-text" data-key="reflect-4" data-stage-required></textarea></label>
+                <label class="response-field"><span>5. Include typos or suggestions for improving the lab manual.</span><textarea class="persist-text" data-key="reflect-5" data-stage-required></textarea></label>
+            </article>
+
+            <article class="section-card card border-success">
+                <h2>Glossary</h2>
+                <div class="grid-layout three">
+                    <details><summary>ThingsBoard Cloud account</summary><div>An individual tenant account used to manage devices, telemetry, shared attributes, and dashboards.</div></details>
+                    <details><summary>Device</summary><div>A ThingsBoard entity representing one physical project; this lab uses <code>Lab7-Ultrasonic-StudentName</code>.</div></details>
+                    <details><summary>Telemetry</summary><div>Measurement or reported-state data sent by LabVIEW, including <code>distance_cm</code> and actual <code>led_state</code>.</div></details>
+                    <details><summary>Shared attribute</summary><div>A persistent cloud-configured value sent to the device, including desired <code>led_switch</code>.</div></details>
+                    <details><summary>MQTT</summary><div>Lightweight publish/subscribe messaging protocol used for IoT data exchange.</div></details>
+                    <details><summary>Broker</summary><div>Server that routes MQTT messages between publishers and subscribers.</div></details>
+                    <details><summary>Client</summary><div>Program connected to the MQTT broker, such as the LabVIEW VI.</div></details>
+                    <details><summary>Device access token</summary><div>Private credential used as the MQTT user name to authenticate one ThingsBoard device.</div></details>
+                    <details><summary>Publish</summary><div>Send a JSON payload to an MQTT topic, such as telemetry or an attribute request.</div></details>
+                    <details><summary>Subscribe</summary><div>Listen to an MQTT topic, such as live or requested shared-attribute messages.</div></details>
+                    <details><summary>Topic</summary><div>MQTT address string that identifies where a message is sent or received.</div></details>
+                    <details><summary>Dashboard</summary><div>Web HMI that displays sensor data and offers controls.</div></details>
+                    <details><summary>Widget</summary><div>Dashboard element such as a gauge or switch.</div></details>
+                    <details><summary>Gauge</summary><div>Widget that displays numeric distance values.</div></details>
+                    <details><summary>Switch</summary><div>Widget configured to get and set the Boolean shared attribute <code>led_switch</code>.</div></details>
+                    <details><summary>HC-SR04</summary><div>Ultrasonic distance sensor with VCC, Trig, Echo, and GND pins.</div></details>
+                    <details><summary>Trig</summary><div>Sensor input pin used to start the ultrasonic pulse.</div></details>
+                    <details><summary>Echo</summary><div>Sensor output pin whose pulse width represents return time.</div></details>
+                    <details><summary>LINX</summary><div>LabVIEW toolkit used to communicate with Arduino hardware.</div></details>
+                    <details><summary>Local variable</summary><div>LabVIEW object used here to read Distance or RX Value inside another structure.</div></details>
+                    <details><summary>RX Value</summary><div>Received MQTT JSON that must be parsed and type-checked before applying <code>led_switch</code>.</div></details>
+                    <details><summary>Format Into String</summary><div>LabVIEW string function that can build a JSON telemetry object when values, braces, quotes, and Boolean text are formatted correctly.</div></details>
+                    <details><summary>Cloud monitoring</summary><div>Viewing local sensor data through ThingsBoard telemetry and dashboard widgets.</div></details>
+                    <details><summary>Remote control</summary><div>Using a cloud command to affect local hardware behavior.</div></details>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        (() => {
+            const STORAGE_PREFIX = 'smrttech-lab7-thingsboard-mqtt';
+            const LEGACY_STORAGE_PREFIX = 'smrttech-lab7-ubidots-mqtt';
+            const MIGRATION_MARKER = `${STORAGE_PREFIX}:migration-v2`;
+            const PLATFORM_NEUTRAL_KEYS = [
+                'setup-lab7', 'setup-circuit', 'setup-stop',
+                'circuit-led-resistor', 'circuit-vcc-gnd', 'circuit-echo', 'circuit-trig',
+                'hmi-led-test', 'hmi-distance-range', 'extend-code'
+            ];
+            const STAGE_COUNT = 12;
+            const STAGE_NAMES = ['Prepare', 'Predict Flow', 'ThingsBoard', 'MQTT Test', 'Circuit', 'HMI', 'Publish', 'Receive', 'Dashboard', 'Extend', 'Troubleshoot', 'Reflect'];
+            const MONITOR_KEYS = ['mon-sensor','mon-labview','mon-publish','mon-variable','mon-dashboard'];
+            const CONTROL_KEYS = ['ctrl-dashboard','ctrl-variable','ctrl-subscribe','ctrl-labview','ctrl-write','ctrl-led'];
+            document.body.classList.add('js-enabled');
+
+            function migrateLegacyStorage() {
+                if (localStorage.getItem(MIGRATION_MARKER) === 'true') return;
+
+                PLATFORM_NEUTRAL_KEYS.forEach(key => {
+                    const legacyKey = `${LEGACY_STORAGE_PREFIX}:${key}`;
+                    const currentKey = `${STORAGE_PREFIX}:${key}`;
+                    if (localStorage.getItem(currentKey) === null && localStorage.getItem(legacyKey) !== null) {
+                        localStorage.setItem(currentKey, localStorage.getItem(legacyKey));
+                    }
+                });
+
+                Object.keys(localStorage)
+                    .filter(key => key.startsWith(`${LEGACY_STORAGE_PREFIX}:`))
+                    .forEach(key => localStorage.removeItem(key));
+
+                Object.keys(localStorage)
+                    .filter(key => key.startsWith(`${STORAGE_PREFIX}:stage-`) && key.endsWith('-complete'))
+                    .forEach(key => localStorage.removeItem(key));
+
+                Object.keys(localStorage)
+                    .filter(key => key.startsWith('smrttech:stage-confirmed:v1:lab-07:'))
+                    .forEach(key => localStorage.removeItem(key));
+
+                localStorage.setItem(MIGRATION_MARKER, 'true');
+            }
+
+            migrateLegacyStorage();
+
+            function storageKey(key) { return `${STORAGE_PREFIX}:${key}`; }
+
+            function setStage(stage) {
+                const safeStage = Math.max(0, Math.min(STAGE_COUNT - 1, Number(stage) || 0));
+                document.body.className = document.body.className.split(' ').filter(name => !/^stage-\d+$/.test(name)).join(' ');
+                document.body.classList.add('pb-24', 'pt-24', 'js-enabled', `stage-${safeStage}`);
+                document.querySelectorAll('[data-stage]').forEach(button => {
+                    const active = Number(button.dataset.stage) === safeStage;
+                    button.classList.toggle('active', active);
+                    button.setAttribute('aria-current', active ? 'step' : 'false');
+                });
+                localStorage.setItem(storageKey('current-stage'), String(safeStage));
+                updateProgress();
+                const panel = document.querySelector(`.stage-panel.stage-${safeStage}`);
+                if (panel) panel.focus({ preventScroll: true });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function updateProgress() {
+                let complete = 0;
+                document.querySelectorAll('[data-stage]').forEach(button => {
+                    const isComplete = localStorage.getItem(storageKey(`stage-${button.dataset.stage}-complete`)) === 'true';
+                    button.classList.toggle('completed', isComplete);
+                    if (isComplete) complete += 1;
+                });
+                document.querySelectorAll('[data-progress-status]').forEach(status => {
+                    status.textContent = `${complete}/${STAGE_COUNT}`;
+                    status.setAttribute('title', `${complete} of ${STAGE_COUNT} phases marked complete.`);
+                });
+            }
+
+            function showStageMessage(stage, message) {
+                const panel = document.querySelector(`.stage-panel.stage-${stage}`);
+                if (!panel) return;
+                let messageBox = panel.querySelector('.stage-message:not([data-monitor-feedback]):not([data-control-feedback])');
+                if (!messageBox) {
+                    messageBox = document.createElement('div');
+                    messageBox.className = 'stage-message';
+                    messageBox.setAttribute('role', 'status');
+                    messageBox.setAttribute('aria-live', 'polite');
+                    const footer = panel.querySelector('.stage-footer');
+                    if (footer) footer.before(messageBox);
+                    else panel.appendChild(messageBox);
+                }
+                messageBox.textContent = message;
+                messageBox.className = 'stage-message show success';
+            }
+
+            function markStageComplete(stage) {
+                localStorage.setItem(storageKey(`stage-${stage}-complete`), 'true');
+                updateProgress();
+                showStageMessage(stage, 'Stage complete. Your progress has been saved in this browser.');
+            }
+
+            function buildStageFooters() {
+                document.querySelectorAll('.stage-panel').forEach((panel, index) => {
+                    if (panel.querySelector('.stage-footer')) return;
+                    const footer = document.createElement('div');
+                    footer.className = 'stage-footer';
+                    const previous = document.createElement('button');
+                    previous.type = 'button';
+                    previous.className = 'nav-button secondary';
+                    previous.textContent = index === 0 ? 'Back to portal' : `Back: ${STAGE_NAMES[index - 1]}`;
+                    previous.addEventListener('click', () => {
+                        if (index === 0) window.location.href = '../../index.html';
+                        else setStage(index - 1);
+                    });
+                    const controls = document.createElement('div');
+                    controls.className = 'chip-row compact';
+                    const next = document.createElement('button');
+                    next.type = 'button';
+                    next.className = 'nav-button primary';
+                    next.textContent = index === STAGE_COUNT - 1 ? 'Finish Lab 7' : `Next: ${STAGE_NAMES[index + 1]}`;
+                    next.addEventListener('click', () => {
+                        markStageComplete(index);
+                        if (index < STAGE_COUNT - 1) setStage(index + 1);
+                    });
+                    controls.append(next);
+                    footer.append(previous, controls);
+                    panel.appendChild(footer);
+                });
+            }
+
+            function setupOrderOptions() {
+                document.querySelectorAll('.monitor-select').forEach(select => addOrderOptions(select, MONITOR_KEYS.length));
+                document.querySelectorAll('.control-select').forEach(select => addOrderOptions(select, CONTROL_KEYS.length));
+            }
+
+            function addOrderOptions(select, count) {
+                if (select.options.length) return;
+                const blank = document.createElement('option');
+                blank.value = '';
+                blank.textContent = 'Order';
+                select.appendChild(blank);
+                for (let i = 1; i <= count; i += 1) {
+                    const option = document.createElement('option');
+                    option.value = String(i);
+                    option.textContent = String(i);
+                    select.appendChild(option);
+                }
+            }
+
+            function restoreInputs() {
+                document.querySelectorAll('.persist-check').forEach(input => {
+                    input.checked = localStorage.getItem(storageKey(input.dataset.key)) === 'true';
+                    input.addEventListener('change', () => localStorage.setItem(storageKey(input.dataset.key), String(input.checked)));
+                });
+                document.querySelectorAll('.persist-text').forEach(input => {
+                    const saved = localStorage.getItem(storageKey(input.dataset.key));
+                    if (saved !== null) input.value = saved;
+                    input.addEventListener('input', () => {
+                        localStorage.setItem(storageKey(input.dataset.key), input.value);
+                        updateTopicChecks();
+                    });
+                    input.addEventListener('change', () => {
+                        localStorage.setItem(storageKey(input.dataset.key), input.value);
+                        updateTopicChecks();
+                    });
+                });
+            }
+
+            function checkSequence(keys, feedbackSelector, successMessage, failMessage) {
+                const values = keys.map(key => document.querySelector(`[data-key="${key}"]`)?.value || '');
+                const feedback = document.querySelector(feedbackSelector);
+                if (!feedback) return;
+                if (values.some(value => value === '')) {
+                    feedback.textContent = 'Choose an order for every event.';
+                    return;
+                }
+                if (new Set(values).size !== values.length) {
+                    feedback.textContent = 'Each order number should be used once.';
+                    return;
+                }
+                const correct = values.every((value, index) => value === String(index + 1));
+                feedback.textContent = correct ? successMessage : failMessage;
+            }
+
+            function updateTopicChecks() {
+                document.querySelectorAll('.topic-input').forEach(input => {
+                    const target = document.querySelector(`[data-topic-result="${input.dataset.key}"]`);
+                    if (!target) return;
+                    const actual = input.value.trim();
+                    const expected = input.dataset.expected.trim();
+                    if (!actual) {
+                        target.textContent = '';
+                        return;
+                    }
+                    const matches = input.hasAttribute('data-case-sensitive')
+                        ? actual === expected
+                        : actual.toLowerCase() === expected.toLowerCase();
+                    target.textContent = matches ? 'Matches expected value.' : `Expected ${input.dataset.expected}.`;
+                });
+            }
+
+            function exportResponses() {
+                return window.LabCompletionExport?.download();
+            }
+
+            function resetLocalData() {
+                if (!confirm('Reset only Lab 7 local progress and responses on this browser?')) return;
+                Object.keys(localStorage).filter(key => key.startsWith(`${STORAGE_PREFIX}:`)).forEach(key => localStorage.removeItem(key));
+                window.LabCompletionExport?.clearStoredData();
+                location.reload();
+            }
+
+            function setupSidebars() {
+                document.querySelectorAll('[data-sidebar-toggle]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const selected = document.getElementById(button.dataset.sidebarToggle);
+                        if (!selected) return;
+                        const wasOpen = selected.classList.contains('active');
+                        document.querySelectorAll('.sidebar').forEach(sidebar => sidebar.classList.remove('active'));
+                        if (!wasOpen) selected.classList.add('active');
+                    });
+                });
+            }
+
+            buildStageFooters();
+            setupSidebars();
+            setupOrderOptions();
+            restoreInputs();
+            updateTopicChecks();
+            document.querySelectorAll('[data-stage]').forEach(button => button.addEventListener('click', () => setStage(button.dataset.stage)));
+            document.querySelector('[data-check-monitor]')?.addEventListener('click', () => checkSequence(MONITOR_KEYS, '[data-monitor-feedback]', 'Correct distance monitoring path.', 'Not yet. Follow sensor data from the local measurement to the dashboard gauge.'));
+            document.querySelector('[data-check-control]')?.addEventListener('click', () => checkSequence(CONTROL_KEYS, '[data-control-feedback]', 'Correct remote control path.', 'Not yet. Follow the ThingsBoard shared-attribute command back to Digital Write and the LED.'));
+            // Completion-file export is provided by assets/js/lab-export.js.
+            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+            document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
+            setStage(localStorage.getItem(storageKey('current-stage')) || 0);
+        })();
+    </script>
+    <script src="../../assets/js/lab-shared.js"></script>
+    <script src="../../assets/js/lab-export.js"></script>
+</body>
+</html>

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SMRTTECH 3CC3 design project manual for building a purposeful smart system with sensors, actuators, local HMI, cloud features, and web HMI.">
+    <title>3CC3 Design Project | Smart System Design Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mac-maroon: #7A003C;
+            --mac-gold: #FDBF57;
+            --mac-grey: #495965;
+            --mac-maroon-20: #E4CCDA;
+            --mac-maroon-80: #953360;
+            --mac-gold-20: #FFF2DD;
+            --mac-gold-60: #FED999;
+            --mac-grey-20: #DBDEE0;
+            --mac-grey-40: #B6BDC1;
+            --mac-grey-80: #6D7A82;
+            --lab-background: #F7F8FA;
+            --lab-surface: #FFFFFF;
+            --lab-text: #2D3338;
+            --success: #287A4B;
+            --warning: #9A5C00;
+            --danger: #B42318;
+            --content: 1180px;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        body { margin: 0; font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--lab-background); color: var(--lab-text); overflow-x: hidden; line-height: 1.6; }
+        a { color: inherit; }
+        button, input, select, textarea { font: inherit; }
+        code, pre, .font-mono { font-family: 'Roboto Mono', Consolas, monospace; }
+        pre { overflow-x: auto; white-space: pre-wrap; background: #282C34; color: #F8FAFC; border-radius: 12px; padding: 1rem; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+        .gradient-text { background: linear-gradient(135deg, var(--mac-maroon) 0%, var(--mac-maroon-80) 62%, var(--mac-gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stage-bar { position: fixed; inset: 0 0 auto 0; z-index: 40; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(73,89,101,0.12); box-shadow: 0 4px 20px rgba(0,0,0,0.04); max-width: 100vw; overflow: hidden; }
+        .stage-bar-inner { width: 100%; max-width: var(--content); margin: 0 auto; padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.65rem; overflow-x: auto; }
+        .stage-label { flex: 0 0 auto; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mac-grey-80); margin-right: 0.3rem; }
+        .stage-btn { flex: 0 0 auto; min-height: 38px; padding: 0.55rem 0.95rem; border-radius: 9px; border: 1px solid transparent; font-size: 0.83rem; font-weight: 700; color: var(--mac-grey); background: transparent; text-decoration: none; transition: all 0.2s ease; white-space: nowrap; cursor: pointer; }
+        .stage-btn:hover { background: var(--mac-grey-20); }
+        .stage-btn:focus-visible, .utility-button:focus-visible, .nav-button:focus-visible, details summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--mac-gold); outline-offset: 3px; }
+        .stage-btn.active, .stage-btn.page-current { color: white; background: var(--mac-maroon); box-shadow: 0 5px 13px rgba(122,0,60,0.28); }
+        .stage-btn.completed:not(.active)::after { content: "*"; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 6px; border-radius: 50%; color: white; background: var(--success); font-size: 0.68rem; font-weight: 700; }
+        .lab-stage-label { margin-left: 0.65rem; padding-left: 0.85rem; border-left: 1px solid rgba(73,89,101,0.18); }
+        .auto-score-chip { flex: 0 0 auto; margin-left: auto; padding: 0.45rem 0.7rem; border-radius: 999px; border: 1px solid var(--mac-gold-60); background: var(--mac-gold-20); color: #5B3900; font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
+        .page-header { padding: 0 0 2.2rem; }
+        h1, h2, h3 { line-height: 1.15; margin-top: 0; }
+        h1 { margin: 0 0 0.7rem; letter-spacing: 0; }
+        p { margin-top: 0; }
+        .card { background: var(--lab-surface); border: 1px solid rgba(73,89,101,0.10); border-radius: 16px; box-shadow: 0 10px 18px -8px rgba(0,0,0,0.16), 0 4px 8px -4px rgba(0,0,0,0.08); }
+        .section-card { padding: 1.75rem; margin-bottom: 2rem; }
+        .border-maroon { border-left: 4px solid var(--mac-maroon); }
+        .border-gold { border-left: 4px solid var(--mac-gold); }
+        .border-success { border-left: 4px solid var(--success); }
+        .stage-panel { display: block; padding-bottom: 2rem; }
+        .js-enabled .stage-panel { display: none; }
+        .js-enabled.stage-0 .stage-panel.stage-0,
+        .js-enabled.stage-1 .stage-panel.stage-1,
+        .js-enabled.stage-2 .stage-panel.stage-2,
+        .js-enabled.stage-3 .stage-panel.stage-3,
+        .js-enabled.stage-4 .stage-panel.stage-4,
+        .js-enabled.stage-5 .stage-panel.stage-5,
+        .js-enabled.stage-6 .stage-panel.stage-6,
+        .js-enabled.stage-7 .stage-panel.stage-7,
+        .js-enabled.stage-8 .stage-panel.stage-8,
+        .js-enabled.stage-9 .stage-panel.stage-9,
+        .js-enabled.stage-10 .stage-panel.stage-10,
+        .js-enabled.stage-11 .stage-panel.stage-11 { display: block; }
+        .grid-layout { display: grid; gap: 1rem; }
+        .grid-layout.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-layout.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid-layout.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .mini-card { border: 1px solid rgba(73,89,101,0.13); border-radius: 12px; padding: 1rem; background: #fff; }
+        .briefing-card { background: #F8FAFC; border-radius: 12px; padding: 18px; border-left: 4px solid var(--mac-maroon); }
+        .warning-card { background: var(--mac-gold-20); border: 1px solid var(--mac-gold-60); border-left: 5px solid var(--mac-gold); color: #5B3900; border-radius: 12px; padding: 16px; }
+        .danger-card { background: #FFF3F2; border: 1px solid #FECACA; border-left: 5px solid var(--danger); color: #7A271A; border-radius: 12px; padding: 16px; }
+        .success-card { background: #EFFAF3; border: 1px solid #B7E4C7; border-left: 5px solid var(--success); color: #174D2D; border-radius: 12px; padding: 16px; }
+        .chip-row { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 1rem 0; }
+        .stage-summary-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.42rem 0.7rem; border-radius: 999px; background: var(--mac-gold-20); color: #5B3900; border: 1px solid rgba(253,191,87,0.35); font-size: 0.82rem; font-weight: 700; }
+        .signal-chain { display: grid; grid-template-columns: repeat(9, minmax(98px, 1fr)); gap: 0.7rem; margin-top: 1rem; }
+        .signal-step { min-height: 96px; padding: 0.85rem; border-radius: 12px; background: #fff; border: 1px solid rgba(122,0,60,0.16); color: var(--mac-maroon); font-weight: 800; }
+        .signal-step span { display: block; margin-top: 0.3rem; color: var(--mac-grey); font-size: 0.82rem; font-weight: 500; }
+        .completion-box { display: flex; align-items: flex-start; gap: 0.7rem; min-height: 44px; padding: 0.75rem; border-radius: 10px; border: 1px solid rgba(73,89,101,0.14); background: #fff; }
+        .completion-box input { margin-top: 0.25rem; min-width: 18px; min-height: 18px; accent-color: var(--mac-maroon); }
+        .response-field { display: grid; gap: 0.35rem; margin-bottom: 0.85rem; }
+        .response-field span { font-weight: 700; }
+        .response-input, .response-field textarea, .response-field input, .response-field select, table input, table select, table textarea { width: 100%; border: 1px solid #CBD5E1; border-radius: 9px; padding: 0.65rem 0.75rem; background: #fff; color: var(--lab-text); }
+        textarea { min-height: 92px; resize: vertical; }
+        details { border: 1px solid rgba(73,89,101,0.14); border-radius: 12px; background: #fff; margin: 0.75rem 0; }
+        details summary { cursor: pointer; padding: 0.9rem 1rem; font-weight: 800; color: var(--mac-maroon); }
+        details > div { padding: 0 1rem 1rem; }
+        .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(73,89,101,0.14); background: #fff; }
+        table { width: 100%; border-collapse: collapse; min-width: 720px; }
+        th, td { padding: 0.75rem; border-bottom: 1px solid rgba(73,89,101,0.12); text-align: left; vertical-align: top; }
+        th { background: #F3F4F6; color: var(--mac-grey); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; }
+        .rubric-table th { text-transform: none; letter-spacing: 0; font-size: 0.95rem; }
+        .rubric-image { width: 100%; max-width: 960px; height: auto; border-radius: 12px; border: 1px solid rgba(73,89,101,0.14); background: #fff; }
+        .project-timeline { position: relative; display: grid; gap: 0.8rem; padding-left: 1rem; }
+        .timeline-item { display: grid; grid-template-columns: 150px 1fr; gap: 1rem; padding: 0.9rem; border-radius: 12px; background: #fff; border: 1px solid rgba(73,89,101,0.14); }
+        .timeline-date { color: var(--mac-maroon); font-weight: 800; }
+        .status-panel { border-radius: 12px; padding: 1rem; border: 1px solid #DDE3E8; background: #F8FAFC; font-weight: 800; }
+        .status-panel.good { background: #EFFAF3; border-color: #B7E4C7; color: #174D2D; }
+        .status-panel.warn { background: var(--mac-gold-20); border-color: var(--mac-gold-60); color: #5B3900; }
+        .status-panel.bad { background: #FFF3F2; border-color: #FECACA; color: #7A271A; }
+        .sidebar { position: fixed; top: 0; height: 100vh; width: min(500px, calc(100vw - 48px)); background: white; box-shadow: 0 0 50px rgba(0,0,0,0.22); z-index: 60; transition: transform 0.38s cubic-bezier(0.25,1,0.5,1); display: flex; flex-direction: column; }
+        #hardwareSidebar { left: 0; transform: translateX(-100%); }
+        #hardwareSidebar.active { transform: translateX(0); }
+        #softwareSidebar { right: 0; transform: translateX(100%); }
+        #softwareSidebar.active { transform: translateX(0); }
+        .sidebar-handle { position: absolute; top: 50%; width: 34px; height: 62px; border: 0; background: var(--mac-maroon); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; z-index: 65; }
+        #handle-hw { right: -34px; border-radius: 0 9px 9px 0; box-shadow: 4px 0 12px rgba(0,0,0,0.16); }
+        #handle-sw { left: -34px; border-radius: 9px 0 0 9px; box-shadow: -4px 0 12px rgba(0,0,0,0.16); }
+        .utility-button, .nav-button { min-height: 42px; padding: 0.72rem 1rem; border-radius: 9px; font-size: 0.88rem; font-weight: 800; transition: all 0.2s ease; cursor: pointer; text-decoration: none; }
+        .utility-button, .nav-button.secondary { background: white; color: var(--mac-grey); border: 1px solid var(--mac-grey-40); }
+        .utility-button:hover, .nav-button.secondary:hover { background: var(--mac-grey-20); }
+        .nav-button.primary { background: var(--mac-maroon); color: white; border: 1px solid var(--mac-maroon); }
+        .nav-button.primary:hover { background: var(--mac-maroon-80); }
+        .stage-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #E5E7EB; }
+        .stage-message { display: none; width: 100%; margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.88rem; font-weight: 600; }
+        .stage-message.show { display: block; }
+        .stage-message.success { background: #EFFAF3; border: 1px solid #B7E4C7; color: #174D2D; }
+        .knowledge-skill-list { display: grid; gap: 0.55rem; margin: 0; padding: 0; list-style: none; }
+        .knowledge-skill-list a { display: block; padding: 0.7rem 0.8rem; border-radius: 10px; border: 1px solid #DDE3E8; background: white; color: var(--lab-text); font-weight: 700; text-decoration: none; }
+        @media (max-width: 980px) {
+            .grid-layout.two, .grid-layout.three, .grid-layout.four { grid-template-columns: 1fr; }
+            .signal-chain { grid-template-columns: 1fr; }
+            .timeline-item { grid-template-columns: 1fr; }
+            .auto-score-chip { margin-left: 0; }
+        }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.001ms !important; animation-duration: 0.001ms !important; } }
+        @media print {
+            .stage-bar, .sidebar, .stage-footer, .utility-button, .nav-button { display: none !important; }
+            .stage-panel { display: block !important; break-inside: avoid; }
+            body { background: #fff; }
+            .card { box-shadow: none; }
+            a::after { content: " (" attr(href) ")"; font-size: 0.8em; }
+        }
+    </style>
+</head>
+<body class="pb-24 pt-24 stage-0">
+    <nav class="stage-bar" aria-label="Project progress">
+        <div class="stage-bar-inner">
+            <span class="stage-label">Student Space</span>
+            <a class="stage-btn" href="../index.html">Home</a>
+            <span class="stage-btn page-current" aria-current="page">Design Project</span>
+            <span class="stage-label lab-stage-label">Project Phases</span>
+            <button class="stage-btn active" id="btn-stage-0" type="button" data-stage="0">Requirements</button>
+            <button class="stage-btn" id="btn-stage-1" type="button" data-stage="1">Idea</button>
+            <button class="stage-btn" id="btn-stage-2" type="button" data-stage="2">Consult</button>
+            <button class="stage-btn" id="btn-stage-3" type="button" data-stage="3">Proposal</button>
+            <button class="stage-btn" id="btn-stage-4" type="button" data-stage="4">Prototype</button>
+            <button class="stage-btn" id="btn-stage-5" type="button" data-stage="5">Local HMI</button>
+            <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">Cloud HMI</button>
+            <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Test</button>
+            <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Demo</button>
+            <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Video</button>
+            <button class="stage-btn" id="btn-stage-10" type="button" data-stage="10">Submit</button>
+            <button class="stage-btn" id="btn-stage-11" type="button" data-stage="11">Reflect</button>
+            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/12</strong></div>
+        </div>
+    </nav>
+
+    <aside id="hardwareSidebar" class="sidebar" aria-label="Project hardware reference">
+        <button id="handle-hw" class="sidebar-handle" type="button" data-sidebar-toggle="hardwareSidebar" title="Open hardware reference">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            <span class="sr-only">Open hardware reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Project Hardware</h3>
+            <p class="text-sm text-white/75 mt-1">Required components and approval limits</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Minimum Build</h4>
+                <dl class="grid grid-cols-2 gap-y-3 text-sm">
+                    <dt class="text-gray-500">Sensors</dt><dd class="font-semibold text-right">At least 2</dd>
+                    <dt class="text-gray-500">Actuators</dt><dd class="font-semibold text-right">At least 1</dd>
+                    <dt class="text-gray-500">Total devices</dt><dd class="font-semibold text-right">Max 6 unless approved</dd>
+                    <dt class="text-gray-500">Parts</dt><dd class="font-semibold text-right">Kit or approved</dd>
+                </dl>
+            </div>
+            <div class="warning-card text-sm"><strong>Before buying parts:</strong> consult the instructor. Personal purchases should only happen after approval.</div>
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Useful Knowledge</h4>
+                <ul class="knowledge-skill-list">
+                    <li><a href="../knowledge/index.html#breadboard">Breadboard and common ground</a></li>
+                    <li><a href="../knowledge/index.html#analog-digital">Arduino sensor I/O</a></li>
+                    <li><a href="../knowledge/index.html#measurement">Measurement and evidence</a></li>
+                    <li><a href="../knowledge/index.html#troubleshooting">Troubleshooting sequence</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <aside id="softwareSidebar" class="sidebar" aria-label="Project software reference">
+        <button id="handle-sw" class="sidebar-handle" type="button" data-sidebar-toggle="softwareSidebar" title="Open software reference">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            <span class="sr-only">Open software reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Project Software</h3>
+            <p class="text-sm text-white/75 mt-1">Local HMI, cloud, and web HMI reminders</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Required Software Features</h4>
+                <p><strong>Local HMI:</strong> LabVIEW is highly recommended.</p>
+                <p><strong>Web HMI:</strong> a dashboard or web interface for remote monitoring or control.</p>
+                <p><strong>Cloud feature:</strong> data transfer, alert, dashboard, database, or remote-control behavior.</p>
+            </div>
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Useful Knowledge</h4>
+                <ul class="knowledge-skill-list">
+                    <li><a href="../knowledge/index.html#labview-interface">LabVIEW interface</a></li>
+                    <li><a href="../knowledge/index.html#controls-indicators">Controls and indicators</a></li>
+                    <li><a href="../knowledge/index.html#analog-digital">Arduino code and I/O</a></li>
+                    <li><a href="../knowledge/index.html#deployment">Cloud and documentation habits</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <main class="max-w-[1180px] mx-auto px-5">
+        <header class="page-header">
+            <div class="card section-card border-maroon">
+                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                    <div>
+                        <p class="uppercase tracking-[0.24em] text-sm font-bold text-[#7A003C] mb-3">SMRTTECH 3CC3 &middot; Cloud Computing and Internet of Things</p>
+                        <h1 class="text-4xl md:text-5xl font-extrabold gradient-text">SMRTTECH 3CC3 Design Project</h1>
+                        <h2 class="text-2xl md:text-3xl font-extrabold text-[#495965]">Smart System Design Project</h2>
+                        <p class="text-xl text-gray-600 mt-3">Integrating sensors, actuators, local HMI, cloud features, and web-based HMI.</p>
+                    </div>
+                    <img src="../assets/McMaster-logo.png" alt="McMaster University logo" class="h-20 w-auto object-contain">
+                </div>
+                <div class="chip-row">
+                    <span class="stage-summary-chip">Project idea due: 02-Nov-25</span>
+                    <span class="stage-summary-chip">Proposal due: 09-Nov-25</span>
+                    <span class="stage-summary-chip">Demo: 24-Nov-25</span>
+                    <span class="stage-summary-chip">Video and code: 24-Nov-25</span>
+                    <span class="stage-summary-chip">Teams: lab groups</span>
+                </div>
+                <div class="warning-card mt-4">
+                    <strong>Instructor confirmation needed:</strong> the PDF states a project weight of 15 marks, but the marking table totals 12.5 marks. The top due-date table also includes "9th-Nov-21" for the proposal, while the deliverables section uses 09-Nov-25. This page treats 09-Nov-25 as the intended proposal date and flags both inconsistencies for confirmation.
+                </div>
+            </div>
+        </header>
+
+        <section class="stage-panel stage-0" data-stage-title="Understand Requirements">
+            <div class="card section-card border-maroon">
+                <p class="uppercase tracking-[0.2em] text-sm font-bold text-[#7A003C]">Phase 1</p>
+                <h2 class="text-3xl font-extrabold">Understand Requirements</h2>
+                <p class="text-lg text-gray-600">Start with the central design question: <strong>How can you combine sensors, actuators, local logic, local HMI, cloud communication, and web-based HMI into a purposeful smart system?</strong></p>
+                <div class="signal-chain" aria-label="Project concept chain">
+                    <div class="signal-step">Problem<span>Real-world need</span></div>
+                    <div class="signal-step">Prototype<span>Small-scale model</span></div>
+                    <div class="signal-step">Sensors<span>Collect information</span></div>
+                    <div class="signal-step">Logic<span>Arduino or LabVIEW</span></div>
+                    <div class="signal-step">Actuator<span>Physical response</span></div>
+                    <div class="signal-step">Local HMI<span>Display and control</span></div>
+                    <div class="signal-step">Cloud<span>Store or transfer</span></div>
+                    <div class="signal-step">Web HMI<span>Remote view/control</span></div>
+                    <div class="signal-step">Demo<span>Communicate clearly</span></div>
+                </div>
+            </div>
+            <div class="grid-layout two">
+                <article class="card section-card border-gold">
+                    <h3 class="text-2xl font-bold">Learning Outcomes</h3>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li>Define a real-world smart-system purpose.</li>
+                        <li>Select suitable sensors and actuators.</li>
+                        <li>Build a low-cost small-scale prototype.</li>
+                        <li>Use local logic to make decisions from sensor evidence.</li>
+                        <li>Create a local HMI for monitoring or control.</li>
+                        <li>Create a web-based HMI or cloud dashboard.</li>
+                        <li>Transfer data to a cloud platform or remote interface.</li>
+                        <li>Explain how hardware, software, and cloud pieces interact.</li>
+                        <li>Plan a project schedule and track progress.</li>
+                        <li>Troubleshoot hardware, code, and interface problems systematically.</li>
+                        <li>Prepare a concise proposal, demo, video, and code submission.</li>
+                        <li>Use evidence to defend design decisions.</li>
+                        <li>Recognize when instructor approval is required.</li>
+                    </ul>
+                </article>
+                <article class="card section-card border-success">
+                    <h3 class="text-2xl font-bold">Metadata Snapshot</h3>
+                    <div class="grid-layout two">
+                        <div class="mini-card"><strong>Proposal length</strong><p>2-3 pages.</p></div>
+                        <div class="mini-card"><strong>Video length</strong><p>3-4 minutes.</p></div>
+                        <div class="mini-card"><strong>Hardware</strong><p>At least 2 sensors and 1 actuator.</p></div>
+                        <div class="mini-card"><strong>Complexity</strong><p>Equivalent to about 3 combined labs.</p></div>
+                        <div class="mini-card"><strong>HMI</strong><p>Local HMI required; web HMI required.</p></div>
+                        <div class="mini-card"><strong>Software</strong><p>LabVIEW recommended; alternatives need comparable HMI quality.</p></div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-1" data-stage-title="Choose Project Idea">
+            <div class="card section-card border-maroon">
+                <p class="uppercase tracking-[0.2em] text-sm font-bold text-[#7A003C]">Phase 2</p>
+                <h2 class="text-3xl font-extrabold">Choose Project Idea</h2>
+                <p>Your first submission is only one paragraph. It should name the application, the problem, at least two sensors, at least one actuator, the local HMI, and the cloud or web-based HMI.</p>
+                <div class="briefing-card">
+                    <h3 class="text-xl font-bold">One-Paragraph Template</h3>
+                    <p>Our project will design a smart <code>[system/application]</code> that solves <code>[real-world problem]</code>. It will use <code>[sensor 1]</code> and <code>[sensor 2]</code> to measure <code>[quantities]</code>, and it will control <code>[actuator]</code> to <code>[action]</code>. A local HMI will allow the user to <code>[monitor/control]</code>, while a web-based HMI will <code>[display/control/alert/log]</code> through <code>[cloud platform]</code>. The prototype will be built as a small-scale model using <code>[materials]</code>.</p>
+                </div>
+            </div>
+            <div class="grid-layout two">
+                <article class="card section-card border-gold">
+                    <h3 class="text-2xl font-bold">Idea Workspace</h3>
+                    <label class="response-field"><span>Real-world problem</span><textarea data-save="problem" placeholder="What problem, user, or environment is your system addressing?"></textarea></label>
+                    <label class="response-field"><span>Proposed smart system</span><textarea data-save="idea" placeholder="Write your one-paragraph idea draft here."></textarea></label>
+                    <label class="response-field"><span>Socratic prompts</span><textarea data-save="idea-prompts" placeholder="Why is this useful? What will count as success? What could go wrong? What evidence will show it works?"></textarea></label>
+                </article>
+                <article class="card section-card border-success">
+                    <h3 class="text-2xl font-bold">Example Directions</h3>
+                    <details open><summary>PDF examples</summary><div><ul class="list-disc pl-6"><li>Elevator system using limit switches and a motor.</li><li>Home security system using motion sensors.</li><li>Temperature monitoring/control system for a building.</li><li>Sun tracking system for a solar panel.</li></ul></div></details>
+                    <details><summary>Expanded idea cards</summary><div><ul class="list-disc pl-6"><li><strong>Smart greenhouse monitor:</strong> moisture and temperature sensors, pump or fan actuator, LabVIEW HMI, cloud dashboard. Risk: water near electronics.</li><li><strong>Smart package/security box:</strong> distance and door sensors, lock or alarm actuator, web alert. Risk: mechanical reliability.</li><li><strong>Mini smart elevator:</strong> limit switches, position feedback, motor actuator, HMI floor request. Risk: motor control scope.</li><li><strong>Smart storage monitor:</strong> light and humidity/temperature sensing, LED/buzzer actuator, data logging. Risk: meaningful purpose.</li><li><strong>Solar tracker:</strong> light sensors, servo or stepper motion, cloud status. Risk: alignment and mechanism friction.</li></ul><p>All ideas require instructor approval.</p></div></details>
+                </article>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-2" data-stage-title="Consult Instructor">
+            <div class="card section-card border-maroon">
+                <p class="uppercase tracking-[0.2em] text-sm font-bold text-[#7A003C]">Phase 3</p>
+                <h2 class="text-3xl font-extrabold">Consult Instructor</h2>
+                <p>During the Nov 3 lab, the instructor spends about 5-10 minutes discussing each project idea. The idea may be accepted, modified, rejected, or replaced with a suggested direction.</p>
+                <div class="grid-layout three">
+                    <div class="mini-card"><h3>Approval Check</h3><p>Is the purpose clear and course-relevant?</p></div>
+                    <div class="mini-card"><h3>Scope Check</h3><p>Is it comparable to about three combined labs?</p></div>
+                    <div class="mini-card"><h3>Risk Check</h3><p>Are parts, wiring, cloud, and mechanisms realistic?</p></div>
+                </div>
+            </div>
+            <div class="card section-card border-gold">
+                <h3 class="text-2xl font-bold">Instructor Feedback Notes</h3>
+                <label class="response-field"><span>What did the instructor approve, modify, reject, or warn about?</span><textarea data-save="instructor-feedback"></textarea></label>
+                <label class="response-field"><span>What must change before proposal submission?</span><textarea data-save="changes-before-proposal"></textarea></label>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-3" data-stage-title="Submit Proposal">
+            <div class="card section-card border-maroon">
+                <p class="uppercase tracking-[0.2em] text-sm font-bold text-[#7A003C]">Phase 4</p>
+                <h2 class="text-3xl font-extrabold">Submit Proposal</h2>
+                <p>The proposal is due 09-Nov-25 prior to lab start and should be 2-3 pages. It is the team's plan for building, testing, demonstrating, and communicating the project.</p>
+            </div>
+            <div class="grid-layout two">
+                <article class="card section-card border-gold">
+                    <h3 class="text-2xl font-bold">Proposal Builder</h3>
+                    <div class="grid-layout two">
+                        <label class="completion-box"><input type="checkbox" data-checker="proposal-abstract" data-save="proposal-abstract"><span><strong>Abstract</strong><br>Short summary of purpose and approach.</span></label>
+                        <label class="completion-box"><input type="checkbox" data-checker="proposal-description" data-save="proposal-description"><span><strong>Description</strong><br>System purpose and expected functionality.</span></label>
+                        <label class="completion-box"><input type="checkbox" data-checker="proposal-components" data-save="proposal-components"><span><strong>Component list</strong><br>Sensors, actuators, Arduino, cloud, and materials.</span></label>
+                        <label class="completion-box"><input type="checkbox" data-checker="proposal-schematic" data-save="proposal-schematic"><span><strong>Electrical schematic</strong><br>Connections shown clearly; EasyEDA may be used.</span></label>
+                        <label class="completion-box"><input type="checkbox" data-checker="proposal-timeline" data-save="proposal-timeline"><span><strong>Weekly timeline</strong><br>Week-by-week hardware, software, and integration plan.</span></label>
+                    </div>
+                    <label class="response-field mt-4"><span>Proposal planning prompt</span><textarea data-save="proposal-plan" placeholder="What will the reader understand after two pages? What evidence will prove the design is feasible?"></textarea></label>
+                </article>
+                <article class="card section-card border-success">
+                    <h3 class="text-2xl font-bold">Evidence Checklist</h3>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li>System block diagram or signal path.</li>
+                        <li>Electrical schematic or wiring map.</li>
+                        <li>Clear sensor and actuator choices.</li>
+                        <li>Local HMI and web HMI descriptions.</li>
+                        <li>Cloud feature description.</li>
+                        <li>Risk or troubleshooting plan.</li>
+                        <li>Weekly schedule with milestones.</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-4" data-stage-title="Build Prototype">
+            <div class="card section-card border-maroon">
+                <p class="uppercase tracking-[0.2em] text-sm font-bold text-[#7A003C]">Phase 5</p>
+                <h2 class="text-3xl font-extrabold">Build Prototype</h2>
+                <p>Build a low-cost, small-scale prototype. Cardboard, wood, and simple materials are acceptable when the prototype demonstrates a real smart-system purpose.</p>
+                <div class="grid-layout three">
+                    <div class="mini-card"><h3>Hardware</h3><p>At least two sensors and one actuator; no more than six sensors/actuators unless approved.</p></div>
+                    <div class="mini-card"><h3>Purpose</h3><p>The prototype should communicate a recognizable real-world application.</p></div>
+                    <div class="mini-card"><h3>Instructor Role</h3><p>The instructor reviews scope and monitors progress; troubleshooting remains the team's responsibility.</p></div>
+                </div>
+            </div>
+            <div class="card section-card border-gold">
+                <h3 class="text-2xl font-bold">Hardware Planning Inputs</h3>
+                <div class="grid-layout four">
+                    <label class="response-field"><span>Sensor count</span><input type="number" min="0" step="1" value="0" data-checker="sensor-count" data-save="sensor-count"></label>
+                    <label class="response-field"><span>Actuator count</span><input type="number" min="0" step="1" value="0" data-checker="actuator-count" data-save="actuator-count"></label>
+                    <label class="completion-box"><input type="checkbox" data-checker="approved-over-six" data-save="approved-over-six"><span>Instructor approved more than 6 devices</span></label>
+                    <label class="completion-box"><input type="checkbox" data-checker="kit-approved" data-save="kit-approved"><span>Parts are kit-based or approved</span></label>
+                </div>
+                <label class="response-field"><span>Prototype materials and mechanism notes</span><textarea data-save="prototype-materials"></textarea></label>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-5" data-stage-title="Develop Local HMI">
+            <div class="card section-card border-maroon">
+                <p class="uppercase tracking-[0.2em] text-sm font-bold text-[#7A003C]">Phase 6</p>
+                <h2 class="text-3xl font-extrabold">Develop Local HMI</h2>
+                <p>A local HMI is required. LabVIEW is highly recommended, but another software environment may be accepted if the HMI quality is similar or better.</p>
+                <div class="grid-layout two">
+                    <label class="completion-box"><input type="checkbox" data-checker="local-hmi" data-save="local-hmi"><span><strong>Local HMI exists</strong><br>Students can monitor or control the system locally.</span></label>
+                    <label class="completion-box"><input type="checkbox" data-checker="sufficient-logic" data-save="sufficient-logic"><span><strong>Sufficient logic</strong><br>The program makes decisions rather than only displaying raw values.</span></label>
+                </div>
+                <label class="response-field mt-4"><span>Local HMI controls and indicators</span><textarea data-save="local-hmi-notes" placeholder="List the controls, indicators, modes, alarms, or settings."></textarea></label>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-6" data-stage-title="Add Cloud/Web HMI">
+            <div class="card section-card border-maroon">
+                <p class="uppercase tracking-[0.2em] text-sm font-bold text-[#7A003C]">Phase 7</p>
+                <h2 class="text-3xl font-extrabold">Add Cloud/Web HMI</h2>
+                <p>The project must include a web-based HMI and a cloud feature such as data transfer, alerting, dashboard visualization, database storage, or remote control.</p>
+                <div class="grid-layout two">
+                    <label class="completion-box"><input type="checkbox" data-checker="web-hmi" data-save="web-hmi"><span><strong>Web-based HMI</strong><br>A remote dashboard or web interface is present.</span></label>
+                    <label class="completion-box"><input type="checkbox" data-checker="cloud-feature" data-save="cloud-feature"><span><strong>Cloud feature</strong><br>Data is transferred, logged, alerted, visualized, or used for remote control.</span></label>
+                </div>
+                <label class="response-field mt-4"><span>Cloud and web HMI design</span><textarea data-save="cloud-hmi-notes" placeholder="What variable is sent? What does the remote user see or control?"></textarea></label>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-7" data-stage-title="Test and Troubleshoot">
+            <div class="card section-card border-maroon">
+                <p class="uppercase tracking-[0.2em] text-sm font-bold text-[#7A003C]">Phase 8</p>
+                <h2 class="text-3xl font-extrabold">Test and Troubleshoot</h2>
+                <p>Attendance is required during the three project weeks. Progress is monitored and assessed, but the team is responsible for systematic troubleshooting.</p>
+            </div>
+            <div class="grid-layout two">
+                <article class="card section-card border-gold">
+                    <h3 class="text-2xl font-bold">Requirement Checker</h3>
+                    <p class="text-gray-600">This checker is a planning aid only. Instructor approval is the final decision.</p>
+                    <div class="grid-layout two">
+                        <label class="completion-box"><input type="checkbox" data-checker="purpose" data-save="purpose"><span>Real-world application is clear</span></label>
+                        <label class="completion-box"><input type="checkbox" data-checker="goal-stated" data-save="goal-stated"><span>Project goal is stated</span></label>
+                        <label class="completion-box"><input type="checkbox" data-checker="functionality-described" data-save="functionality-described"><span>Functionality is described</span></label>
+                        <label class="completion-box"><input type="checkbox" data-checker="complexity-three-labs" data-save="complexity-three-labs"><span>Complexity is about three labs</span></label>
+                    </div>
+                    <div class="status-panel mt-4" data-requirement-status aria-live="polite">Complete the project checks to estimate readiness.</div>
+                </article>
+                <article class="card section-card border-success">
+                    <h3 class="text-2xl font-bold">Risk Table</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Risk</th><th>Student response</th></tr></thead>
+                            <tbody>
+                                <tr><td>Too few components or weak purpose</td><td>Reconnect the build to a real use case and add meaningful sensing/actuation.</td></tr>
+                                <tr><td>Too many devices or over-scope</td><td>Reduce features or get instructor approval.</td></tr>
+                                <tr><td>Cloud or web HMI delayed</td><td>Build a minimal dashboard first, then improve visuals.</td></tr>
+                                <tr><td>Wiring or common-ground errors</td><td>Test one sensor or actuator path at a time.</td></tr>
+                                <tr><td>Demo failure</td><td>Prepare recorded evidence and a fallback explanation.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-8" data-stage-title="Prepare Demo">
+            <div class="card section-card border-maroon">
+                <p class="uppercase tracking-[0.2em] text-sm font-bold text-[#7A003C]">Phase 9</p>
+                <h2 class="text-3xl font-extrabold">Prepare Demo</h2>
+                <p>The real-life demo happens on 24-Nov-25. The last hour of lab is reserved for demos only.</p>
+                <div class="grid-layout three">
+                    <label class="completion-box"><input type="checkbox" data-save="demo-functionality"><span>Main functionality demonstrated</span></label>
+                    <label class="completion-box"><input type="checkbox" data-save="demo-hardware"><span>Hardware path can be explained</span></label>
+                    <label class="completion-box"><input type="checkbox" data-save="demo-software"><span>Software and cloud path can be explained</span></label>
+                </div>
+                <label class="response-field mt-4"><span>Demo script and fallback plan</span><textarea data-save="demo-plan"></textarea></label>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-9" data-stage-title="Record Video">
+            <div class="card section-card border-maroon">
+                <p class="uppercase tracking-[0.2em] text-sm font-bold text-[#7A003C]">Phase 10</p>
+                <h2 class="text-3xl font-extrabold">Record Video</h2>
+                <p>The video is due 24-Nov-25 with the code submission. It should be 3-4 minutes and describe hardware, describe software, and demonstrate the main functionality.</p>
+                <div class="grid-layout five"></div>
+                <div class="grid-layout two">
+                    <div class="mini-card"><strong>0:00-0:20</strong><p>System name, problem, and purpose.</p></div>
+                    <div class="mini-card"><strong>0:20-1:10</strong><p>Hardware: sensors, actuator, wiring, prototype.</p></div>
+                    <div class="mini-card"><strong>1:10-2:00</strong><p>Software: local HMI, logic, cloud, web HMI.</p></div>
+                    <div class="mini-card"><strong>2:00-3:30</strong><p>Demonstrate functionality clearly.</p></div>
+                    <div class="mini-card"><strong>3:30-4:00</strong><p>Summarize evidence, limitations, and final result.</p></div>
+                </div>
+            </div>
+            <div class="card section-card border-gold">
+                <h3 class="text-2xl font-bold text-center">Lab Video Submission Rubric</h3>
+                <p class="text-gray-600">The marking scheme lists Video as 2.5 marks; this rubric judges video quality and may be scaled to the official video mark.</p>
+                <div class="table-wrap">
+                    <table class="rubric-table">
+                        <thead>
+                            <tr><th>Criterion</th><th>0</th><th>1</th><th>2</th><th>3</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><th scope="row">Video: demonstrate the functionality</th><td>No functionality is demonstrated</td><td>Minimal and unclear demo of the functionalities</td><td>Most of the functionality is clearly demonstrated</td><td>All functionalities are clearly demonstrated</td></tr>
+                            <tr><th scope="row">Video: describe the hardware</th><td>No description is provided</td><td>Minimal and unclear description</td><td>Most of the hardware is clearly described</td><td>All the hardware is described and clearly explained</td></tr>
+                            <tr><th scope="row">Video: describe the software</th><td>No description is provided</td><td>Minimal and unclear description</td><td>Most of the software is clearly described</td><td>All the software is described and clearly explained</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <figure class="mt-5">
+                    <img class="rubric-image" src="../assets/project-video-rubric.png" alt="Rubric for lab video submission with criteria for demonstrating functionality, describing hardware, and describing software, scored from 0 to 3.">
+                    <figcaption class="text-gray-600 text-sm mt-2">Original rubric image from the project handout.</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-10" data-stage-title="Submit Code and Evidence">
+            <div class="card section-card border-maroon">
+                <p class="uppercase tracking-[0.2em] text-sm font-bold text-[#7A003C]">Phase 11</p>
+                <h2 class="text-3xl font-extrabold">Submit Code and Evidence</h2>
+                <p>Submit the video and code by 24-Nov-25. Keep evidence organized so the instructor can understand what was built, how it works, and what was verified.</p>
+            </div>
+            <div class="grid-layout two">
+                <article class="card section-card border-gold">
+                    <h3 class="text-2xl font-bold">Marking Scheme</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Item</th><th>Marks</th></tr></thead>
+                            <tbody>
+                                <tr><td>Project idea</td><td>0.5</td></tr>
+                                <tr><td>Proposal and schedule</td><td>1</td></tr>
+                                <tr><td>Project functionality</td><td>3</td></tr>
+                                <tr><td>Demo presentation</td><td>2.5</td></tr>
+                                <tr><td>Video</td><td>2.5</td></tr>
+                                <tr><td>Complexity</td><td>4</td></tr>
+                                <tr><td>Lab attendance and progress</td><td>1.5</td></tr>
+                                <tr><th scope="row">Table total</th><th>12.5</th></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="warning-card mt-4">Confirm the official weighting because the handout states "Project Weight: 15 Marks" but the table totals 12.5.</p>
+                </article>
+                <article class="card section-card border-success">
+                    <h3 class="text-2xl font-bold">Submission Checklist</h3>
+                    <div class="grid-layout two">
+                        <label class="completion-box"><input type="checkbox" data-checker="video-functionality" data-save="video-functionality"><span>Video demonstrates functionality</span></label>
+                        <label class="completion-box"><input type="checkbox" data-checker="video-hardware" data-save="video-hardware"><span>Video describes hardware</span></label>
+                        <label class="completion-box"><input type="checkbox" data-checker="video-software" data-save="video-software"><span>Video describes software</span></label>
+                        <label class="completion-box"><input type="checkbox" data-checker="code-included" data-save="code-included"><span>Code is included</span></label>
+                    </div>
+                    <label class="response-field mt-4"><span>Final evidence list</span><textarea data-save="evidence-list" placeholder="List videos, code files, schematics, screenshots, measurements, and demo notes."></textarea></label>
+                </article>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-11" data-stage-title="Reflect">
+            <div class="card section-card border-maroon">
+                <p class="uppercase tracking-[0.2em] text-sm font-bold text-[#7A003C]">Phase 12</p>
+                <h2 class="text-3xl font-extrabold">Reflect</h2>
+                <p>Use the self-assessment to see what is complete, what still needs work, and what should be confirmed with the instructor.</p>
+            </div>
+            <div class="grid-layout two">
+                <article class="card section-card border-gold">
+                    <h3 class="text-2xl font-bold">Self-Assessment Tool</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Item</th><th>Status</th></tr></thead>
+                            <tbody data-self-assessment>
+                                <tr><td>Clear real-world purpose</td><td><select data-assess="real-world-purpose"><option>Not started</option><option>In progress</option><option>Complete</option><option>Needs instructor confirmation</option></select></td></tr>
+                                <tr><td>At least 2 sensors</td><td><select data-assess="two-sensors"><option>Not started</option><option>In progress</option><option>Complete</option><option>Needs instructor confirmation</option></select></td></tr>
+                                <tr><td>At least 1 actuator</td><td><select data-assess="one-actuator"><option>Not started</option><option>In progress</option><option>Complete</option><option>Needs instructor confirmation</option></select></td></tr>
+                                <tr><td>Local HMI</td><td><select data-assess="local-hmi-assess"><option>Not started</option><option>In progress</option><option>Complete</option><option>Needs instructor confirmation</option></select></td></tr>
+                                <tr><td>Web-based HMI</td><td><select data-assess="web-hmi-assess"><option>Not started</option><option>In progress</option><option>Complete</option><option>Needs instructor confirmation</option></select></td></tr>
+                                <tr><td>Cloud feature</td><td><select data-assess="cloud-feature-assess"><option>Not started</option><option>In progress</option><option>Complete</option><option>Needs instructor confirmation</option></select></td></tr>
+                                <tr><td>Logic complexity</td><td><select data-assess="logic-complexity"><option>Not started</option><option>In progress</option><option>Complete</option><option>Needs instructor confirmation</option></select></td></tr>
+                                <tr><td>Small-scale prototype</td><td><select data-assess="prototype"><option>Not started</option><option>In progress</option><option>Complete</option><option>Needs instructor confirmation</option></select></td></tr>
+                                <tr><td>Proposal completeness</td><td><select data-assess="proposal-completeness"><option>Not started</option><option>In progress</option><option>Complete</option><option>Needs instructor confirmation</option></select></td></tr>
+                                <tr><td>Demo readiness</td><td><select data-assess="demo-readiness"><option>Not started</option><option>In progress</option><option>Complete</option><option>Needs instructor confirmation</option></select></td></tr>
+                                <tr><td>Video readiness</td><td><select data-assess="video-readiness"><option>Not started</option><option>In progress</option><option>Complete</option><option>Needs instructor confirmation</option></select></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+                <article class="card section-card border-success">
+                    <h3 class="text-2xl font-bold">Timeline and Glossary</h3>
+                    <div class="project-timeline">
+                        <div class="timeline-item"><div class="timeline-date">02-Nov-25</div><div>Project idea, one paragraph, due end of day.</div></div>
+                        <div class="timeline-item"><div class="timeline-date">Nov 3 lab</div><div>Instructor discussion, 5-10 minutes per idea.</div></div>
+                        <div class="timeline-item"><div class="timeline-date">09-Nov-25</div><div>Proposal due prior to lab start.</div></div>
+                        <div class="timeline-item"><div class="timeline-date">Nov 9-24</div><div>Execution, weekly attendance, progress monitoring, and troubleshooting.</div></div>
+                        <div class="timeline-item"><div class="timeline-date">24-Nov-25</div><div>Demo, video, and code submission.</div></div>
+                    </div>
+                    <details class="mt-4"><summary>Glossary</summary><div><ul class="list-disc pl-6"><li><strong>Smart system:</strong> sensing, decision-making, actuation, and interface working toward a purpose.</li><li><strong>Local HMI:</strong> nearby interface such as LabVIEW front panel.</li><li><strong>Web HMI:</strong> remote browser/dashboard interface.</li><li><strong>Cloud feature:</strong> online data transfer, storage, alerting, dashboarding, or remote control.</li><li><strong>Complexity:</strong> design effort, integration, and functionality comparable to about three combined labs.</li></ul></div></details>
+                </article>
+            </div>
+        </section>
+
+        <section class="card section-card border-gold">
+            <h2 class="text-2xl font-extrabold">Weekly Planning Table</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Week</th><th>Goal</th><th>Hardware progress</th><th>Software progress</th><th>Cloud/HMI progress</th><th>Risks</th><th>Instructor feedback</th></tr></thead>
+                    <tbody>
+                        <tr><td>Week 1</td><td><textarea data-save="week1-goal" placeholder="Freeze scope and verify one sensor path."></textarea></td><td><textarea data-save="week1-hardware"></textarea></td><td><textarea data-save="week1-software"></textarea></td><td><textarea data-save="week1-cloud"></textarea></td><td><textarea data-save="week1-risks"></textarea></td><td><textarea data-save="week1-feedback"></textarea></td></tr>
+                        <tr><td>Week 2</td><td><textarea data-save="week2-goal" placeholder="Integrate actuator and local HMI."></textarea></td><td><textarea data-save="week2-hardware"></textarea></td><td><textarea data-save="week2-software"></textarea></td><td><textarea data-save="week2-cloud"></textarea></td><td><textarea data-save="week2-risks"></textarea></td><td><textarea data-save="week2-feedback"></textarea></td></tr>
+                        <tr><td>Week 3</td><td><textarea data-save="week3-goal" placeholder="Finalize web HMI, test demo, record video."></textarea></td><td><textarea data-save="week3-hardware"></textarea></td><td><textarea data-save="week3-software"></textarea></td><td><textarea data-save="week3-cloud"></textarea></td><td><textarea data-save="week3-risks"></textarea></td><td><textarea data-save="week3-feedback"></textarea></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="stage-footer">
+                <button class="utility-button" type="button" data-export>Export project notes</button>
+                <button class="utility-button" type="button" data-reset>Reset saved project notes</button>
+                <button class="utility-button" type="button" onclick="window.print()">Print project manual</button>
+                <div class="stage-message success" data-global-message role="status"></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        (function () {
+            const STORAGE_KEY = 'smrttech-design-project';
+            const TOTAL_STAGES = 12;
+            document.body.classList.add('js-enabled');
+
+            const state = loadState();
+            const stageButtons = [...document.querySelectorAll('[data-stage]')];
+            const panels = [...document.querySelectorAll('.stage-panel')];
+
+            function loadState() {
+                try {
+                    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"stage":0,"completed":[],"fields":{},"assessment":{}}');
+                } catch {
+                    return { stage: 0, completed: [], fields: {}, assessment: {} };
+                }
+            }
+
+            function saveState() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            }
+
+            function setStage(stage) {
+                state.stage = Math.max(0, Math.min(TOTAL_STAGES - 1, Number(stage) || 0));
+                document.body.className = document.body.className.replace(/\bstage-\d+\b/g, '').trim();
+                document.body.classList.add('pb-24', 'pt-24', 'js-enabled', `stage-${state.stage}`);
+                stageButtons.forEach(button => {
+                    const isActive = Number(button.dataset.stage) === state.stage;
+                    button.classList.toggle('active', isActive);
+                    button.setAttribute('aria-pressed', String(isActive));
+                    button.classList.toggle('completed', state.completed.includes(Number(button.dataset.stage)));
+                });
+                saveState();
+                document.querySelector('.stage-panel.stage-' + state.stage)?.scrollIntoView({ block: 'start' });
+            }
+
+            function updateProgress() {
+                document.querySelector('[data-progress-status]').textContent = `${state.completed.length}/${TOTAL_STAGES}`;
+                stageButtons.forEach(button => button.classList.toggle('completed', state.completed.includes(Number(button.dataset.stage))));
+            }
+
+            function completeStage(stage) {
+                if (!state.completed.includes(stage)) state.completed.push(stage);
+                state.completed.sort((a, b) => a - b);
+                saveState();
+                updateProgress();
+            }
+
+            function setupStageFooters() {
+                panels.forEach(panel => {
+                    const stage = Number([...panel.classList].find(name => name.startsWith('stage-'))?.replace('stage-', ''));
+                    const footer = document.createElement('div');
+                    footer.className = 'stage-footer';
+                    const previous = document.createElement('button');
+                    previous.type = 'button';
+                    previous.className = 'nav-button secondary';
+                    previous.textContent = 'Previous phase';
+                    previous.disabled = stage === 0;
+                    previous.addEventListener('click', () => setStage(stage - 1));
+                    const mark = document.createElement('button');
+                    mark.type = 'button';
+                    mark.className = 'nav-button primary';
+                    mark.textContent = 'Mark phase complete';
+                    mark.addEventListener('click', () => {
+                        completeStage(stage);
+                        message(panel, `${panel.dataset.stageTitle || 'Phase'} marked complete.`);
+                    });
+                    const next = document.createElement('button');
+                    next.type = 'button';
+                    next.className = 'nav-button primary';
+                    next.textContent = stage === TOTAL_STAGES - 1 ? 'Back to requirements' : 'Next phase';
+                    next.addEventListener('click', () => setStage(stage === TOTAL_STAGES - 1 ? 0 : stage + 1));
+                    const note = document.createElement('div');
+                    note.className = 'stage-message success';
+                    note.setAttribute('role', 'status');
+                    footer.append(previous, mark, next, note);
+                    panel.appendChild(footer);
+                });
+            }
+
+            function message(container, text) {
+                const target = container.querySelector('.stage-message') || document.querySelector('[data-global-message]');
+                if (!target) return;
+                target.textContent = text;
+                target.classList.add('show');
+                window.setTimeout(() => target.classList.remove('show'), 2600);
+            }
+
+            function setupFields() {
+                document.querySelectorAll('[data-save]').forEach(input => {
+                    const key = input.dataset.save;
+                    if (Object.prototype.hasOwnProperty.call(state.fields, key)) {
+                        if (input.type === 'checkbox') input.checked = Boolean(state.fields[key]);
+                        else input.value = state.fields[key];
+                    }
+                    input.addEventListener('input', () => {
+                        state.fields[key] = input.type === 'checkbox' ? input.checked : input.value;
+                        saveState();
+                        updateRequirementStatus();
+                    });
+                    input.addEventListener('change', () => {
+                        state.fields[key] = input.type === 'checkbox' ? input.checked : input.value;
+                        saveState();
+                        updateRequirementStatus();
+                    });
+                });
+
+                document.querySelectorAll('[data-assess]').forEach(select => {
+                    const key = select.dataset.assess;
+                    if (state.assessment[key]) select.value = state.assessment[key];
+                    select.addEventListener('change', () => {
+                        state.assessment[key] = select.value;
+                        saveState();
+                    });
+                });
+            }
+
+            function getCheckerValue(name) {
+                const input = document.querySelector(`[data-checker="${name}"]`);
+                if (!input) return false;
+                if (input.type === 'checkbox') return input.checked;
+                return Number(input.value || 0);
+            }
+
+            function updateRequirementStatus() {
+                const status = document.querySelector('[data-requirement-status]');
+                if (!status) return;
+                const sensors = getCheckerValue('sensor-count');
+                const actuators = getCheckerValue('actuator-count');
+                const totalDevices = sensors + actuators;
+                const approvedOverSix = getCheckerValue('approved-over-six');
+                const localHmi = getCheckerValue('local-hmi');
+                const webHmi = getCheckerValue('web-hmi');
+                const cloudFeature = getCheckerValue('cloud-feature');
+                const logic = getCheckerValue('sufficient-logic');
+                const purpose = getCheckerValue('purpose');
+                const complexity = getCheckerValue('complexity-three-labs');
+                let text = 'Complete the project checks to estimate readiness.';
+                let tone = '';
+                if (sensors < 2) { text = 'Missing required sensors: include at least 2 sensors.'; tone = 'bad'; }
+                else if (actuators < 1) { text = 'Missing actuator: include at least 1 actuator.'; tone = 'bad'; }
+                else if (!localHmi) { text = 'Missing required HMI: define the local HMI.'; tone = 'bad'; }
+                else if (!webHmi) { text = 'Missing web-based HMI: add a remote dashboard or web interface.'; tone = 'bad'; }
+                else if (totalDevices > 6 && !approvedOverSix) { text = 'May be over-scoped - confirm with instructor.'; tone = 'warn'; }
+                else if (!cloudFeature || !logic || !purpose || !complexity) { text = 'Looks under-scoped: strengthen purpose, logic, cloud feature, or complexity evidence.'; tone = 'warn'; }
+                else { text = 'Likely acceptable complexity. Instructor approval is still required.'; tone = 'good'; }
+                status.textContent = text;
+                status.className = `status-panel mt-4 ${tone}`;
+            }
+
+            function setupSidebarToggles() {
+                document.querySelectorAll('[data-sidebar-toggle]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const sidebar = document.getElementById(button.dataset.sidebarToggle);
+                        const wasOpen = sidebar.classList.contains('active');
+                        document.querySelectorAll('.sidebar').forEach(item => item.classList.remove('active'));
+                        if (!wasOpen) sidebar.classList.add('active');
+                    });
+                });
+                document.addEventListener('keydown', event => {
+                    if (event.key === 'Escape') document.querySelectorAll('.sidebar').forEach(item => item.classList.remove('active'));
+                });
+            }
+
+            function setupExportReset() {
+                document.querySelector('[data-export]')?.addEventListener('click', () => {
+                    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = '3cc3-design-project-notes.json';
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    message(document, 'Project notes exported.');
+                });
+                document.querySelector('[data-reset]')?.addEventListener('click', () => {
+                    if (!confirm('Reset saved project notes and progress for this browser?')) return;
+                    localStorage.removeItem(STORAGE_KEY);
+                    window.location.reload();
+                });
+            }
+
+            stageButtons.forEach(button => button.addEventListener('click', () => setStage(button.dataset.stage)));
+            setupStageFooters();
+            setupFields();
+            setupSidebarToggles();
+            setupExportReset();
+            updateRequirementStatus();
+            updateProgress();
+            setStage(state.stage || 0);
+        }());
+    </script>
+</body>
+</html>

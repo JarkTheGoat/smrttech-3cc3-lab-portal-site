@@ -1,0 +1,942 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SMRTTECH 3CC3 Lab 5: Servo Motor Control with LabVIEW and Arduino.">
+    <title>Lab 5 | Servo Motor Control with LabVIEW and Arduino</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="../../assets/McMaster-logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <style>
+        :root {
+            --mac-maroon: #7A003C;
+            --mac-gold: #FDBF57;
+            --mac-grey: #495965;
+            --mac-maroon-20: #E4CCDA;
+            --mac-maroon-80: #953360;
+            --mac-gold-20: #FFF2DD;
+            --mac-gold-60: #FED999;
+            --mac-grey-20: #DBDEE0;
+            --mac-grey-40: #B6BDC1;
+            --mac-grey-80: #6D7A82;
+            --lab-background: #F7F8FA;
+            --lab-surface: #FFFFFF;
+            --lab-text: #2D3338;
+            --success: #287A4B;
+            --danger: #B42318;
+            --content: 1180px;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        body {
+            margin: 0;
+            font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--lab-background);
+            color: var(--lab-text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        a { color: inherit; }
+        button, input, select, textarea { font: inherit; }
+        code, pre, .font-mono { font-family: 'Roboto Mono', Consolas, monospace; }
+        pre { overflow-x: auto; white-space: pre-wrap; background: #282C34; color: #F8FAFC; border-radius: 12px; padding: 1rem; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+        .gradient-text { background: linear-gradient(135deg, var(--mac-maroon) 0%, var(--mac-maroon-80) 62%, var(--mac-gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stage-bar { position: fixed; inset: 0 0 auto 0; z-index: 40; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(73,89,101,0.12); box-shadow: 0 4px 20px rgba(0,0,0,0.04); max-width: 100vw; overflow: hidden; }
+        .stage-bar-inner { width: 100%; max-width: var(--content); margin: 0 auto; padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.65rem; overflow-x: auto; }
+        .stage-label { flex: 0 0 auto; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mac-grey-80); margin-right: 0.3rem; }
+        .stage-btn { flex: 0 0 auto; min-height: 38px; padding: 0.55rem 0.95rem; border-radius: 9px; border: 1px solid transparent; font-size: 0.83rem; font-weight: 700; color: var(--mac-grey); background: transparent; text-decoration: none; transition: all 0.2s ease; white-space: nowrap; cursor: pointer; }
+        .stage-btn:hover { background: var(--mac-grey-20); }
+        .stage-btn:focus-visible, .utility-button:focus-visible, .nav-button:focus-visible, details summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--mac-gold); outline-offset: 3px; }
+        .stage-btn.active, .stage-btn.page-current { color: white; background: var(--mac-maroon); box-shadow: 0 5px 13px rgba(122,0,60,0.28); }
+        .stage-btn.completed:not(.active)::after { content: "âœ“"; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 6px; border-radius: 50%; color: white; background: var(--success); font-size: 0.68rem; font-weight: 700; }
+        .lab-stage-label { margin-left: 0.65rem; padding-left: 0.85rem; border-left: 1px solid rgba(73,89,101,0.18); }
+        .auto-score-chip { flex: 0 0 auto; margin-left: auto; padding: 0.45rem 0.7rem; border-radius: 999px; border: 1px solid var(--mac-gold-60); background: var(--mac-gold-20); color: #5B3900; font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
+        .page-header { padding: 0 0 2.2rem; }
+        h1, h2, h3 { line-height: 1.15; margin-top: 0; }
+        h1 { margin: 0 0 0.7rem; letter-spacing: 0; }
+        p { margin-top: 0; }
+        .card { background: var(--lab-surface); border: 1px solid rgba(73,89,101,0.10); border-radius: 16px; box-shadow: 0 10px 18px -8px rgba(0,0,0,0.16), 0 4px 8px -4px rgba(0,0,0,0.08); }
+        .section-card { padding: 1.75rem; margin-bottom: 2rem; }
+        .border-maroon { border-left: 4px solid var(--mac-maroon); }
+        .border-gold { border-left: 4px solid var(--mac-gold); }
+        .border-success { border-left: 4px solid var(--success); }
+        .stage-panel { display: block; padding-bottom: 2rem; }
+        .js-enabled .stage-panel { display: none; }
+        .js-enabled.stage-0 .stage-panel.stage-0,
+        .js-enabled.stage-1 .stage-panel.stage-1,
+        .js-enabled.stage-2 .stage-panel.stage-2,
+        .js-enabled.stage-3 .stage-panel.stage-3,
+        .js-enabled.stage-4 .stage-panel.stage-4,
+        .js-enabled.stage-5 .stage-panel.stage-5,
+        .js-enabled.stage-6 .stage-panel.stage-6,
+        .js-enabled.stage-7 .stage-panel.stage-7,
+        .js-enabled.stage-8 .stage-panel.stage-8,
+        .js-enabled.stage-9 .stage-panel.stage-9,
+        .js-enabled.stage-10 .stage-panel.stage-10 { display: block; }
+        .grid-layout { display: grid; gap: 1rem; }
+        .grid-layout.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-layout.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid-layout.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .mini-card { border: 1px solid rgba(73,89,101,0.13); border-radius: 12px; padding: 1rem; background: #fff; }
+        .briefing-card { background: #F8FAFC; border-radius: 12px; padding: 18px; border-left: 4px solid var(--mac-maroon); }
+        .warning-card { background: var(--mac-gold-20); border: 1px solid var(--mac-gold-60); border-left: 5px solid var(--mac-gold); color: #5B3900; border-radius: 12px; padding: 16px; }
+        .danger-card { background: #FFF3F2; border: 1px solid #FECACA; border-left: 5px solid var(--danger); color: #7A271A; border-radius: 12px; padding: 16px; }
+        .success-card { background: #EFFAF3; border: 1px solid #B7E4C7; border-left: 5px solid var(--success); color: #174D2D; border-radius: 12px; padding: 16px; }
+        .chip-row { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 1rem 0; }
+        .chip-row.compact { margin: 0; }
+        .mt-block { margin-top: 1rem; }
+        .stage-summary-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.42rem 0.7rem; border-radius: 999px; background: var(--mac-gold-20); color: #5B3900; border: 1px solid rgba(253,191,87,0.35); font-size: 0.82rem; font-weight: 700; }
+        .signal-chain { display: grid; grid-template-columns: repeat(7, minmax(110px, 1fr)); gap: 0.7rem; margin-top: 1rem; }
+        .signal-step { min-height: 88px; padding: 0.85rem; border-radius: 12px; background: #fff; border: 1px solid rgba(122,0,60,0.16); color: var(--mac-maroon); font-weight: 800; }
+        .signal-step span { display: block; margin-top: 0.3rem; color: var(--mac-grey); font-size: 0.82rem; font-weight: 500; }
+        .completion-box { display: flex; align-items: flex-start; gap: 0.7rem; min-height: 44px; padding: 0.75rem; border-radius: 10px; border: 1px solid rgba(73,89,101,0.14); background: #fff; }
+        .completion-box input { margin-top: 0.25rem; min-width: 18px; min-height: 18px; accent-color: var(--mac-maroon); }
+        .response-field { display: grid; gap: 0.35rem; margin-bottom: 0.85rem; }
+        .response-field span { font-weight: 700; }
+        .response-input, .response-field textarea, .response-field input, .response-field select, table input, table select, table textarea { width: 100%; border: 1px solid #CBD5E1; border-radius: 9px; padding: 0.65rem 0.75rem; background: #fff; color: var(--lab-text); }
+        textarea { min-height: 92px; resize: vertical; }
+        details { border: 1px solid rgba(73,89,101,0.14); border-radius: 12px; background: #fff; margin: 0.75rem 0; }
+        details summary { cursor: pointer; padding: 0.9rem 1rem; font-weight: 800; color: var(--mac-maroon); }
+        details > div { padding: 0 1rem 1rem; }
+        .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(73,89,101,0.14); background: #fff; }
+        table { width: 100%; border-collapse: collapse; min-width: 720px; }
+        th, td { padding: 0.75rem; border-bottom: 1px solid rgba(73,89,101,0.12); text-align: left; vertical-align: top; }
+        th { background: #F3F4F6; color: var(--mac-grey); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; }
+        .diagram-card { padding: 1rem; border-radius: 14px; background: #fff; border: 1px solid rgba(73,89,101,0.14); }
+        .diagram-card img, .diagram-card svg { max-width: 100%; height: auto; display: block; }
+        figcaption { color: var(--mac-grey); font-size: 0.92rem; margin-top: 0.6rem; }
+        .logic-flow { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+        .logic-flow span { padding: 0.6rem 0.75rem; border-radius: 10px; background: #fff; border: 1px solid rgba(122,0,60,0.15); font-weight: 700; }
+        .logic-flow b { color: var(--mac-gold); }
+        .order-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+        .order-item { display: grid; grid-template-columns: auto 1fr; gap: 0.6rem; align-items: center; padding: 0.75rem; border-radius: 10px; background: #fff; border: 1px solid rgba(73,89,101,0.14); }
+        .sidebar { position: fixed; top: 0; height: 100vh; width: min(500px, calc(100vw - 48px)); background: white; box-shadow: 0 0 50px rgba(0,0,0,0.22); z-index: 60; transition: transform 0.38s cubic-bezier(0.25,1,0.5,1); display: flex; flex-direction: column; }
+        #hardwareSidebar { left: 0; transform: translateX(-100%); }
+        #hardwareSidebar.active { transform: translateX(0); }
+        #softwareSidebar { right: 0; transform: translateX(100%); }
+        #softwareSidebar.active { transform: translateX(0); }
+        .sidebar-handle { position: absolute; top: 50%; width: 34px; height: 62px; border: 0; background: var(--mac-maroon); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; z-index: 65; }
+        .sidebar-handle:hover { background: var(--mac-maroon-80); }
+        #handle-hw { right: -34px; border-radius: 0 9px 9px 0; box-shadow: 4px 0 12px rgba(0,0,0,0.16); }
+        #handle-sw { left: -34px; border-radius: 9px 0 0 9px; box-shadow: -4px 0 12px rgba(0,0,0,0.16); }
+        .handle-icon { transition: transform 0.4s ease; stroke-width: 3px; }
+        #hardwareSidebar.active #handle-hw .handle-icon, #softwareSidebar.active #handle-sw .handle-icon { transform: rotate(180deg); }
+        .utility-button, .nav-button { min-height: 42px; padding: 0.72rem 1rem; border-radius: 9px; font-size: 0.88rem; font-weight: 800; transition: all 0.2s ease; cursor: pointer; text-decoration: none; }
+        .utility-button, .nav-button.secondary { background: white; color: var(--mac-grey); border: 1px solid var(--mac-grey-40); }
+        .utility-button:hover, .nav-button.secondary:hover { background: var(--mac-grey-20); }
+        .nav-button.primary { background: var(--mac-maroon); color: white; border: 1px solid var(--mac-maroon); }
+        .nav-button.primary:hover { background: var(--mac-maroon-80); }
+        .stage-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #E5E7EB; }
+        .stage-message { display: none; width: 100%; margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.88rem; font-weight: 600; }
+        .stage-message.show { display: block; }
+        .stage-message.success { background: #EFFAF3; border: 1px solid #B7E4C7; color: #174D2D; }
+        .knowledge-skill-list { display: grid; gap: 0.55rem; margin: 0; padding: 0; list-style: none; }
+        .knowledge-skill-list a { display: block; padding: 0.7rem 0.8rem; border-radius: 10px; border: 1px solid #DDE3E8; background: white; color: var(--lab-text); font-weight: 700; text-decoration: none; }
+        .optional-card { border-left: 5px solid var(--mac-gold); }
+        @media (max-width: 900px) {
+            .grid-layout.two, .grid-layout.three, .grid-layout.four, .order-grid { grid-template-columns: 1fr; }
+            .signal-chain { grid-template-columns: 1fr; }
+            .auto-score-chip { margin-left: 0; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.001ms !important; animation-duration: 0.001ms !important; }
+        }
+        @media print {
+            .stage-bar, .sidebar { display: none !important; }
+            .stage-panel { display: block !important; break-inside: avoid; }
+            body { background: #fff; }
+            .card { box-shadow: none; }
+            a::after { content: " (" attr(href) ")"; font-size: 0.8em; }
+        }
+        /* Completion indicator: use a CSS escape so the glyph remains valid in every file encoding. */
+        .stage-btn.completed::after { content: "\2713"; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 6px; border: 1px solid #23834d; border-radius: 50%; color: #126b3a; background: #e3f5e9; font-size: 0.84rem; font-weight: 800; line-height: 1; }
+    </style>
+</head>
+<body class="pb-24 pt-24 stage-0">
+    <nav class="stage-bar" aria-label="Lab progress">
+        <div class="stage-bar-inner">
+            <span class="stage-label">Student Space</span>
+            <a class="stage-btn" href="../../index.html">Home</a>
+            <span class="stage-btn page-current" aria-current="page">Lab 5</span>
+            <span class="stage-label lab-stage-label">Lab Progress</span>
+            <button class="stage-btn active" id="btn-stage-0" type="button" data-stage="0">Prepare</button>
+            <button class="stage-btn" id="btn-stage-1" type="button" data-stage="1">Predict</button>
+            <button class="stage-btn" id="btn-stage-2" type="button" data-stage="2">Build Circuit</button>
+            <button class="stage-btn" id="btn-stage-3" type="button" data-stage="3">Manual Control</button>
+            <button class="stage-btn" id="btn-stage-4" type="button" data-stage="4">Scale Angle</button>
+            <button class="stage-btn" id="btn-stage-5" type="button" data-stage="5">Scale Pulse Width</button>
+            <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">Build HMI</button>
+            <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Create SubVI</button>
+            <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Automatic Control</button>
+            <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Troubleshoot</button>
+            <button class="stage-btn" id="btn-stage-10" type="button" data-stage="10">Reflect</button>
+            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/11</strong></div>
+        </div>
+    </nav>
+
+    <aside id="hardwareSidebar" class="sidebar" aria-label="Lab tools and access reference">
+        <button id="handle-hw" class="sidebar-handle" type="button" data-sidebar-toggle="hardwareSidebar" title="Open lab tools reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            <span class="sr-only">Open lab tools reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Tools & Access</h3>
+            <p class="text-sm text-white/75 mt-1">Servo, potentiometer, Arduino A0, Arduino D7</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Setup Checklist</h4>
+                <ul class="text-sm text-gray-600 list-disc ml-5">
+                    <li>Attach the white plastic coupling before testing motion.</li>
+                    <li>Confirm brown servo wire to GND, red to 5 V, orange to Digital Pin 7.</li>
+                    <li>Confirm potentiometer middle terminal to Analog Pin 0.</li>
+                    <li>Confirm LINX firmware, board type, and serial port before running.</li>
+                </ul>
+            </div>
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Key Values</h4>
+                <dl class="grid grid-cols-2 gap-y-3 text-sm">
+                    <dt class="text-gray-500">Pot input</dt><dd class="font-semibold text-right">A0</dd>
+                    <dt class="text-gray-500">Servo signal</dt><dd class="font-semibold text-right">D7</dd>
+                    <dt class="text-gray-500">Center pulse</dt><dd class="font-semibold text-right">~1500 us</dd>
+                    <dt class="text-gray-500">Lab prep range</dt><dd class="font-semibold text-right">600-2400 us</dd>
+                    <dt class="text-gray-500">Wait</dt><dd class="font-semibold text-right">10 ms</dd>
+                </dl>
+            </div>
+            <div class="warning-card text-sm">
+                <h4 class="font-bold uppercase mb-2">Servo Limit Note</h4>
+                <p>The PDF uses 600-2400 microseconds for the servo used during lab preparation. Do not assume every servo can safely use that range.</p>
+            </div>
+        </div>
+    </aside>
+
+    <aside id="softwareSidebar" class="sidebar" aria-label="Formula and concept reference">
+        <button id="handle-sw" class="sidebar-handle" type="button" data-sidebar-toggle="softwareSidebar" title="Open formula and concept reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            <span class="sr-only">Open formula and concept reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Scaling & Logic</h3>
+            <p class="text-sm text-white/75 mt-1">Voltage, angle, pulse width, SubVI state</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Manual Mode</h4>
+                <p class="font-mono text-base">Angle = V / 5 * 180</p>
+                <p class="font-mono text-base mt-2">PW = Angle / 180 * (URV - LRV) + LRV</p>
+            </div>
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Knowledge Links</h4>
+                <ul class="knowledge-skill-list">
+                    <li><a href="../../knowledge/skill-tree.html?topic=analog-input">Analog input and digital control</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW interface</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=while-loops">LabVIEW loops</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Troubleshooting sequence</a></li>
+                </ul>
+            </div>
+            <div class="success-card text-sm">
+                <strong>Concept anchor:</strong> LabVIEW does not send degrees directly to the servo. It calculates a pulse-width command; the servo electronics interpret that signal as a target position.
+            </div>
+        </div>
+    </aside>
+
+    <main class="max-w-[1180px] mx-auto px-5">
+        <header class="page-header">
+            <div class="card section-card border-maroon">
+                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                    <div>
+                        <p class="uppercase tracking-[0.24em] text-sm font-bold text-[#7A003C] mb-3">SMRTTECH 3CC3 &middot; Cloud Computing and Internet of Things</p>
+                        <h1 class="lab-page-title text-4xl md:text-5xl font-extrabold"><span class="lab-title-prefix">Lab 5:</span> <span class="lab-title-gradient">Servo Motor Control with LabVIEW and Arduino</span></h1>
+                        <p class="text-xl text-gray-600 mt-3">From analog input and HMI commands to controlled motion.</p>
+                    </div>
+                    <img src="../../assets/McMaster-logo.png" alt="McMaster University logo" class="h-20 w-auto object-contain">
+                </div>
+                <div class="chip-row">
+                    <span class="stage-summary-chip">Pre-lab: 25-35 min</span>
+                    <span class="stage-summary-chip">Lab: 3 hours</span>
+                    <span class="stage-summary-chip">Post-lab: 45-60 min</span>
+                    <span class="stage-summary-chip">Safety: low voltage, moving part caution</span>
+                </div>
+                <div class="chip-row compact" aria-label="Lab utility actions">
+                    <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
+                    <button class="utility-button" type="button" data-print>Print lab</button>
+                    <button class="utility-button" type="button" data-reset>Reset Lab 5 data</button>
+                </div>
+                <div class="briefing-card mt-block">
+                    <h2 class="text-2xl font-bold text-[#7A003C]">Central question</h2>
+                    <p class="text-lg font-semibold">How does a voltage from a potentiometer or an HMI command become controlled servo motion?</p>
+                </div>
+                <div class="signal-chain" aria-label="Manual servo command chain">
+                    <div class="signal-step">Potentiometer<span>Physical input changes position.</span></div>
+                    <div class="signal-step">A0 voltage<span>Arduino measures voltage.</span></div>
+                    <div class="signal-step">LINX read<span>LabVIEW receives voltage.</span></div>
+                    <div class="signal-step">Angle<span>Voltage maps to 0-180 degrees.</span></div>
+                    <div class="signal-step">Pulse width<span>Angle maps to microseconds.</span></div>
+                    <div class="signal-step">D7 signal<span>Arduino commands servo.</span></div>
+                    <div class="signal-step">Motion<span>Servo shaft moves.</span></div>
+                </div>
+            </div>
+        </header>
+
+        <section class="stage-panel stage-0" id="prepare" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Prepare</p>
+                <h2>Lab scenario and setup</h2>
+                <p>You are building a local IoT motion-control node. The system must accept either a physical input from a potentiometer or an HMI command from LabVIEW, convert that command into a safe servo pulse width, and move a servo motor predictably. In automatic mode, the system performs a repeated waving motion based on speed and number of waves.</p>
+                <p class="briefing-card mt-block">This lab focuses on the local motion-control and HMI layer of an IoT system. It does not yet upload motion data or commands to the cloud.</p>
+                <div class="grid-layout three mt-block">
+                    <div class="mini-card"><h3>Software</h3><p>LabVIEW, NI LabVIEW LINX Toolkit, and LINX firmware loaded to Arduino.</p></div>
+                    <div class="mini-card"><h3>Hardware</h3><p>Arduino Mega, USB cable, breadboard, servo motor, potentiometer, 8 jumper wires, and white plastic coupling.</p></div>
+                    <div class="mini-card"><h3>Required pins</h3><p>Analog Pin 0 for potentiometer input. Digital Pin 7 for the servo signal.</p></div>
+                </div>
+            </article>
+
+            <article class="section-card card border-gold">
+                <h2>Learning outcomes</h2>
+                <div class="learning-outcome-grid">
+                    <div class="learning-outcome-card"><strong>Servo wiring</strong><span>Identify servo power, ground, and signal wires.</span></div>
+                    <div class="learning-outcome-card"><strong>Safe circuit build</strong><span>Wire a servo motor and potentiometer to Arduino Mega safely.</span></div>
+                    <div class="learning-outcome-card"><strong>Analog input</strong><span>Read potentiometer voltage from A0 using LINX.</span></div>
+                    <div class="learning-outcome-card"><strong>Scaling</strong><span>Scale voltage to angle, then angle to servo pulse width.</span></div>
+                    <div class="learning-outcome-card"><strong>LINX servo control</strong><span>Use Servo Open, Servo Write, Servo Close, and LINX Close.</span></div>
+                    <div class="learning-outcome-card"><strong>HMI modes</strong><span>Build Manual and Automatic LabVIEW front panels.</span></div>
+                    <div class="learning-outcome-card"><strong>Automatic logic</strong><span>Use Case Structures, MathScript Nodes, SubVIs, local variables, and previous-state values.</span></div>
+                    <div class="learning-outcome-card"><strong>Troubleshooting</strong><span>Diagnose wiring, scaling, servo-range, and LabVIEW logic faults.</span></div>
+                </div>
+            </article>
+
+            <article class="section-card card border-maroon">
+                <h2>Safety and pre-power checklist</h2>
+                <div class="danger-card"><strong>STOP - Check servo wiring, potentiometer wiring, and pulse-width limits before running the VI.</strong><p>This checklist supports safe work, but it does not replace instructor approval when approval is required.</p></div>
+                <div class="grid-layout two mt-block">
+                    <div class="mini-card"><h3>Electrical safety</h3><ul><li>Disconnect USB before changing wiring.</li><li>Verify 5 V and GND rails before powering.</li><li>Do not short 5 V to GND.</li><li>Confirm brown to GND, red to 5 V, orange to Digital Pin 7.</li><li>Confirm potentiometer middle terminal to A0.</li><li>Ask for help if the Arduino or servo becomes hot, buzzes continuously, or behaves unexpectedly.</li></ul></div>
+                    <div class="mini-card"><h3>Mechanical safety</h3><ul><li>Attach the white plastic coupling before testing.</li><li>Keep fingers, wires, and loose objects clear of the moving servo horn.</li><li>Do not force the shaft by hand while powered.</li><li>Do not command extreme pulse widths without confirming limits.</li><li>Use the Stop button rather than aborting the VI during normal operation.</li></ul></div>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safe-coupling"><span>White plastic coupling attached.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safe-servo-wires"><span>Servo brown, red, and orange wires checked.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safe-pot"><span>Potentiometer outside terminals and middle terminal checked.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safe-linx"><span>LINX firmware, board type, and COM port checked.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safe-motion"><span>Wires and fingers clear of servo motion.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safe-limits"><span>Pulse-width limits will be tested cautiously.</span></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-1" id="predict" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Predict</p>
+                <h2>Pre-lab activities</h2>
+                <h3>A. Servo readiness</h3>
+                <div class="grid-layout two">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="ready-mega"><span>Arduino Mega and USB cable available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="ready-servo"><span>Servo motor and white coupling available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="ready-pot"><span>Potentiometer and jumper wires available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="ready-port"><span>Arduino COM port known.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="ready-pins"><span>A0 and Digital Pin 7 identified.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="ready-firmware"><span>LINX firmware loaded.</span></label>
+                </div>
+            </article>
+
+            <article class="section-card card border-gold">
+                <h2>B. Build the command chain</h2>
+                <p>Drag the events into order, or use the numbered selects if you prefer keyboard entry.</p>
+                <div class="order-grid" data-dnd-order>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-pot"></select><span>Potentiometer rotates</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-a0"></select><span>Voltage on A0 changes</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-linx"></select><span>LabVIEW reads voltage through LINX</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-angle"></select><span>Voltage is scaled to angle</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-pw"></select><span>Angle is scaled to pulse width</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-d7"></select><span>Servo command is written to Digital Pin 7</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-motion"></select><span>Servo shaft moves</span></label>
+                </div>
+                <button class="utility-button mt-block" type="button" data-check-order>Check order</button>
+                <p class="stage-message show" data-order-feedback aria-live="polite">Choose an order for every event.</p>
+            </article>
+
+            <article class="section-card card border-success">
+                <h2>C. Predict scaling values</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Prompt</th><th>Expected relationship</th><th>Your answer</th><th>Check</th></tr></thead>
+                        <tbody>
+                            <tr><td>Angle at V = 0 V</td><td>Angle = V / 5 * 180</td><td><input type="number" class="persist-text scale-input" data-key="angle-0" data-expected="0"></td><td data-scale-result="angle-0"></td></tr>
+                            <tr><td>Angle at V = 2.5 V</td><td>Angle = V / 5 * 180</td><td><input type="number" class="persist-text scale-input" data-key="angle-25" data-expected="90"></td><td data-scale-result="angle-25"></td></tr>
+                            <tr><td>Angle at V = 5 V</td><td>Angle = V / 5 * 180</td><td><input type="number" class="persist-text scale-input" data-key="angle-5" data-expected="180"></td><td data-scale-result="angle-5"></td></tr>
+                            <tr><td>Pulse width at 0 degrees</td><td>LRV = 600, URV = 2400</td><td><input type="number" class="persist-text scale-input" data-key="pw-0" data-expected="600"></td><td data-scale-result="pw-0"></td></tr>
+                            <tr><td>Pulse width at 90 degrees</td><td>LRV = 600, URV = 2400</td><td><input type="number" class="persist-text scale-input" data-key="pw-90" data-expected="1500"></td><td data-scale-result="pw-90"></td></tr>
+                            <tr><td>Pulse width at 180 degrees</td><td>LRV = 600, URV = 2400</td><td><input type="number" class="persist-text scale-input" data-key="pw-180" data-expected="2400"></td><td data-scale-result="pw-180"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <label class="response-field mt-block"><span>D. What does the Case Structure decide?</span><textarea class="persist-text" data-key="predict-case"></textarea></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-2" id="build-circuit" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 1</p>
+                <h2>Build the physical command-and-motion circuit</h2>
+                <div class="grid-layout three">
+                    <figure class="diagram-card">
+                        <img src="../../assets/lab5-pdf-servo-coupling.jpg" alt="Source PDF photo of a servo motor with the white plastic coupling attached to the shaft.">
+                        <figcaption>Source PDF setup detail: attach the white plastic coupling before testing servo motion.</figcaption>
+                    </figure>
+                    <figure class="diagram-card">
+                        <img src="../../assets/lab5-pdf-servo-circuit-schematic.jpg" alt="Source PDF schematic showing Arduino Mega connected to a potentiometer and servo motor.">
+                        <figcaption>Source PDF circuit schematic: potentiometer connects to A0 and the servo signal connects to Digital Pin 7.</figcaption>
+                    </figure>
+                    <figure class="diagram-card">
+                        <img src="../../assets/lab5-pdf-servo-circuit-photo.jpg" alt="Source PDF breadboard photo showing the Arduino Mega, potentiometer, and servo motor wiring.">
+                        <figcaption>Source PDF hardware view: compare your wiring against this Arduino, breadboard, potentiometer, and servo layout.</figcaption>
+                    </figure>
+                </div>
+                <div class="grid-layout three mt-block">
+                    <div class="mini-card"><h3>Breadboard rails</h3><ol><li>Positive row to Arduino 5 V.</li><li>Negative row to Arduino GND.</li></ol></div>
+                    <div class="mini-card"><h3>Servo motor</h3><ol><li>Brown GND wire to negative rail.</li><li>Red VCC wire to positive rail.</li><li>Orange PWM wire to Arduino Digital Pin 7.</li></ol></div>
+                    <div class="mini-card"><h3>Potentiometer</h3><ol><li>One outside terminal to negative rail.</li><li>Other outside terminal to positive rail.</li><li>Middle terminal to Arduino Analog Pin 0.</li></ol></div>
+                </div>
+                <details><summary>Think it through</summary><div><ul><li>Which component is the input device?</li><li>Which component is the output device?</li><li>What does the potentiometer physically change?</li><li>What does Arduino A0 measure?</li><li>What does the servo signal wire receive?</li><li>Why must the servo and Arduino share ground?</li><li>What would happen if the red and brown servo wires were reversed?</li><li>What evidence would show the circuit is safe to power?</li></ul></div></details>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-d7"><span>Servo signal pin recorded as Digital Pin 7.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-a0"><span>Potentiometer input recorded as Analog Pin 0.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-power"><span>Servo power and ground checked.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-middle"><span>Potentiometer middle terminal checked.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-coupling"><span>Coupling attached.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-clear"><span>Wires clear of servo motion.</span></label>
+                </div>
+                <label class="response-field mt-block"><span>What evidence tells you the circuit is safe to power?</span><textarea class="persist-text" data-key="build-safe-evidence"></textarea></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-3" id="manual-control" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 2</p>
+                <h2>Open Arduino, read voltage, and command the servo</h2>
+                <p>Build the main VI that communicates with Arduino and the servo. Begin with a basic fixed pulse-width test before scaling.</p>
+                <figure class="diagram-card">
+                    <img src="../../assets/lab5-pdf-arduino-interface.png" alt="Source PDF LabVIEW block diagram for opening LINX, opening servo channel 7, reading analog channel 0, writing pulse width, and closing connections.">
+                    <figcaption>Source PDF Arduino interface: LINX Open, Servo Open, Analog Read, Set Pulse Width, Servo Close, and LINX Close are wired in sequence.</figcaption>
+                </figure>
+                <div class="grid-layout three">
+                    <details open><summary>A. LINX Open</summary><div>Add LINX Open, create the Serial Port constant, and set it to COM3 or the correct Arduino COM port.</div></details>
+                    <details><summary>B. Servo Open</summary><div>Add LINX Servo Open and set Servo Channel to <code>7</code>.</div></details>
+                    <details><summary>C. While Loop</summary><div>Place the loop, wire LINX resource and error tunnels, and create a Stop control.</div></details>
+                    <details><summary>D. Analog Read</summary><div>Add LINX Analog Read inside the loop and set Analog Channel to <code>0</code>. Create a Voltage indicator.</div></details>
+                    <details><summary>E. Set Pulse Width</summary><div>Add Servo Write / Set Pulse Width inside the loop, set Servo Channel to <code>7</code>, and initially use <code>1000</code> microseconds.</div></details>
+                    <details><summary>F. Close functions</summary><div>Add Servo Close after the loop, then LINX Close. Wire resource and error lines through all blocks.</div></details>
+                </div>
+                <div class="warning-card mt-block">A pulse width around 1500 microseconds is typically near center. Many servos use about 1000-2000 microseconds, but actual limits vary. The PDF's 600-2400 microseconds range is a lab-preparation value for the tested servo.</div>
+                <details><summary>Think it through</summary><div><ul><li>Why does the servo need to be opened before writing commands?</li><li>What does Analog Read return?</li><li>Does Analog Read measure angle directly?</li><li>What does Set Pulse Width send to the servo?</li><li>Why should Servo Close and LINX Close occur after the loop?</li><li>What could happen if the VI is aborted before close functions run?</li><li>What does a constant pulse width of 1000 microseconds test?</li></ul></div></details>
+                <div class="grid-layout two mt-block">
+                    <label class="response-field"><span>Arduino COM port selected</span><input class="persist-text" data-key="manual-com"></label>
+                    <label class="response-field"><span>Pulse width test value</span><input class="persist-text" data-key="manual-pw-test" value=""></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="manual-servo7"><span>Servo channel set to 7.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="manual-analog0"><span>Analog channel set to 0.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="manual-voltage"><span>Voltage indicator visible.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="manual-close"><span>Servo Close and LINX Close present.</span></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-4" id="scale-angle" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 3 and 4</p>
+                <h2>Build the Manual/Automatic front panel and scale voltage to angle</h2>
+                <p>Add the front-panel HMI controls, then create the Manual case that turns potentiometer voltage into an angle command.</p>
+                <figure class="diagram-card">
+                    <img src="../../assets/lab5-pdf-front-panel.jpg" alt="Source PDF LabVIEW front panel with Choice combo box, Angle gauge, Speed and NumberOfWaves controls, GO button, Stop button, and Voltage indicator.">
+                    <figcaption>Source PDF front panel: use this as the visual reference for the Manual/Automatic HMI controls.</figcaption>
+                </figure>
+                <div class="grid-layout three">
+                    <div class="mini-card"><h3>Combo Box</h3><p>Name it <code>Choice</code>. Add items <code>Manual</code> and <code>Automatic</code>.</p></div>
+                    <div class="mini-card"><h3>Gauge</h3><p>Name it <code>Angle</code>. Set range to 0-180.</p></div>
+                    <div class="mini-card"><h3>Controls</h3><p>Add <code>Speed</code>, <code>NumberOfWaves</code>, <code>GO</code>, and keep the Voltage indicator.</p></div>
+                </div>
+                <div class="briefing-card mt-block">
+                    <h3>Manual MathScript Node</h3>
+                    <figure class="diagram-card">
+                        <img src="../../assets/lab5-pdf-manual-case.png" alt="Source PDF Manual case showing a MathScript Node calculating Angle equals V divided by 5 times 180.">
+                        <figcaption>Source PDF Manual case: voltage from Analog Read becomes a commanded angle.</figcaption>
+                    </figure>
+                    <pre><code>Angle = V / 5 * 180;</code></pre>
+                    <p>Add input <code>V</code> from Analog Read voltage. Add output <code>Angle</code> and connect it to the Angle gauge and the output of the Manual case.</p>
+                </div>
+                <details><summary>Think it through</summary><div><ul><li>What is the input to the Manual case?</li><li>What is the output of the Manual case?</li><li>Why divide by 5?</li><li>Why multiply by 180?</li><li>What happens if the potentiometer does not reach exactly 0 V or 5 V?</li><li>Is the Angle gauge a measured shaft angle or a commanded angle?</li><li>What would happen if the two outside potentiometer terminals were swapped?</li></ul></div></details>
+                <div class="table-wrap mt-block">
+                    <table>
+                        <thead><tr><th>Potentiometer position</th><th>Voltage at A0</th><th>Calculated angle</th><th>Observed servo response</th></tr></thead>
+                        <tbody>
+                            <tr><td>Minimum</td><td><input class="persist-text" data-key="manual-v-min"></td><td><input class="persist-text" data-key="manual-a-min"></td><td><input class="persist-text" data-key="manual-r-min"></td></tr>
+                            <tr><td>Middle</td><td><input class="persist-text" data-key="manual-v-mid"></td><td><input class="persist-text" data-key="manual-a-mid"></td><td><input class="persist-text" data-key="manual-r-mid"></td></tr>
+                            <tr><td>Maximum</td><td><input class="persist-text" data-key="manual-v-max"></td><td><input class="persist-text" data-key="manual-a-max"></td><td><input class="persist-text" data-key="manual-r-max"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <label class="response-field evidence-upload mt-block"><span>Manual case screenshot/export</span><input class="persist-file" data-key="manual-screenshot" data-stage-required type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="manual-screenshot">No file selected.</small></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-5" id="scale-pulse-width" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 5</p>
+                <h2>Convert angle into servo pulse width</h2>
+                <p>Add the second MathScript Node below the Case Structure so both Manual and Automatic angle commands pass through the same pulse-width mapping.</p>
+                <figure class="diagram-card">
+                    <img src="../../assets/lab5-pdf-pulse-width-node.png" alt="Source PDF block diagram showing the pulse-width MathScript Node below the Case Structure.">
+                    <figcaption>Source PDF pulse-width calculation: the angle output maps to a microsecond pulse command for Set Pulse Width.</figcaption>
+                </figure>
+                <pre><code>URV = 2400;
+LRV = 600;
+PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
+                <p>Add input <code>Angle</code>. Add output <code>PW</code>. Connect <code>PW</code> to the Pulse Width input of Set Pulse Width One Channel.</p>
+                <div class="warning-card">The values 600 and 2400 microseconds are from lab preparation. Confirm safe limits for the actual servo before wide-range testing.</div>
+                <div class="table-wrap mt-block">
+                    <table>
+                        <thead><tr><th>Angle</th><th>Pulse width using 600-2400 microseconds</th><th>Your measured or adjusted value</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>0 degrees</td><td>600 microseconds</td><td><input type="number" step="1" min="400" max="2600" class="persist-text" data-key="pw-measured-0" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-0"></td></tr>
+                            <tr><td>90 degrees</td><td>1500 microseconds</td><td><input type="number" step="1" min="400" max="2600" class="persist-text" data-key="pw-measured-90" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-90"></td></tr>
+                            <tr><td>180 degrees</td><td>2400 microseconds</td><td><input type="number" step="1" min="400" max="2600" class="persist-text" data-key="pw-measured-180" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-180"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <details><summary>Think it through</summary><div><ul><li>Why does the servo need pulse width rather than only an angle number?</li><li>What does 1500 microseconds usually represent?</li><li>Why might a different servo require different limits?</li><li>What could happen if the pulse-width range is too wide?</li><li>How could you test safe limits cautiously?</li><li>What is the difference between commanded angle and actual servo position?</li><li>Why should pulse width be bounded?</li></ul></div></details>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-6" id="build-hmi" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">HMI integration</p>
+                <h2>Route Manual and Automatic choices through one Case Structure</h2>
+                <p>Place <code>Choice</code>, <code>GO</code>, <code>Speed</code>, and <code>NumberOfWaves</code> inside the loop. Connect <code>Choice</code> to the Case Structure selector. Create cases named <code>Manual</code>, <code>Automatic</code>, and <code>Default</code>.</p>
+                <figure class="diagram-card">
+                    <img src="../../assets/lab5-pdf-manual-case.png" alt="Source PDF Manual Case Structure in LabVIEW, showing Choice selecting Manual logic and outputting Angle.">
+                    <figcaption>Source PDF Case Structure reference: Manual and Automatic cases should both output an angle command.</figcaption>
+                </figure>
+                <div class="logic-flow" aria-label="Case structure command flow"><span>Choice</span><b>-&gt;</b><span>Manual or Automatic case</span><b>-&gt;</b><span>Angle command</span><b>-&gt;</b><span>Pulse-width scaling</span><b>-&gt;</b><span>Servo Write</span></div>
+                <div class="grid-layout two mt-block">
+                    <div class="mini-card"><h3>Manual case output</h3><p>Angle from potentiometer voltage.</p></div>
+                    <div class="mini-card"><h3>Automatic case output</h3><p>Temporary DBL numeric constant for now. This will be replaced by the waving SubVI.</p></div>
+                </div>
+                <label class="response-field mt-block"><span>How does the Case Structure support both modes without duplicating pulse-width scaling?</span><textarea class="persist-text" data-key="hmi-case-explain"></textarea></label>
+                <div class="grid-layout two">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-choice"><span>Combo Box named Choice has Manual and Automatic items.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-angle"><span>Angle gauge range is 0-180.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-speed"><span>Speed and NumberOfWaves controls are present.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-go"><span>GO button is present.</span></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-7" id="create-subvi" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 6</p>
+                <h2>Create a reusable automatic-wave SubVI</h2>
+                <p>Create a new Blank VI for automatic waving. Add front-panel controls and indicators, then add the MathScript Node shown below.</p>
+                <div class="grid-layout three">
+                    <figure class="diagram-card">
+                        <img src="../../assets/lab5-pdf-subvi-front-panel.png" alt="Source PDF SubVI front panel with Go, NumberOfWaves, Speed, Waving, Direction, Wave Count, and Angle.">
+                        <figcaption>Source PDF SubVI front panel: these controls and indicators define the automatic waving state.</figcaption>
+                    </figure>
+                    <figure class="diagram-card">
+                        <img src="../../assets/lab5-pdf-wave-servo-icon.png" alt="Source PDF Wave Servo icon for the automatic waving SubVI.">
+                        <figcaption>Source PDF icon example: edit the SubVI icon so it is recognizable when placed in the main VI.</figcaption>
+                    </figure>
+                    <figure class="diagram-card">
+                        <img src="../../assets/lab5-pdf-subvi-block-diagram.png" alt="Source PDF SubVI block diagram showing the MathScript Node, local variables, wait function, and connector wiring.">
+                        <figcaption>Source PDF SubVI block diagram: local variables read previous state values and the MathScript Node updates the waving command.</figcaption>
+                    </figure>
+                </div>
+                <div class="grid-layout three">
+                    <div class="mini-card"><h3>Controls</h3><p><code>Go</code>, <code>NumberOfWaves</code>, and <code>Speed</code>.</p></div>
+                    <div class="mini-card"><h3>Indicators</h3><p><code>Waving</code>, <code>Direction</code>, <code>Wave Count</code>, and <code>Angle</code>.</p></div>
+                    <div class="mini-card"><h3>State inputs</h3><p>Local variables changed to Read provide AngleLast, DirectionLast, WaveCountLast, and WavingLast.</p></div>
+                </div>
+                <pre><code>Angle = AngleLast;
+Waving = WavingLast;
+Direction = DirectionLast;
+WaveCount = WaveCountLast;
+if Go == true
+    Waving = true
+    WaveCount = NumberOfWaves
+end
+if Waving == true
+    if Direction == false
+        Angle = Angle + Speed
+    else
+        Angle = Angle - Speed
+    end
+    if Angle >= 180 | Angle <= 0
+        Direction = Not(Direction)
+        WaveCount = WaveCount - 1
+    end
+    if WaveCount == 0
+        Waving = false
+    end
+end</code></pre>
+                <div class="logic-flow mt-block" aria-label="Automatic waving state diagram"><span>Idle</span><b>-&gt;</b><span>GO pressed</span><b>-&gt;</b><span>Waving forward</span><b>-&gt;</b><span>Boundary reached</span><b>-&gt;</b><span>Waving backward</span><b>-&gt;</b><span>Count decreases</span><b>-&gt;</b><span>Idle</span></div>
+                <div class="grid-layout two mt-block">
+                    <div class="mini-card"><h3>Connector pane</h3><p>Set a pattern with three inputs and one output. Top input to GO, middle to NumberOfWaves, bottom to Speed, output to Angle.</p></div>
+                    <div class="mini-card"><h3>Timing and icon</h3><p>Add Wait with constant 10. Edit the icon, for example <code>Wave Servo</code>. Save the SubVI.</p></div>
+                </div>
+                <details><summary>Think it through</summary><div><ul><li>Why does automatic mode need memory of the previous angle?</li><li>What do Waving, Direction, and WaveCount represent?</li><li>What happens when GO becomes true?</li><li>What condition causes direction to reverse?</li><li>What does <code>==</code> mean?</li><li>What does <code>|</code> mean?</li><li>Why does the code stop when WaveCount reaches 0?</li><li>Why are local variables used here?</li><li>What are the risks of using local variables carelessly?</li></ul></div></details>
+                <div class="grid-layout two mt-block">
+                    <label class="response-field evidence-upload"><span>SubVI front panel evidence</span><input class="persist-file" data-key="subvi-front" type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="subvi-front">No file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>SubVI block diagram evidence</span><input class="persist-file" data-key="subvi-block" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="subvi-block">No file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>Icon and connector pane evidence</span><input class="persist-file" data-key="subvi-icon" type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="subvi-icon">No file selected.</small></label>
+                    <label class="response-field"><span>Explain one if statement</span><textarea class="persist-text" data-key="subvi-if"></textarea></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-8" id="automatic-control" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 7</p>
+                <h2>Insert the automatic-wave SubVI into the main VI</h2>
+                <p>Return to the main VI from Exercise 2. Place the saved SubVI in the Automatic case, remove the temporary DBL constant, and connect the SubVI output to the Case Structure output.</p>
+                <figure class="diagram-card">
+                    <img src="../../assets/lab5-pdf-final-program.png" alt="Source PDF final LabVIEW program showing the automatic-wave SubVI inserted into the Automatic case and connected to the pulse-width calculation.">
+                    <figcaption>Source PDF final program: the Automatic case calls the SubVI, then the shared pulse-width mapping commands the servo.</figcaption>
+                </figure>
+                <div class="grid-layout two">
+                    <div class="mini-card"><h3>Inputs</h3><ul><li>GO to top SubVI input.</li><li>NumberOfWaves to middle input.</li><li>Speed to bottom input.</li></ul></div>
+                    <div class="mini-card"><h3>Output</h3><p>SubVI Angle output connects to the Case Structure output. The shared pulse-width conversion then commands the servo.</p></div>
+                </div>
+                <p class="briefing-card mt-block">Manual mode and Automatic mode produce the same kind of output: an angle command. The shared pulse-width conversion turns either angle source into a servo command.</p>
+                <details><summary>Think it through</summary><div><ul><li>Why should both cases output an angle?</li><li>Why should pulse-width scaling remain outside the Case Structure?</li><li>What would happen if Automatic output pulse width instead of angle?</li><li>What does GO trigger?</li><li>What does Speed change?</li><li>What does NumberOfWaves change?</li><li>How will you test that the number of waves is correct?</li><li>How can you safely stop automatic motion?</li></ul></div></details>
+                <div class="table-wrap mt-block">
+                    <table>
+                        <thead><tr><th>Test</th><th>Setting</th><th>Expected observation</th><th>Actual observation</th><th>Decision</th></tr></thead>
+                        <tbody>
+                            <tr><td>Manual mode</td><td><input class="persist-text" data-key="auto-manual-setting"></td><td>Potentiometer changes command angle</td><td><input class="persist-text" data-key="auto-manual-actual"></td><td><input class="persist-text" data-key="auto-manual-decision"></td></tr>
+                            <tr><td>Automatic mode</td><td><input class="persist-text" data-key="auto-auto-setting"></td><td>Servo waves using GO, Speed, NumberOfWaves</td><td><input class="persist-text" data-key="auto-auto-actual"></td><td><input class="persist-text" data-key="auto-auto-decision"></td></tr>
+                            <tr><td>Stop button</td><td><input class="persist-text" data-key="auto-stop-setting"></td><td>Loop ends and close functions run</td><td><input class="persist-text" data-key="auto-stop-actual"></td><td><input class="persist-text" data-key="auto-stop-decision"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <label class="response-field evidence-upload mt-block"><span>Final main VI front-panel and block-diagram evidence</span><input class="persist-file" data-key="auto-final-evidence" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="auto-final-evidence">No file selected.</small></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-9" id="troubleshoot" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Troubleshoot</p>
+                <h2>Observation, hypothesis, test, evidence, decision</h2>
+                <p class="danger-card"><strong>Before changing the circuit or LabVIEW block diagram, write one hypothesis and one measurement or inspection that could support or reject it.</strong></p>
+                <div class="table-wrap mt-block">
+                    <table>
+                        <thead><tr><th>Observation</th><th>Possible cause</th><th>Test</th><th>Expected result if correct</th><th>Actual result</th><th>Decision</th></tr></thead>
+                        <tbody>
+                            <tr><td><input class="persist-text" data-key="tr-obs-1" data-stage-required></td><td><input class="persist-text" data-key="tr-cause-1" data-stage-required></td><td><input class="persist-text" data-key="tr-test-1" data-stage-required></td><td><input class="persist-text" data-key="tr-exp-1" data-stage-required></td><td><input class="persist-text" data-key="tr-act-1" data-stage-required></td><td><input class="persist-text" data-key="tr-dec-1" data-stage-required></td></tr>
+                            <tr><td><input class="persist-text" data-key="tr-obs-2"></td><td><input class="persist-text" data-key="tr-cause-2"></td><td><input class="persist-text" data-key="tr-test-2"></td><td><input class="persist-text" data-key="tr-exp-2"></td><td><input class="persist-text" data-key="tr-act-2"></td><td><input class="persist-text" data-key="tr-dec-2"></td></tr>
+                            <tr><td><input class="persist-text" data-key="tr-obs-3"></td><td><input class="persist-text" data-key="tr-cause-3"></td><td><input class="persist-text" data-key="tr-test-3"></td><td><input class="persist-text" data-key="tr-exp-3"></td><td><input class="persist-text" data-key="tr-act-3"></td><td><input class="persist-text" data-key="tr-dec-3"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid-layout three mt-block">
+                    <div class="mini-card"><h3>Hardware faults</h3><ul><li>Servo red and brown wires reversed</li><li>Servo signal not on Digital Pin 7</li><li>Potentiometer middle terminal not on A0</li><li>Missing common ground</li><li>Loose jumper or rail discontinuity</li><li>Servo coupling not attached or mechanically blocked</li><li>USB cable is power-only</li></ul></div>
+                    <div class="mini-card"><h3>LabVIEW and LINX faults</h3><ul><li>LINX firmware not loaded</li><li>Wrong COM port</li><li>Servo channel not 7</li><li>Analog channel not 0</li><li>Servo Open or Servo Close missing</li><li>LINX Open inside loop</li><li>Choice not wired to Case selector</li><li>SubVI connector pane wired incorrectly</li></ul></div>
+                    <div class="mini-card"><h3>Scaling and logic faults</h3><ul><li>Wrong voltage range in angle formula</li><li>Wrong LRV/URV</li><li>Pulse width exceeds safe range</li><li>Speed too large</li><li>GO not wired correctly</li><li>Local variables set to Write instead of Read</li><li>Direction logic reversed</li><li>Assuming gauge angle is measured actual angle</li></ul></div>
+                </div>
+                <div class="briefing-card mt-block"><h3>Troubleshooting discussion</h3><p>Use your observation, possible cause, proposed test, actual evidence, and next action. Do not change wiring, scaling, and SubVI logic at the same time.</p></div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-10" id="reflect" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Reflect</p>
+                <h2>Deliverables and assessment</h2>
+                <div class="grid-layout two">
+                    <div class="mini-card"><h3>Submit</h3><ol><li>Completed servo and potentiometer circuit.</li><li>Manual-control front panel and block diagram evidence.</li><li>Evidence that A0 is read and Digital Pin 7 commands the servo.</li><li>Voltage-to-angle and angle-to-pulse-width calculations.</li><li>MathScript Node explanations.</li><li>Completed automatic-wave SubVI with front panel, block diagram, icon, and connector pane.</li><li>Final main VI with SubVI in Automatic case.</li><li>Manual and automatic mode test evidence.</li><li>Explanation of each if statement, <code>==</code>, <code>|</code>, and local variables.</li><li>Three applications of servomotors.</li><li>Student names and numbers as required.</li><li>Report formatted according to 3CC3 Lab Policies and Report Writing.pdf.</li></ol></div>
+                    <div class="mini-card"><h3>Suggested weighting</h3><table><tbody><tr><td>Circuit construction and safety evidence</td><td>10%</td></tr><tr><td>Manual-control VI and HMI</td><td>15%</td></tr><tr><td>Scaling calculations</td><td>15%</td></tr><tr><td>Manual servo test evidence</td><td>10%</td></tr><tr><td>Automatic-wave SubVI</td><td>20%</td></tr><tr><td>Final automatic integration</td><td>15%</td></tr><tr><td>Code explanation and report responses</td><td>10%</td></tr><tr><td>Troubleshooting and reflection</td><td>5%</td></tr></tbody></table></div>
+                </div>
+            </article>
+
+            <article class="section-card card border-gold">
+                <h2>Reflection questions</h2>
+                <label class="response-field"><span>1. What does the potentiometer physically change?</span><textarea class="persist-text" data-key="reflect-1" data-stage-required></textarea></label>
+                <label class="response-field"><span>2. What does Arduino A0 actually measure?</span><textarea class="persist-text" data-key="reflect-2" data-stage-required></textarea></label>
+                <label class="response-field"><span>3. Does LabVIEW send an angle directly to the servo? Explain.</span><textarea class="persist-text" data-key="reflect-3" data-stage-required></textarea></label>
+                <label class="response-field"><span>4. Why must voltage be scaled to angle before calculating pulse width?</span><textarea class="persist-text" data-key="reflect-4" data-stage-required></textarea></label>
+                <label class="response-field"><span>5. Why must angle be scaled to pulse width?</span><textarea class="persist-text" data-key="reflect-5" data-stage-required></textarea></label>
+                <label class="response-field"><span>6. What does a pulse width of approximately 1500 microseconds usually represent?</span><textarea class="persist-text" data-key="reflect-6" data-stage-required></textarea></label>
+                <label class="response-field"><span>7. Why might 600-2400 microseconds not be safe for every servo?</span><textarea class="persist-text" data-key="reflect-7" data-stage-required></textarea></label>
+                <label class="response-field"><span>8. What is the purpose of the Manual/Automatic Case Structure?</span><textarea class="persist-text" data-key="reflect-8" data-stage-required></textarea></label>
+                <label class="response-field"><span>9. Why is the automatic waving logic placed in a SubVI?</span><textarea class="persist-text" data-key="reflect-9" data-stage-required></textarea></label>
+                <label class="response-field"><span>10. What does each if statement in the automatic MathScript code do?</span><textarea class="persist-text" data-key="reflect-10" data-stage-required></textarea></label>
+                <label class="response-field"><span>11. What do == and | mean in the code?</span><textarea class="persist-text" data-key="reflect-11" data-stage-required></textarea></label>
+                <label class="response-field"><span>12. Why are local variables used in the automatic SubVI?</span><textarea class="persist-text" data-key="reflect-12" data-stage-required></textarea></label>
+                <label class="response-field"><span>13. What could cause servo jitter?</span><textarea class="persist-text" data-key="reflect-13" data-stage-required></textarea></label>
+                <label class="response-field"><span>14. What could cause the servo to move in the opposite direction from the potentiometer?</span><textarea class="persist-text" data-key="reflect-14" data-stage-required></textarea></label>
+                <label class="response-field"><span>15. Does this lab create a complete IoT system? If not, which IoT layer is completed and what still needs to be added?</span><textarea class="persist-text" data-key="reflect-15" data-stage-required></textarea></label>
+                <label class="response-field"><span>16. What did you initially believe about servo control that this lab changed or clarified?</span><textarea class="persist-text" data-key="reflect-16" data-stage-required></textarea></label>
+            </article>
+
+            <article class="section-card card border-success">
+                <h2>Optional extensions</h2>
+                <div class="grid-layout three">
+                    <div class="mini-card optional-card">Add a safe pulse-width limiter.</div>
+                    <div class="mini-card optional-card">Add user-adjustable LRV and URV fields.</div>
+                    <div class="mini-card optional-card">Add a reset-to-center button.</div>
+                    <div class="mini-card optional-card">Add an emergency stop that commands 90 degrees.</div>
+                    <div class="mini-card optional-card">Add a live angle-versus-time chart.</div>
+                    <div class="mini-card optional-card">Add a moving average filter or software deadband to reduce jitter.</div>
+                    <div class="mini-card optional-card">Add a second automatic pattern besides waving.</div>
+                    <div class="mini-card optional-card">Add a simulated cloud-command placeholder.</div>
+                    <div class="mini-card optional-card">Explain how this node could later receive cloud dashboard commands.</div>
+                </div>
+            </article>
+
+            <article class="section-card card border-maroon">
+                <h2>Glossary</h2>
+                <div class="grid-layout three">
+                    <details><summary>Servo motor</summary><div>A motor assembly that moves to a commanded position using an internal control circuit.</div></details>
+                    <details><summary>Servo horn</summary><div>The attachment on the servo shaft that transfers motion to a mechanism.</div></details>
+                    <details><summary>Coupling</summary><div>The white plastic piece attached to the motor shaft before testing.</div></details>
+                    <details><summary>Potentiometer</summary><div>A variable resistor used here to create a changing voltage.</div></details>
+                    <details><summary>Analog input</summary><div>A microcontroller input that reads a voltage range.</div></details>
+                    <details><summary>Arduino A0</summary><div>Analog Pin 0, used for the potentiometer voltage.</div></details>
+                    <details><summary>Digital Pin 7</summary><div>The Arduino pin used for the servo control signal.</div></details>
+                    <details><summary>PWM</summary><div>Pulse-width modulation or timed pulse signaling used by many servo interfaces.</div></details>
+                    <details><summary>Pulse width</summary><div>The duration of the servo command pulse, measured in microseconds.</div></details>
+                    <details><summary>Microsecond</summary><div>One millionth of a second.</div></details>
+                    <details><summary>Commanded angle</summary><div>The angle value calculated by software.</div></details>
+                    <details><summary>Actual angle</summary><div>The physical shaft position, which may differ slightly from the command.</div></details>
+                    <details><summary>LabVIEW</summary><div>A graphical programming environment.</div></details>
+                    <details><summary>VI</summary><div>Virtual Instrument, a LabVIEW program.</div></details>
+                    <details><summary>SubVI</summary><div>A reusable LabVIEW program used inside another VI.</div></details>
+                    <details><summary>Front Panel</summary><div>The user-facing LabVIEW controls and indicators.</div></details>
+                    <details><summary>Block Diagram</summary><div>The graphical LabVIEW program logic.</div></details>
+                    <details><summary>HMI</summary><div>Human-machine interface.</div></details>
+                    <details><summary>LINX</summary><div>LabVIEW toolkit for communicating with Arduino.</div></details>
+                    <details><summary>Servo Open</summary><div>LINX function that prepares a servo channel.</div></details>
+                    <details><summary>Set Pulse Width</summary><div>LINX function that writes the servo pulse command.</div></details>
+                    <details><summary>Servo Close</summary><div>LINX function that closes the servo channel.</div></details>
+                    <details><summary>Analog Read</summary><div>LINX function that reads voltage from an analog channel.</div></details>
+                    <details><summary>While Loop</summary><div>A repeated LabVIEW structure.</div></details>
+                    <details><summary>Stop button</summary><div>The normal way to stop the VI loop.</div></details>
+                    <details><summary>Abort button</summary><div>An emergency interruption, not normal shutdown.</div></details>
+                    <details><summary>Case Structure</summary><div>LabVIEW structure that selects code based on Choice.</div></details>
+                    <details><summary>Manual mode</summary><div>Mode where potentiometer voltage generates the angle command.</div></details>
+                    <details><summary>Automatic mode</summary><div>Mode where the SubVI generates the angle command over time.</div></details>
+                    <details><summary>MathScript Node</summary><div>LabVIEW node for script-style calculations.</div></details>
+                    <details><summary>Local variable</summary><div>A LabVIEW object used here to read previous state values.</div></details>
+                    <details><summary>GO button</summary><div>Button that starts automatic waving.</div></details>
+                    <details><summary>Speed</summary><div>User control for how quickly the angle changes.</div></details>
+                    <details><summary>NumberOfWaves</summary><div>User control for requested waving repetitions.</div></details>
+                    <details><summary>Direction</summary><div>Boolean state that selects increasing or decreasing angle.</div></details>
+                    <details><summary>Waving</summary><div>Boolean state indicating automatic motion is active.</div></details>
+                    <details><summary>Wave Count</summary><div>Remaining automatic wave count.</div></details>
+                    <details><summary>== operator</summary><div>Equality comparison.</div></details>
+                    <details><summary>| operator</summary><div>Logical OR in the MathScript condition.</div></details>
+                    <details><summary>LRV</summary><div>Lower reference value for pulse-width mapping.</div></details>
+                    <details><summary>URV</summary><div>Upper reference value for pulse-width mapping.</div></details>
+                    <details><summary>Saturation</summary><div>A limit condition where a command or actuator cannot increase further.</div></details>
+                    <details><summary>Jitter</summary><div>Small unwanted servo movement or vibration.</div></details>
+                    <details><summary>IoT motion-control node</summary><div>A local sensing and motion layer that could later connect to cloud commands or logging.</div></details>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        (() => {
+            const STORAGE_PREFIX = 'smrttech-lab5-servo-control';
+            const STAGE_COUNT = 11;
+            const STAGE_NAMES = ['Prepare', 'Predict', 'Build Circuit', 'Manual Control', 'Scale Angle', 'Scale Pulse Width', 'Build HMI', 'Create SubVI', 'Automatic Control', 'Troubleshoot', 'Reflect'];
+            const ORDER_KEYS = ['chain-pot','chain-a0','chain-linx','chain-angle','chain-pw','chain-d7','chain-motion'];
+            const CORRECT_ORDER = ['1','2','3','4','5','6','7'];
+            document.body.classList.add('js-enabled');
+
+            function storageKey(key) { return `${STORAGE_PREFIX}:${key}`; }
+
+            function setStage(stage) {
+                const safeStage = Math.max(0, Math.min(STAGE_COUNT - 1, Number(stage) || 0));
+                document.body.className = document.body.className.split(' ').filter(name => !/^stage-\d+$/.test(name)).join(' ');
+                document.body.classList.add('pb-24', 'pt-24', 'js-enabled', `stage-${safeStage}`);
+                document.querySelectorAll('[data-stage]').forEach(button => {
+                    const active = Number(button.dataset.stage) === safeStage;
+                    button.classList.toggle('active', active);
+                    button.setAttribute('aria-current', active ? 'step' : 'false');
+                });
+                localStorage.setItem(storageKey('current-stage'), String(safeStage));
+                updateProgress();
+                const panel = document.querySelector(`.stage-panel.stage-${safeStage}`);
+                if (panel) panel.focus({ preventScroll: true });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function updateProgress() {
+                let complete = 0;
+                document.querySelectorAll('[data-stage]').forEach(button => {
+                    const isComplete = localStorage.getItem(storageKey(`stage-${button.dataset.stage}-complete`)) === 'true';
+                    button.classList.toggle('completed', isComplete);
+                    if (isComplete) complete += 1;
+                });
+                document.querySelectorAll('[data-progress-status]').forEach(status => {
+                    status.textContent = `${complete}/${STAGE_COUNT}`;
+                    status.setAttribute('title', `${complete} of ${STAGE_COUNT} phases marked complete.`);
+                });
+            }
+
+            function showStageMessage(stage, message) {
+                const panel = document.querySelector(`.stage-panel.stage-${stage}`);
+                if (!panel) return;
+                let messageBox = panel.querySelector('.stage-message:not([data-order-feedback])');
+                if (!messageBox) {
+                    messageBox = document.createElement('div');
+                    messageBox.className = 'stage-message';
+                    messageBox.setAttribute('role', 'status');
+                    messageBox.setAttribute('aria-live', 'polite');
+                    const footer = panel.querySelector('.stage-footer');
+                    if (footer) footer.before(messageBox);
+                    else panel.appendChild(messageBox);
+                }
+                messageBox.textContent = message;
+                messageBox.className = 'stage-message show success';
+            }
+
+            function markStageComplete(stage) {
+                localStorage.setItem(storageKey(`stage-${stage}-complete`), 'true');
+                updateProgress();
+                showStageMessage(stage, 'Stage complete. Your progress has been saved in this browser.');
+            }
+
+            function buildStageFooters() {
+                document.querySelectorAll('.stage-panel').forEach((panel, index) => {
+                    if (panel.querySelector('.stage-footer')) return;
+                    const footer = document.createElement('div');
+                    footer.className = 'stage-footer';
+                    const previous = document.createElement('button');
+                    previous.type = 'button';
+                    previous.className = 'nav-button secondary';
+                    previous.textContent = index === 0 ? 'Back to portal' : `Back: ${STAGE_NAMES[index - 1]}`;
+                    previous.addEventListener('click', () => {
+                        if (index === 0) window.location.href = '../../index.html';
+                        else setStage(index - 1);
+                    });
+                    const controls = document.createElement('div');
+                    controls.className = 'chip-row compact';
+                    const next = document.createElement('button');
+                    next.type = 'button';
+                    next.className = 'nav-button primary';
+                    next.textContent = index === STAGE_COUNT - 1 ? 'Finish Lab 5' : `Next: ${STAGE_NAMES[index + 1]}`;
+                    next.addEventListener('click', () => {
+                        markStageComplete(index);
+                        if (index < STAGE_COUNT - 1) setStage(index + 1);
+                    });
+                    controls.append(next);
+                    footer.append(previous, controls);
+                    panel.appendChild(footer);
+                });
+            }
+
+            function setupOrderOptions() {
+                document.querySelectorAll('.order-select').forEach(select => {
+                    if (select.options.length) return;
+                    const blank = document.createElement('option');
+                    blank.value = '';
+                    blank.textContent = 'Order';
+                    select.appendChild(blank);
+                    for (let i = 1; i <= ORDER_KEYS.length; i += 1) {
+                        const option = document.createElement('option');
+                        option.value = String(i);
+                        option.textContent = String(i);
+                        select.appendChild(option);
+                    }
+                });
+            }
+
+            function restoreInputs() {
+                document.querySelectorAll('.persist-check').forEach(input => {
+                    input.checked = localStorage.getItem(storageKey(input.dataset.key)) === 'true';
+                    input.addEventListener('change', () => localStorage.setItem(storageKey(input.dataset.key), String(input.checked)));
+                });
+                document.querySelectorAll('.persist-text').forEach(input => {
+                    const saved = localStorage.getItem(storageKey(input.dataset.key));
+                    if (saved !== null) input.value = saved;
+                    input.addEventListener('input', () => {
+                        localStorage.setItem(storageKey(input.dataset.key), input.value);
+                        updateScaleChecks();
+                    });
+                    input.addEventListener('change', () => {
+                        localStorage.setItem(storageKey(input.dataset.key), input.value);
+                        updateScaleChecks();
+                    });
+                });
+            }
+
+            function checkOrder() {
+                const values = ORDER_KEYS.map(key => document.querySelector(`[data-key="${key}"]`)?.value || '');
+                const feedback = document.querySelector('[data-order-feedback]');
+                if (!feedback) return;
+                if (values.some(value => value === '')) {
+                    feedback.textContent = 'Choose an order for every event.';
+                    return;
+                }
+                if (new Set(values).size !== values.length) {
+                    feedback.textContent = 'Each order number should be used once.';
+                    return;
+                }
+                const correct = values.every((value, index) => value === CORRECT_ORDER[index]);
+                feedback.textContent = correct ? 'Correct command chain.' : 'Not yet. Trace the path from potentiometer motion to servo shaft motion.';
+            }
+
+            function updateScaleChecks() {
+                document.querySelectorAll('.scale-input').forEach(input => {
+                    const target = document.querySelector(`[data-scale-result="${input.dataset.key}"]`);
+                    if (!target) return;
+                    if (input.value === '') {
+                        target.textContent = '';
+                        return;
+                    }
+                    const expected = Number(input.dataset.expected);
+                    const value = Number(input.value);
+                    target.textContent = Math.abs(value - expected) < 0.01 ? 'Matches expected value.' : `Expected ${expected}.`;
+                });
+            }
+
+            function exportResponses() {
+                return window.LabCompletionExport?.download();
+            }
+
+            function resetLocalData() {
+                if (!confirm('Reset only Lab 5 local progress and responses on this browser?')) return;
+                window.LabCompletionExport?.clearStoredData();
+                Object.keys(localStorage).filter(key => key.startsWith(`${STORAGE_PREFIX}:`)).forEach(key => localStorage.removeItem(key));
+                location.reload();
+            }
+
+            function setupSidebars() {
+                document.querySelectorAll('[data-sidebar-toggle]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const selected = document.getElementById(button.dataset.sidebarToggle);
+                        if (!selected) return;
+                        const wasOpen = selected.classList.contains('active');
+                        document.querySelectorAll('.sidebar').forEach(sidebar => sidebar.classList.remove('active'));
+                        if (!wasOpen) selected.classList.add('active');
+                    });
+                });
+            }
+
+            buildStageFooters();
+            setupSidebars();
+            setupOrderOptions();
+            restoreInputs();
+            updateScaleChecks();
+            document.querySelectorAll('[data-stage]').forEach(button => button.addEventListener('click', () => setStage(button.dataset.stage)));
+            document.querySelector('[data-check-order]')?.addEventListener('click', checkOrder);
+            // Completion-file export is provided by assets/js/lab-export.js.
+            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+            document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
+            setStage(localStorage.getItem(storageKey('current-stage')) || 0);
+        })();
+    </script>
+    <script src="../../assets/js/lab-shared.js"></script>
+    <script src="../../assets/js/lab-export.js"></script>
+</body>
+</html>

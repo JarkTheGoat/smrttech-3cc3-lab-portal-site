@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SMRTTECH 3CC3 Cloud Computing and Internet of Things laboratory portal and knowledge database.">
+    <title>SMRTTECH 3CC3 | Unified Lab Learning Space</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+
+        :root {
+            --mac-maroon: #7A003C;
+            --mac-gold: #FDBF57;
+            --mac-grey: #495965;
+            --mac-maroon-20: #E4CCDA;
+            --mac-maroon-40: #CA99B1;
+            --mac-maroon-80: #953360;
+            --mac-gold-20: #FFF2DD;
+            --mac-gold-60: #FED999;
+            --mac-grey-20: #DBDEE0;
+            --mac-grey-40: #B6BDC1;
+            --mac-grey-80: #6D7A82;
+            --lab-background: #F7F8FA;
+            --lab-surface: #FFFFFF;
+            --lab-text: #2D3338;
+            --success: #287A4B;
+            --warning: #9A5C00;
+            --danger: #B42318;
+            --content: 1180px;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--lab-background);
+            color: var(--lab-text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        a { color: inherit; }
+        button, input { font: inherit; }
+        code, .font-mono { font-family: 'Roboto Mono', Consolas, monospace; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--mac-maroon) 0%, var(--mac-maroon-80) 62%, var(--mac-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--mac-maroon) 0%, var(--mac-maroon-80) 65%, var(--mac-gold) 100%);
+        }
+
+        .stage-bar {
+            position: fixed;
+            inset: 0 0 auto 0;
+            z-index: 40;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(73, 89, 101, 0.12);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .stage-bar-inner {
+            max-width: var(--content);
+            margin: 0 auto;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            overflow-x: auto;
+        }
+
+        .stage-label {
+            flex: 0 0 auto;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--mac-grey-80);
+            margin-right: 0.3rem;
+        }
+
+        .stage-btn {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0.55rem 0.95rem;
+            border-radius: 9px;
+            border: 1px solid transparent;
+            font-size: 0.83rem;
+            font-weight: 700;
+            color: var(--mac-grey);
+            background: transparent;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .stage-btn:hover { background: var(--mac-grey-20); }
+        .stage-btn.active {
+            color: white;
+            background: var(--mac-maroon);
+            box-shadow: 0 5px 13px rgba(122, 0, 60, 0.28);
+        }
+
+        .portal-shell {
+            width: min(calc(100% - 2rem), var(--content));
+            margin: 0 auto;
+        }
+
+        .page-header {
+            padding: 6.25rem 0 2.2rem;
+        }
+
+        .brand-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1.4rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(73, 89, 101, 0.14);
+        }
+
+        .brand-row img {
+            width: 124px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .brand-divider {
+            width: 1px;
+            height: 64px;
+            background: rgba(73, 89, 101, 0.18);
+        }
+
+        .eyebrow {
+            margin: 0 0 0.55rem;
+            color: var(--mac-maroon);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        h1, h2, h3 { line-height: 1.15; margin-top: 0; }
+        h1 {
+            margin-bottom: 0.7rem;
+            font-size: clamp(2.25rem, 5vw, 4.5rem);
+            letter-spacing: -0.02em;
+        }
+        h2 { font-size: clamp(1.6rem, 3vw, 2.35rem); }
+        h3 { font-size: 1.15rem; }
+
+        .lead {
+            max-width: 840px;
+            color: var(--mac-grey);
+            font-size: clamp(1.05rem, 2vw, 1.25rem);
+            font-weight: 300;
+            margin: 0;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            margin-top: 1.2rem;
+        }
+
+        .stage-summary-chip,
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.42rem 0.7rem;
+            border-radius: 999px;
+            background: var(--mac-gold-20);
+            color: #5B3900;
+            border: 1px solid var(--mac-gold-60);
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .tag.subtle {
+            background: #EEF1F4;
+            color: var(--mac-grey);
+            border-color: #DCE2E8;
+        }
+
+        main { padding-bottom: 4rem; }
+
+        .card {
+            background: var(--lab-surface);
+            border-radius: 16px;
+            border: 1px solid rgba(73, 89, 101, 0.10);
+            box-shadow: 0 10px 18px -8px rgba(0, 0, 0, 0.16), 0 4px 8px -4px rgba(0, 0, 0, 0.08);
+            padding: 1.35rem;
+        }
+
+        .card + .card { margin-top: 1rem; }
+        .border-maroon { border-left: 5px solid var(--mac-maroon); }
+        .border-gold { border-left: 5px solid var(--mac-gold); }
+        .border-success { border-left: 5px solid var(--success); }
+
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .three-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .lab-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .lab-card,
+        .topic-card,
+        .arch-node {
+            background: white;
+            border: 1px solid rgba(73, 89, 101, 0.12);
+            border-radius: 14px;
+            padding: 1rem;
+        }
+
+        .lab-card {
+            min-height: 245px;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .lab-card:hover {
+            border-color: var(--mac-maroon);
+            transform: translateY(-2px);
+        }
+
+        .lab-card.available { border-top: 6px solid var(--mac-maroon); }
+        .lab-card.blank { border-top: 6px solid var(--mac-gold); }
+        .lab-card p, .topic-card p, .arch-node p { color: var(--mac-grey); }
+        .lab-card .portal-button { margin-top: auto; align-self: flex-start; }
+
+        .blank-lab-panel {
+            min-height: 360px;
+            display: grid;
+            align-content: center;
+            gap: 1rem;
+        }
+
+        .status-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            padding: 0.9rem;
+            border-radius: 12px;
+            background: #F8FAFC;
+            border: 1px solid rgba(73, 89, 101, 0.10);
+        }
+
+        .portal-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            min-height: 42px;
+            padding: 0.68rem 0.95rem;
+            border-radius: 9px;
+            border: 1px solid var(--mac-maroon);
+            background: var(--mac-maroon);
+            color: white;
+            font-size: 0.88rem;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .portal-button.secondary {
+            background: white;
+            color: var(--mac-grey);
+            border-color: var(--mac-grey-40);
+        }
+
+        .portal-button.secondary:hover { background: var(--mac-grey-20); }
+        .portal-button:hover { background: var(--mac-maroon-80); color: white; }
+
+        .architecture-map {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(145px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.15rem;
+        }
+
+        .arch-node {
+            min-width: 145px;
+            position: relative;
+            border-top: 5px solid var(--mac-maroon);
+        }
+
+        .arch-node.gold { border-top-color: var(--mac-gold); }
+        .arch-node.grey { border-top-color: var(--mac-grey); }
+        .arch-node.success { border-top-color: var(--success); }
+        .arch-node strong {
+            display: block;
+            color: var(--mac-maroon);
+            font-size: 0.88rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .flow-band {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.65rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 14px;
+            background: #F8FAFC;
+            border: 1px solid rgba(73, 89, 101, 0.10);
+        }
+
+        .flow-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 42px;
+            border-radius: 999px;
+            padding: 0.55rem 0.85rem;
+            background: white;
+            border: 1px solid #DCE2E8;
+            color: var(--mac-grey);
+            font-weight: 800;
+            font-size: 0.82rem;
+        }
+
+        .flow-arrow { color: var(--mac-grey-80); font-weight: 900; }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            height: 100vh;
+            width: min(500px, calc(100vw - 48px));
+            background: white;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.22);
+            z-index: 60;
+            transition: transform 0.38s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #architectureSidebar { left: 0; transform: translateX(-100%); }
+        #knowledgeSidebar { right: 0; transform: translateX(100%); }
+        #architectureSidebar.active, #knowledgeSidebar.active { transform: translateX(0); }
+
+        .sidebar-handle {
+            position: absolute;
+            top: 50%;
+            width: 34px;
+            height: 62px;
+            background: var(--mac-maroon);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 65;
+            border: 0;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        #handle-architecture {
+            right: -34px;
+            border-radius: 0 9px 9px 0;
+        }
+
+        #handle-knowledge {
+            left: -34px;
+            border-radius: 9px 0 0 9px;
+        }
+
+        .sidebar-header {
+            padding: 1.4rem;
+            color: white;
+            background: var(--mac-maroon);
+        }
+
+        .sidebar-scroll {
+            padding: 1rem;
+            overflow-y: auto;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .link-list {
+            display: grid;
+            gap: 0.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .link-list a {
+            display: block;
+            text-decoration: none;
+            border-radius: 10px;
+            padding: 0.65rem 0.75rem;
+            border: 1px solid #DDE3E8;
+            background: white;
+            color: var(--lab-text);
+            font-weight: 700;
+        }
+
+        .link-list a:hover { border-color: var(--mac-maroon); background: var(--mac-maroon-20); }
+
+        .search-panel {
+            display: grid;
+            gap: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-panel input {
+            width: 100%;
+            min-height: 46px;
+            border-radius: 10px;
+            border: 1px solid #CBD5E1;
+            padding: 0.7rem 0.85rem;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .filter-button {
+            border: 1px solid #DCE2E8;
+            background: white;
+            border-radius: 999px;
+            padding: 0.48rem 0.75rem;
+            color: var(--mac-grey);
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .filter-button.active {
+            background: var(--mac-maroon);
+            color: white;
+            border-color: var(--mac-maroon);
+        }
+
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .topic-card {
+            border-left: 5px solid var(--mac-maroon);
+            scroll-margin-top: 86px;
+        }
+
+        .topic-card[data-category="Circuits"] { border-left-color: var(--mac-gold); }
+        .topic-card[data-category="Arduino"] { border-left-color: var(--success); }
+        .topic-card[data-category="Measurement"] { border-left-color: var(--warning); }
+        .topic-card[data-category="Practice"] { border-left-color: var(--mac-grey); }
+        .topic-card h3 { margin-bottom: 0.4rem; }
+
+        .topic-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .topic-card[hidden] { display: none; }
+
+        .empty-state {
+            display: none;
+            padding: 1.2rem;
+            border-radius: 14px;
+            background: var(--mac-gold-20);
+            border: 1px solid var(--mac-gold-60);
+            color: #5B3900;
+        }
+
+        .empty-state.show { display: block; }
+
+        .footer {
+            border-top: 1px solid rgba(73, 89, 101, 0.12);
+            background: white;
+            color: var(--mac-grey);
+            font-size: 0.84rem;
+            padding: 1.4rem 0;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 980px) {
+            .section-grid, .three-grid, .lab-grid, .topic-grid { grid-template-columns: 1fr; }
+            .architecture-map { grid-template-columns: repeat(5, minmax(180px, 1fr)); }
+            .brand-divider { display: none; }
+        }
+
+        @media (max-width: 640px) {
+            .page-header { padding-top: 7.25rem; }
+            .brand-row img { width: 96px; }
+            .card { padding: 1rem; }
+            .stage-bar-inner { padding-inline: 0.9rem; }
+            .stage-label { display: none; }
+        }
+
+    </style>
+    <link rel="stylesheet" href="assets/css/site.css">
+    <link rel="icon" type="image/png" href="assets/McMaster-logo.png">
+</head>
+
+<body>
+    <nav class="stage-bar" aria-label="Course navigation" data-home-nav>
+        <div class="stage-bar-inner">
+            <span class="stage-label">Student Space</span>
+            <a class="stage-btn active" href="#home" data-home-section="home">Home</a>
+            <a class="stage-btn" href="#architecture" data-home-section="architecture">Architecture</a>
+            <a class="stage-btn" href="#labs" data-home-section="labs">Labs</a>
+            <a class="stage-btn" href="#knowledge" data-home-section="knowledge">Knowledge Database</a>
+        </div>
+    </nav>
+
+    <header id="home" class="portal-shell page-header">
+        <div class="brand-row">
+            <img src="assets/McMaster-logo.png" alt="McMaster University logo">
+            <div class="brand-divider" aria-hidden="true"></div>
+            <div>
+                <p class="eyebrow">SMRTTECH 3CC3 - Cloud Computing and Internet of Things</p>
+                <h1>Unified <span class="gradient-text">Lab Learning Space</span></h1>
+                <p class="lead">A CloudLab-styled course portal where interactive laboratory manuals and the shared knowledge database live together, so students can move from a task to the supporting concept without leaving the course environment.</p>
+            </div>
+        </div>
+        <div class="chip-row">
+            <span class="stage-summary-chip">Fall 2025</span>
+            <span class="stage-summary-chip">Automation Engineering Technology</span>
+            <span class="stage-summary-chip">Single student entry point</span>
+            <span class="stage-summary-chip">Shared knowledge database</span>
+            <span class="stage-summary-chip">Reusable lab architecture</span>
+            <span class="stage-summary-chip">Static-site friendly</span>
+        </div>
+    </header>
+
+    <main class="portal-shell">
+        <section id="architecture" class="card border-maroon">
+            <p class="eyebrow">System Architecture</p>
+            <h2>Labs and knowledge live in the same student space</h2>
+            <p>The architecture below turns the current prototype into a course shell: the hub routes students into each lab, each lab links into the knowledge database at the moment of need, and the database links back to active labs and reusable concepts.</p>
+
+            <div class="architecture-map" aria-label="Student learning-space architecture">
+                <div class="arch-node">
+                    <strong>Entry</strong>
+                    <h3>Course Hub</h3>
+                    <p>Start page, lab catalog, architecture overview, and student orientation.</p>
+                </div>
+                <div class="arch-node gold">
+                    <strong>Work</strong>
+                    <h3>Lab Manuals</h3>
+                    <p>Interactive stages, measurements, checks, and evidence capture.</p>
+                </div>
+                <div class="arch-node success">
+                    <strong>Support</strong>
+                    <h3>Knowledge DB</h3>
+                    <p>Short reusable articles for concepts, tools, code, and troubleshooting.</p>
+                </div>
+                <div class="arch-node grey">
+                    <strong>Foundation</strong>
+                    <h3>Shared Assets</h3>
+                    <p>McMaster styling, diagrams, lab figures, and course-owned media.</p>
+                </div>
+                <div class="arch-node">
+                    <strong>Scale</strong>
+                    <h3>Future Labs</h3>
+                    <p>New labs plug into the same shell, reference model, and visual system.</p>
+                </div>
+            </div>
+
+            <div class="flow-band" aria-label="Student path">
+                <span class="flow-pill">Open course hub</span>
+                <span class="flow-arrow">&rarr;</span>
+                <span class="flow-pill">Choose lab</span>
+                <span class="flow-arrow">&rarr;</span>
+                <span class="flow-pill">Use just-in-time knowledge</span>
+                <span class="flow-arrow">&rarr;</span>
+                <span class="flow-pill">Record evidence</span>
+                <span class="flow-arrow">&rarr;</span>
+                <span class="flow-pill">Demonstrate or submit</span>
+            </div>
+        </section>
+
+        <section class="section-grid" aria-label="Architecture details">
+            <article class="card border-gold">
+                <p class="eyebrow">Information Model</p>
+                <h2>Content Types</h2>
+                <div class="three-grid">
+                    <div class="arch-node"><strong>Labs</strong><p>Procedures, stages, tables, quizzes, and checklists.</p></div>
+                    <div class="arch-node gold"><strong>Topics</strong><p>Reusable explanations independent of a single lab.</p></div>
+                    <div class="arch-node success"><strong>Evidence</strong><p>Local student entries, measurements, predictions, and reflections.</p></div>
+                </div>
+            </article>
+            <article class="card border-success">
+                <p class="eyebrow">Implementation Model</p>
+                <h2>Static First, LMS Ready Later</h2>
+                <p>The current build can run as a static site on GitHub Pages, a school server, or an LMS content page. Student work remains local in the browser unless the school later connects an approved LMS/LTI workflow.</p>
+                <a class="portal-button" href="knowledge/index.html#deployment">View deployment notes</a>
+            </article>
+        </section>
+
+        <section id="labs" class="card border-maroon">
+            <p class="eyebrow">Laboratory Catalog</p>
+            <h2>Available lab manual spaces</h2>
+            <div class="lab-grid">
+
+                <a class="lab-card available" href="labs/lab-01/index.html">
+                    <span class="tag">Available</span>
+                    <h3>Lab 1 - Introduction to LabVIEW, Tinkercad, Arduino, and Sensors</h3>
+                    <p>Voltage-divider VI, photoresistor resistance, Tinkercad sensor circuit, Arduino threshold logic, and real hardware verification.</p>
+                    <span class="portal-button">Open Lab 1</span>
+                </a>
+
+                <a class="lab-card available" href="labs/lab-02/index.html">
+                    <span class="tag">Available</span>
+                    <h3>Lab 2 - Temperature Sensing with LabVIEW and Arduino</h3>
+                    <p>Thermistor voltage divider, Arduino LINX communication, Celsius-to-Fahrenheit SubVI, live LabVIEW display, Kelvin extension, and evidence-based troubleshooting.</p>
+                    <span class="portal-button">Open Lab 2</span>
+                </a>
+
+                <a class="lab-card available" href="labs/lab-03/index.html">
+                    <span class="tag">Available</span>
+                    <h3>Lab 3 - Tilt Sensor Detection with LabVIEW and Arduino</h3>
+                    <p>Tilt switch pull-down logic, digital input/output, active buzzer control, shift-register event counting, waveform chart evidence, and inverted-alert extension.</p>
+                    <span class="portal-button">Open Lab 3</span>
+                </a>
+
+                <a class="lab-card available" href="labs/lab-04/index.html">
+                    <span class="tag">Available</span>
+                    <h3>Lab 4 - Load Cells, Strain Gauges, and Signal Amplification</h3>
+                    <p>Load-cell bridge output, raw differential voltage, LMC6484 amplifier stages, gain calculations, Arduino A0 reading, LabVIEW voltage display, and gain-halving redesign.</p>
+                    <span class="portal-button">Open Lab 4</span>
+                </a>
+
+                <a class="lab-card available" href="labs/lab-05/index.html">
+                    <span class="tag">Available</span>
+                    <h3>Lab 5 - Servo Motor Control with LabVIEW and Arduino</h3>
+                    <p>Servo and potentiometer wiring, LINX analog read, voltage-to-angle scaling, pulse-width mapping, Manual and Automatic HMI modes, automatic waving SubVI, and safe motion troubleshooting.</p>
+                    <span class="portal-button">Open Lab 5</span>
+                </a>
+
+                <a class="lab-card available" href="labs/lab-06/index.html">
+                    <span class="tag">Available</span>
+                    <h3>Lab 6 - Introduction to Stepper Motors</h3>
+                    <p>Stepper motor fundamentals, external power setup, motor driver wiring, Arduino IDE firmware upload, Serial Monitor tests, LabVIEW VISA serial commands, and angle-control extension.</p>
+                    <span class="portal-button">Open Lab 6</span>
+                </a>
+
+                <a class="lab-card available" href="labs/lab-07/index.html">
+                    <span class="tag">Available</span>
+                    <h3>Lab 7 - Ultrasonic Sensor and Remote LED Control</h3>
+                    <p>ThingsBoard device telemetry and shared attributes, ultrasonic distance sensing, LabVIEW LINX HMI, MQTT JSON publishing, dashboard monitoring, and remote LED control.</p>
+                    <span class="portal-button">Open Lab 7</span>
+                </a>
+
+                <a class="lab-card available" href="labs/lab-08/index.html">
+                    <span class="tag">Available</span>
+                    <h3>Lab 8 - Soil Moisture Monitoring</h3>
+                    <p>Capacitive sensing, native LabVIEW dry/wet calibration and alarm logic, ThingsBoard JSON telemetry, a shared moisture threshold, dashboard monitoring, and internet-loss testing.</p>
+                    <span class="portal-button">Open Lab 8</span>
+                </a>
+
+                <a class="lab-card available" href="project/index.html">
+                    <span class="tag">Final Project</span>
+                    <h3>3CC3 Design Project - Smart System Design Project</h3>
+                    <p>Plan, build, test, demonstrate, and submit a purposeful smart-system prototype with sensors, actuators, local HMI, cloud features, and web-based HMI.</p>
+                    <span class="portal-button">Open Design Project</span>
+                </a>
+            </div>
+        </section>
+
+        <section id="skill-map-preview" class="card border-gold skill-map-section">
+            <p class="eyebrow">Optional Conceptual Navigation</p>
+            <h2>Explore the Course Skill Map</h2>
+            <p>Laboratories are organized by scheduled tasks. Knowledge is organized for retrieval and reuse. The skill map reveals how concepts relate across the course, but it does not control access to any lab.</p>
+            <div class="chip-row">
+                <span class="stage-summary-chip">Browse by relationship</span>
+                <span class="stage-summary-chip">Keep labs task-based</span>
+                <span class="stage-summary-chip" data-skill-map-count>Concept map loading...</span>
+            </div>
+            <div data-skill-map-preview data-doc-path="knowledge/index.html">
+                <div class="section-grid">
+                    <article class="card border-maroon">
+                        <h3>LabVIEW and graphical programming</h3>
+                        <p>Interface, program elements, data organization, program flow, and the voltage-divider VI.</p>
+                    </article>
+                    <article class="card border-gold">
+                        <h3>Circuits, sensors, Arduino, and practice</h3>
+                        <p>Core electronics, measurement, sensor interfaces, embedded programming, and engineering habits.</p>
+                    </article>
+                </div>
+            </div>
+            <div class="skill-map-toolbar">
+                <a class="portal-button" href="knowledge/index.html#skill-map">Open full skill map</a>
+                <a class="portal-button secondary" href="knowledge/index.html">Browse documentation</a>
+            </div>
+            <noscript>
+                <p>The interactive map requires JavaScript, but labs and documentation remain available through the links above.</p>
+            </noscript>
+        </section>
+
+        <section id="knowledge" class="section-grid">
+            <article class="card border-gold">
+                <p class="eyebrow">Knowledge Database</p>
+                <h2>Reusable student support</h2>
+                <p>The database is organized by concept family: LabVIEW, circuits, measurement, Arduino, simulation, and engineering practice. Students can search or filter topics and return to the lab workflow.</p>
+                <a class="portal-button" href="knowledge/index.html">Browse Knowledge Database</a>
+            </article>
+            <article class="card border-success">
+                <p class="eyebrow">Student Experience</p>
+                <h2>Designed for quick recovery</h2>
+                <p>The architecture supports students who get stuck: every concept has a short explanation, practical check, and relevant lab connection instead of forcing students to search through PDFs.</p>
+                <a class="portal-button secondary" href="knowledge/index.html#troubleshooting">Open troubleshooting</a>
+            </article>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="portal-shell">McMaster University | SMRTTECH 3CC3 unified lab space prototype</div>
+    </footer>
+
+    <script>
+
+        function toggleSidebar(id) {
+            const selected = document.getElementById(id);
+            const wasOpen = selected.classList.contains('active');
+            document.querySelectorAll('.sidebar').forEach(sidebar => sidebar.classList.remove('active'));
+            if (!wasOpen) selected.classList.add('active');
+        }
+
+        function setupKnowledgeFilters() {
+            const search = document.querySelector('[data-knowledge-search]');
+            const filters = [...document.querySelectorAll('[data-filter]')];
+            const cards = [...document.querySelectorAll('[data-topic-card]')];
+            const empty = document.querySelector('[data-empty-state]');
+            if (!cards.length) return;
+
+            let active = 'All';
+            function applyFilters() {
+                const query = (search?.value || '').trim().toLowerCase();
+                let shown = 0;
+
+                cards.forEach(card => {
+                    const haystack = `${card.textContent} ${card.dataset.keywords || ''}`.toLowerCase();
+                    const categoryMatch = active === 'All' || card.dataset.category === active;
+                    const queryMatch = !query || haystack.includes(query);
+                    const visible = categoryMatch && queryMatch;
+                    card.hidden = !visible;
+                    if (visible) shown += 1;
+                });
+
+                if (empty) empty.classList.toggle('show', shown === 0);
+            }
+
+            search?.addEventListener('input', applyFilters);
+            filters.forEach(button => {
+                button.addEventListener('click', () => {
+                    active = button.dataset.filter;
+                    filters.forEach(item => item.classList.toggle('active', item === button));
+                    applyFilters();
+                });
+            });
+        }
+
+        function setupHomeScrollSpy() {
+            const nav = document.querySelector('[data-home-nav]');
+            if (!nav) return;
+
+            const links = [...nav.querySelectorAll('[data-home-section]')];
+            const sections = links
+                .map(link => ({
+                    link,
+                    id: link.dataset.homeSection,
+                    target: document.getElementById(link.dataset.homeSection)
+                }))
+                .filter(item => item.target);
+
+            function setActive(id) {
+                links.forEach(link => {
+                    link.classList.toggle('active', link.dataset.homeSection === id);
+                });
+            }
+
+            const observer = new IntersectionObserver(entries => {
+                const visible = entries
+                    .filter(entry => entry.isIntersecting)
+                    .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+                if (visible) setActive(visible.target.id);
+            }, {
+                rootMargin: '-45% 0px -45% 0px',
+                threshold: [0.01, 0.2, 0.5, 0.8]
+            });
+
+            sections.forEach(item => observer.observe(item.target));
+            setActive('home');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupKnowledgeFilters();
+            setupHomeScrollSpy();
+        });
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <script src="assets/js/skill-tree.js"></script>
+</body>
+
+</html>

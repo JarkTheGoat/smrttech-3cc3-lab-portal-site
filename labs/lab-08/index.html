@@ -1,0 +1,933 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SMRTTECH 3CC3 Lab 8: Soil moisture sensing, native LabVIEW calibration and alarm logic, MQTT, and ThingsBoard Cloud dashboards.">
+    <title>Lab 8: Soil Moisture Monitoring</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="../../assets/McMaster-logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;family=Roboto+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <style>
+        :root {
+            --mac-maroon: #7A003C;
+            --mac-gold: #FDBF57;
+            --mac-grey: #495965;
+            --mac-maroon-20: #E4CCDA;
+            --mac-maroon-80: #953360;
+            --mac-gold-20: #FFF2DD;
+            --mac-gold-60: #FED999;
+            --mac-grey-20: #DBDEE0;
+            --mac-grey-40: #B6BDC1;
+            --mac-grey-80: #6D7A82;
+            --lab-background: #F7F8FA;
+            --lab-surface: #FFFFFF;
+            --lab-text: #2D3338;
+            --success: #287A4B;
+            --danger: #B42318;
+            --content: 1180px;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        body { margin: 0; font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--lab-background); color: var(--lab-text); overflow-x: hidden; line-height: 1.6; }
+        a { color: inherit; }
+        button, input, select, textarea { font: inherit; }
+        code, pre, .font-mono { font-family: 'Roboto Mono', Consolas, monospace; }
+        pre { overflow-x: auto; white-space: pre-wrap; background: #282C34; color: #F8FAFC; border-radius: 12px; padding: 1rem; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+        .gradient-text { background: linear-gradient(135deg, var(--mac-maroon) 0%, var(--mac-maroon-80) 62%, var(--mac-gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stage-bar { position: fixed; inset: 0 0 auto 0; z-index: 40; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(73,89,101,0.12); box-shadow: 0 4px 20px rgba(0,0,0,0.04); max-width: 100vw; overflow: hidden; }
+        .stage-bar-inner { width: 100%; max-width: var(--content); margin: 0 auto; padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.65rem; overflow-x: auto; }
+        .stage-label { flex: 0 0 auto; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mac-grey-80); margin-right: 0.3rem; }
+        .stage-btn { flex: 0 0 auto; min-height: 38px; padding: 0.55rem 0.95rem; border-radius: 9px; border: 1px solid transparent; font-size: 0.83rem; font-weight: 700; color: var(--mac-grey); background: transparent; text-decoration: none; transition: all 0.2s ease; white-space: nowrap; cursor: pointer; }
+        .stage-btn:hover { background: var(--mac-grey-20); }
+        .stage-btn:focus-visible, .utility-button:focus-visible, .nav-button:focus-visible, details summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--mac-gold); outline-offset: 3px; }
+        .stage-btn.active, .stage-btn.page-current { color: white; background: var(--mac-maroon); box-shadow: 0 5px 13px rgba(122,0,60,0.28); }
+        .lab-stage-label { margin-left: 0.65rem; padding-left: 0.85rem; border-left: 1px solid rgba(73,89,101,0.18); }
+        .auto-score-chip { flex: 0 0 auto; margin-left: auto; padding: 0.45rem 0.7rem; border-radius: 999px; border: 1px solid var(--mac-gold-60); background: var(--mac-gold-20); color: #5B3900; font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
+        .page-header { padding: 0 0 2.2rem; }
+        h1, h2, h3 { line-height: 1.15; margin-top: 0; }
+        h1 { margin: 0 0 0.7rem; letter-spacing: 0; }
+        p { margin-top: 0; }
+        .card { background: var(--lab-surface); border: 1px solid rgba(73,89,101,0.10); border-radius: 16px; box-shadow: 0 10px 18px -8px rgba(0,0,0,0.16), 0 4px 8px -4px rgba(0,0,0,0.08); }
+        .section-card { padding: 1.75rem; margin-bottom: 2rem; }
+        .border-maroon { border-left: 4px solid var(--mac-maroon); }
+        .border-gold { border-left: 4px solid var(--mac-gold); }
+        .border-success { border-left: 4px solid var(--success); }
+        .stage-panel { display: block; padding-bottom: 2rem; }
+        .js-enabled .stage-panel { display: none; }
+        .js-enabled.stage-0 .stage-panel.stage-0,
+        .js-enabled.stage-1 .stage-panel.stage-1,
+        .js-enabled.stage-2 .stage-panel.stage-2,
+        .js-enabled.stage-3 .stage-panel.stage-3,
+        .js-enabled.stage-4 .stage-panel.stage-4,
+        .js-enabled.stage-5 .stage-panel.stage-5,
+        .js-enabled.stage-6 .stage-panel.stage-6,
+        .js-enabled.stage-7 .stage-panel.stage-7,
+        .js-enabled.stage-8 .stage-panel.stage-8,
+        .js-enabled.stage-9 .stage-panel.stage-9,
+        .js-enabled.stage-10 .stage-panel.stage-10,
+        .js-enabled.stage-11 .stage-panel.stage-11,
+        .js-enabled.stage-12 .stage-panel.stage-12,
+        .js-enabled.stage-13 .stage-panel.stage-13 { display: block; }
+        .grid-layout { display: grid; gap: 1rem; }
+        .grid-layout.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-layout.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid-layout.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .mini-card { border: 1px solid rgba(73,89,101,0.13); border-radius: 12px; padding: 1rem; background: #fff; }
+        .briefing-card { background: #F8FAFC; border-radius: 12px; padding: 18px; border-left: 4px solid var(--mac-maroon); }
+        .warning-card { background: var(--mac-gold-20); border: 1px solid var(--mac-gold-60); border-left: 5px solid var(--mac-gold); color: #5B3900; border-radius: 12px; padding: 16px; }
+        .danger-card { background: #FFF3F2; border: 1px solid #FECACA; border-left: 5px solid var(--danger); color: #7A271A; border-radius: 12px; padding: 16px; }
+        .success-card { background: #EFFAF3; border: 1px solid #B7E4C7; border-left: 5px solid var(--success); color: #174D2D; border-radius: 12px; padding: 16px; }
+        .chip-row { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 1rem 0; }
+        .chip-row.compact { margin: 0; }
+        .mt-block { margin-top: 1rem; }
+        .stage-summary-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.42rem 0.7rem; border-radius: 999px; background: var(--mac-gold-20); color: #5B3900; border: 1px solid rgba(253,191,87,0.35); font-size: 0.82rem; font-weight: 700; }
+        .signal-chain { display: grid; grid-template-columns: repeat(8, minmax(96px, 1fr)); gap: 0.7rem; margin-top: 1rem; }
+        .signal-step { min-height: 92px; padding: 0.85rem; border-radius: 12px; background: #fff; border: 1px solid rgba(122,0,60,0.16); color: var(--mac-maroon); font-weight: 800; }
+        .signal-step span { display: block; margin-top: 0.3rem; color: var(--mac-grey); font-size: 0.82rem; font-weight: 500; }
+        .completion-box { display: flex; align-items: flex-start; gap: 0.7rem; min-height: 44px; padding: 0.75rem; border-radius: 10px; border: 1px solid rgba(73,89,101,0.14); background: #fff; }
+        .completion-box input { margin-top: 0.25rem; min-width: 18px; min-height: 18px; accent-color: var(--mac-maroon); }
+        .response-field { display: grid; gap: 0.35rem; margin-bottom: 0.85rem; }
+        .response-field span { font-weight: 700; }
+        .response-input, .response-field textarea, .response-field input, .response-field select, table input, table select, table textarea { width: 100%; border: 1px solid #CBD5E1; border-radius: 9px; padding: 0.65rem 0.75rem; background: #fff; color: var(--lab-text); }
+        textarea { min-height: 92px; resize: vertical; }
+        details { border: 1px solid rgba(73,89,101,0.14); border-radius: 12px; background: #fff; margin: 0.75rem 0; }
+        details summary { cursor: pointer; padding: 0.9rem 1rem; font-weight: 800; color: var(--mac-maroon); }
+        details > div { padding: 0 1rem 1rem; }
+        .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(73,89,101,0.14); background: #fff; }
+        table { width: 100%; border-collapse: collapse; min-width: 720px; }
+        th, td { padding: 0.75rem; border-bottom: 1px solid rgba(73,89,101,0.12); text-align: left; vertical-align: top; }
+        th { background: #F3F4F6; color: var(--mac-grey); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; }
+        .diagram-card { padding: 1rem; border-radius: 14px; background: #fff; border: 1px solid rgba(73,89,101,0.14); }
+        .diagram-card img, .diagram-card svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+        .screenshot-placeholder { min-height: 150px; display: grid; align-content: center; gap: 0.45rem; border: 2px dashed var(--mac-grey-40); background: #F8FAFC; color: var(--mac-grey); text-align: center; }
+        .screenshot-placeholder strong { color: var(--mac-maroon); }
+        figcaption { color: var(--mac-grey); font-size: 0.92rem; margin-top: 0.6rem; }
+        .logic-flow { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+        .logic-flow span { padding: 0.6rem 0.75rem; border-radius: 10px; background: #fff; border: 1px solid rgba(122,0,60,0.15); font-weight: 700; }
+        .logic-flow b { color: var(--mac-gold); }
+        .order-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+        .order-item { display: grid; grid-template-columns: auto 1fr; gap: 0.6rem; align-items: center; padding: 0.75rem; border-radius: 10px; background: #fff; border: 1px solid rgba(73,89,101,0.14); }
+        .sidebar { position: fixed; top: 0; height: 100vh; width: min(500px, calc(100vw - 48px)); background: white; box-shadow: 0 0 50px rgba(0,0,0,0.22); z-index: 60; transition: transform 0.38s cubic-bezier(0.25,1,0.5,1); display: flex; flex-direction: column; }
+        #hardwareSidebar { left: 0; transform: translateX(-100%); }
+        #hardwareSidebar.active { transform: translateX(0); }
+        #softwareSidebar { right: 0; transform: translateX(100%); }
+        #softwareSidebar.active { transform: translateX(0); }
+        .sidebar-handle { position: absolute; top: 50%; width: 34px; height: 62px; border: 0; background: var(--mac-maroon); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; z-index: 65; }
+        .sidebar-handle:hover { background: var(--mac-maroon-80); }
+        #handle-hw { right: -34px; border-radius: 0 9px 9px 0; box-shadow: 4px 0 12px rgba(0,0,0,0.16); }
+        #handle-sw { left: -34px; border-radius: 9px 0 0 9px; box-shadow: -4px 0 12px rgba(0,0,0,0.16); }
+        .handle-icon { transition: transform 0.4s ease; stroke-width: 3px; }
+        #hardwareSidebar.active #handle-hw .handle-icon, #softwareSidebar.active #handle-sw .handle-icon { transform: rotate(180deg); }
+        .utility-button, .nav-button { min-height: 42px; padding: 0.72rem 1rem; border-radius: 9px; font-size: 0.88rem; font-weight: 800; transition: all 0.2s ease; cursor: pointer; text-decoration: none; }
+        .utility-button, .nav-button.secondary { background: white; color: var(--mac-grey); border: 1px solid var(--mac-grey-40); }
+        .utility-button:hover, .nav-button.secondary:hover { background: var(--mac-grey-20); }
+        .nav-button.primary { background: var(--mac-maroon); color: white; border: 1px solid var(--mac-maroon); }
+        .nav-button.primary:hover { background: var(--mac-maroon-80); }
+        .stage-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #E5E7EB; }
+        .stage-message { display: none; width: 100%; margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.88rem; font-weight: 600; }
+        .stage-message.show { display: block; }
+        .stage-message.success { background: #EFFAF3; border: 1px solid #B7E4C7; color: #174D2D; }
+        .knowledge-skill-list { display: grid; gap: 0.55rem; margin: 0; padding: 0; list-style: none; }
+        .knowledge-skill-list a { display: block; padding: 0.7rem 0.8rem; border-radius: 10px; border: 1px solid #DDE3E8; background: white; color: var(--lab-text); font-weight: 700; text-decoration: none; }
+        .optional-card { border-left: 5px solid var(--mac-gold); }
+        @media (max-width: 980px) {
+            .grid-layout.two, .grid-layout.three, .grid-layout.four, .order-grid { grid-template-columns: 1fr; }
+            .signal-chain { grid-template-columns: 1fr; }
+            .auto-score-chip { margin-left: 0; }
+        }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.001ms !important; animation-duration: 0.001ms !important; } }
+        @media print {
+            .stage-bar, .sidebar { display: none !important; }
+            .stage-panel { display: block !important; break-inside: avoid; }
+            body { background: #fff; }
+            .card { box-shadow: none; }
+            a::after { content: " (" attr(href) ")"; font-size: 0.8em; }
+        }
+        /* Completion indicator: use a CSS escape so the glyph remains valid in every file encoding. */
+        .stage-btn.completed::after { content: "\2713"; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 6px; border: 1px solid #23834d; border-radius: 50%; color: #126b3a; background: #e3f5e9; font-size: 0.84rem; font-weight: 800; line-height: 1; }
+    </style>
+</head>
+<body class="pb-24 pt-24 stage-0">
+    <nav class="stage-bar" aria-label="Lab progress">
+        <div class="stage-bar-inner">
+            <span class="stage-label">Student Space</span>
+            <a class="stage-btn" href="../../index.html">Home</a>
+            <span class="stage-btn page-current" aria-current="page">Lab 8</span>
+            <span class="stage-label lab-stage-label">Lab Progress</span>
+            <button class="stage-btn active" id="btn-stage-0" type="button" data-stage="0">Prepare</button>
+            <button class="stage-btn" id="btn-stage-1" type="button" data-stage="1">Predict</button>
+            <button class="stage-btn" id="btn-stage-2" type="button" data-stage="2">ThingsBoard</button>
+            <button class="stage-btn" id="btn-stage-3" type="button" data-stage="3">MQTT</button>
+            <button class="stage-btn" id="btn-stage-4" type="button" data-stage="4">Circuit</button>
+            <button class="stage-btn" id="btn-stage-5" type="button" data-stage="5">Calibrate</button>
+            <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">Percent</button>
+            <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Publish</button>
+            <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Threshold</button>
+            <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Dashboard</button>
+            <button class="stage-btn" id="btn-stage-10" type="button" data-stage="10">Reliability</button>
+            <button class="stage-btn" id="btn-stage-11" type="button" data-stage="11">Analytics</button>
+            <button class="stage-btn" id="btn-stage-12" type="button" data-stage="12">Troubleshoot</button>
+            <button class="stage-btn" id="btn-stage-13" type="button" data-stage="13">Reflect</button>
+            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/14</strong></div>
+        </div>
+    </nav>
+
+    <aside id="hardwareSidebar" class="sidebar" aria-label="Water and sensor safety reference">
+        <button id="handle-hw" class="sidebar-handle" type="button" data-sidebar-toggle="hardwareSidebar" title="Open hardware reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            <span class="sr-only">Open hardware reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Moisture Sensor</h3>
+            <p class="text-sm text-white/75 mt-1">A0 sensing and water-near-electronics safety</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Pin Map</h4>
+                <dl class="grid grid-cols-2 gap-y-3 text-sm">
+                    <dt class="text-gray-500">Sensor GND</dt><dd class="font-semibold text-right">Arduino GND</dd>
+                    <dt class="text-gray-500">Sensor VCC</dt><dd class="font-semibold text-right">Arduino 5 V</dd>
+                    <dt class="text-gray-500">Sensor SIG</dt><dd class="font-semibold text-right">Arduino A0</dd>
+                    <dt class="text-gray-500">Water cup</dt><dd class="font-semibold text-right">1/3 full</dd>
+                </dl>
+            </div>
+            <div class="danger-card text-sm"><strong>Water caution:</strong> keep hands dry, keep water away from Arduino, breadboard, laptop, and the top electronics of the sensor.</div>
+        </div>
+    </aside>
+
+    <aside id="softwareSidebar" class="sidebar" aria-label="MQTT and ThingsBoard reference">
+        <button id="handle-sw" class="sidebar-handle" type="button" data-sidebar-toggle="softwareSidebar" title="Open software reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            <span class="sr-only">Open cloud reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Cloud Settings</h3>
+            <p class="text-sm text-white/75 mt-1">MQTT topics, telemetry, shared attributes, and dashboard outputs</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">ThingsBoard Cloud</h4>
+                <p><strong>Broker:</strong> <code>mqtt.thingsboard.cloud</code></p>
+                <p><strong>Port:</strong> <code>1883</code> (classroom) or <code>8883</code> with verified TLS support</p>
+                <p><strong>Publish:</strong> <code>v1/devices/me/telemetry</code></p>
+                <p><strong>Subscribe:</strong> <code>v1/devices/me/attributes</code></p>
+                <p><strong>Startup response:</strong> <code>v1/devices/me/attributes/response/+</code></p>
+                <p><strong>Shared key:</strong> <code>moisture_threshold</code></p>
+            </div>
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Knowledge Links</h4>
+                <ul class="knowledge-skill-list">
+                    <li><a href="../../knowledge/skill-tree.html?topic=soil-moisture-sensor">Arduino and sensor I/O</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=moisture-calibration">Measurement and calibration</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW interface</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Troubleshooting sequence</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <main class="max-w-[1180px] mx-auto px-5">
+        <header class="page-header">
+            <div class="card section-card border-maroon">
+                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                    <div>
+                        <p class="uppercase tracking-[0.24em] text-sm font-bold text-[#7A003C] mb-3">SMRTTECH 3CC3 &middot; Cloud Computing and Internet of Things</p>
+                        <h1 class="lab-page-title text-4xl md:text-5xl font-extrabold"><span class="lab-title-prefix">Lab 8:</span> <span class="lab-title-gradient">Soil Moisture Monitoring</span></h1>
+                        <p class="text-xl text-gray-600 mt-3">Native LabVIEW calibration and alarm logic with MQTT telemetry, shared attributes, and ThingsBoard Cloud dashboards.</p>
+                    </div>
+                    <img src="../../assets/McMaster-logo.png" alt="McMaster University logo" class="h-20 w-auto object-contain">
+                </div>
+                <div class="chip-row">
+                    <span class="stage-summary-chip">Pre-lab: 30-45 min</span>
+                    <span class="stage-summary-chip">Lab time: 3 hours</span>
+                    <span class="stage-summary-chip">Post-lab: 45-60 min</span>
+                    <span class="stage-summary-chip">Software: LabVIEW 2026 Q1, Lab8_init.vi, LINX, NI-VISA, ThingsBoard Cloud, MQTT</span>
+                    <span class="stage-summary-chip">Hardware: Arduino Mega, capacitive soil moisture sensor, cup of water</span>
+                </div>
+                <div class="warning-card mt-block"><strong>Central question:</strong> How does soil moisture become calibrated telemetry, a cloud-configured threshold, and a reliable local alarm?</div>
+                <div class="flex flex-wrap gap-3 mt-block">
+                    <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
+                    <button class="utility-button" type="button" data-print>Print lab</button>
+                    <button class="utility-button" type="button" data-reset>Reset Lab 8 data</button>
+                </div>
+            </div>
+
+            <div class="card section-card border-gold">
+                <h2>Moisture monitoring and threshold chain</h2>
+                <div class="signal-chain" aria-label="Soil moisture data chain">
+                    <div class="signal-step">Moisture<span>Soil or water changes dielectric condition.</span></div>
+                    <div class="signal-step">Sensor voltage<span>Capacitive sensor produces SIG voltage.</span></div>
+                    <div class="signal-step">Arduino A0<span>LabVIEW reads analog channel 0.</span></div>
+                    <div class="signal-step">Calibration<span>V_dry and V_wet define range.</span></div>
+                    <div class="signal-step">Percent<span>Native LabVIEW arithmetic clamps 0 to 100.</span></div>
+                    <div class="signal-step">MQTT telemetry<span>Send JSON to ThingsBoard about once per second.</span></div>
+                    <div class="signal-step">Dashboard<span>Value card, gauge, chart, and alarm indicator.</span></div>
+                    <div class="signal-step">Local alarm<span>LabVIEW reports low_moisture_alarm.</span></div>
+                </div>
+                <div class="signal-chain" aria-label="Threshold control chain">
+                    <div class="signal-step">Threshold control<span>User selects a setpoint.</span></div>
+                    <div class="signal-step">Shared attribute<span>moisture_threshold persists in ThingsBoard.</span></div>
+                    <div class="signal-step">MQTT subscribe<span>LabVIEW receives live changes.</span></div>
+                    <div class="signal-step">Startup request<span>LabVIEW retrieves the current value after reconnect.</span></div>
+                    <div class="signal-step">JSON parse<span>Validate the numeric threshold.</span></div>
+                    <div class="signal-step">Native compare<span>moisture_percent &lt; moisture_threshold.</span></div>
+                    <div class="signal-step">Local alarm<span>Operates even during internet loss.</span></div>
+                    <div class="signal-step">Telemetry feedback<span>Report low_moisture_alarm to ThingsBoard.</span></div>
+                </div>
+            </div>
+        </header>
+
+        <section class="stage-panel stage-0" id="prepare" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Prepare</p>
+                <h2>Scenario and safety setup</h2>
+                <p>You are building an IoT plant-monitoring node. Arduino Mega sends sensor voltage to LabVIEW through LINX. LabVIEW performs calibration and the primary low-moisture decision locally, then exchanges telemetry and a persistent threshold with ThingsBoard Cloud over MQTT.</p>
+                <div class="grid-layout two mt-block">
+                    <div class="danger-card"><strong>Water-near-electronics caution:</strong> fill the cup only one-third with water. Keep hands dry. Do not spill water on Arduino, breadboard, laptop, or the top electronics of the sensor.</div>
+                    <div class="warning-card"><strong>Credential caution:</strong> a ThingsBoard device access token is a password-equivalent credential. Never include it in this manual, a report screenshot, completion JSON, public GitHub repository, or shared class document.</div>
+                </div>
+            </article>
+            <article class="section-card card border-success">
+                <h2>Required software environment</h2>
+                <div class="grid-layout two">
+                    <div class="mini-card"><h3>Computer and LabVIEW</h3><ul><li>Windows 10 or Windows 11.</li><li>LabVIEW 2026 Q1; use 64-bit unless the installed MQTT library specifically requires another edition.</li><li>NI-VISA 2026 Q1.</li></ul></div>
+                    <div class="mini-card"><h3>Hardware interface</h3><ul><li>Arduino Mega 2560.</li><li>LabVIEW Hobbyist Toolkit / LINX 2026 Q1.</li><li>The course MQTT library and its required dependencies.</li></ul></div>
+                </div>
+            </article>
+            <article class="section-card card border-gold">
+                <h2>Interactive setup checklist</h2>
+                <div class="grid-layout two">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-sensor-wiring"><span>Sensor wiring path is understood: GND, VCC, SIG to A0.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-cup"><span>Cup will be filled only one-third with water.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-top"><span>Top electronics of the sensor are identified and will not be submerged.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-drywet"><span>V_dry and V_wet are ready to measure, not assumed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-variables"><span>ThingsBoard telemetry keys and the shared moisture_threshold attribute are understood.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-topics"><span>ThingsBoard MQTT publish, live-attribute, and startup-response topics are ready to verify.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-stop"><span>Stop button behavior is understood: use Stop, not Abort, and reset maintained Stop before rerun.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-cleanup"><span>End-of-lab cleanup is understood: stop cleanly, close references, power off, disconnect USB, remove the sensor, and let it dry.</span></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-1" id="predict" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Predict</p>
+                <h2>Arrange the moisture data chain</h2>
+                <p>Number the events from physical moisture to cloud analytics.</p>
+                <div class="order-grid" data-dnd-order>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-sensor"></select><span>Capacitive sensor produces voltage</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-a0"></select><span>Arduino A0 is read through LabVIEW LINX</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-calibration"></select><span>V_dry and V_wet calibration maps voltage to percent</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-percent"></select><span>Native LabVIEW arithmetic computes moisture_percent and clamps it</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-publish"></select><span>MQTT publishes a labelled JSON telemetry object</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-variable"></select><span>ThingsBoard stores raw_voltage, moisture_percent, and low_moisture_alarm telemetry</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-dashboard"></select><span>Dashboard cards, gauge, chart, and alarm indicator display the readings</span></label>
+                </div>
+                <button class="utility-button mt-block" type="button" data-check-order>Check order</button>
+                <p class="stage-message show" data-order-feedback aria-live="polite">Choose an order for every event.</p>
+            </article>
+            <article class="section-card card border-success">
+                <h2>Calibration and topic practice</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Prompt</th><th>Your answer</th><th>Expected check</th></tr></thead>
+                        <tbody>
+                            <tr><td>Publish topic for telemetry</td><td><input class="persist-text topic-input" data-key="topic-publish" data-expected="v1/devices/me/telemetry" data-case-sensitive></td><td data-topic-result="topic-publish"></td></tr>
+                            <tr><td>Subscribe topic for live shared-attribute changes</td><td><input class="persist-text topic-input" data-key="topic-subscribe" data-expected="v1/devices/me/attributes" data-case-sensitive></td><td data-topic-result="topic-subscribe"></td></tr>
+                            <tr><td>Subscribe topic for startup-request responses</td><td><input class="persist-text topic-input" data-key="topic-response" data-expected="v1/devices/me/attributes/response/+" data-case-sensitive></td><td data-topic-result="topic-response"></td></tr>
+                            <tr><td>If moisture_percent is 18 and threshold is 25, should the LabVIEW Low Moisture LED indicator be on?</td><td><input class="persist-text topic-input" data-key="topic-threshold" data-expected="yes"></td><td data-topic-result="topic-threshold"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <details><summary>Think it through</summary><div><ul><li>Does Arduino measure moisture directly?</li><li>Why are V_dry and V_wet specific to this sensor and setup?</li><li>Why clamp moisture_percent between 0 and 100?</li></ul></div></details>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-2" id="thingsboard" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Build</p>
+                <h2>Create and Configure Your ThingsBoard Cloud Account</h2>
+                <ol>
+                    <li>Open <a href="https://thingsboard.cloud" target="_blank" rel="noopener noreferrer">ThingsBoard Cloud</a> and create an individual account with your student email address.</li>
+                    <li>Complete email verification if requested, sign in, and confirm you are viewing your own tenant account.</li>
+                    <li>Open <strong>Entities &rarr; Devices</strong>, select <strong>Add Device</strong>, and name the device <code>Lab8-Soil-Moisture-StudentName</code>.</li>
+                    <li>Leave the device profile as the default unless the instructor supplies a different profile, then save.</li>
+                    <li>Open the device details or connectivity information and copy its access token to a private local location.</li>
+                </ol>
+                <div class="warning-card mt-block"><strong>One physical project normally equals one ThingsBoard device.</strong> Do not create a separate device for every sensor or actuator. Never paste the real token into this page. Use <code>YOUR_DEVICE_ACCESS_TOKEN</code> in examples and redact credentials from evidence.</div>
+                <div class="grid-layout four mt-block">
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Cloud account registration screenshot"><strong>Screenshot required</strong><span>ThingsBoard Cloud account registration</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Devices page screenshot"><strong>Screenshot required</strong><span>Entities &rarr; Devices page</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Add Device dialog screenshot"><strong>Screenshot required</strong><span>Add Device dialog</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard device access-token screen screenshot"><strong>Screenshot required</strong><span>Device credential/access-token screen</span></figure>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <label class="response-field"><span>ThingsBoard device name</span><input class="persist-text" data-key="thingsboard-device-name" placeholder="Lab8-Soil-Moisture-StudentName" data-stage-required></label>
+                    <label class="response-field"><span>How did you verify this is your own tenant?</span><input class="persist-text" data-key="thingsboard-tenant-check" placeholder="Describe the account/device check" data-stage-required></label>
+                </div>
+                <label class="completion-box"><input type="checkbox" class="persist-check" data-key="thingsboard-token-private"><span>The device token is stored in a private local location, ready for the next MQTT stage, and is absent from screenshots, reports, HTML, repositories, and completion exports.</span></label>
+                <label class="response-field evidence-upload mt-block"><span>Device page screenshot with the access token hidden</span><input class="persist-file" data-key="thingsboard-device-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="thingsboard-device-screenshot">No file selected.</small></label>
+            </article>
+            <article class="section-card card border-gold">
+                <h2>ThingsBoard data model for this lab</h2>
+                <div class="grid-layout two">
+                    <div class="mini-card"><h3>Telemetry: measured or calculated state</h3><p>LabVIEW publishes <code>raw_voltage</code>, <code>moisture_percent</code>, and <code>low_moisture_alarm</code> to <code>v1/devices/me/telemetry</code>.</p></div>
+                    <div class="mini-card"><h3>Shared attribute: persistent configuration</h3><p>The dashboard writes <code>moisture_threshold</code>. LabVIEW receives it on <code>v1/devices/me/attributes</code> and retrieves it after startup or reconnection.</p></div>
+                </div>
+                <div class="success-card mt-block"><strong>Keep the meanings separate:</strong> <code>moisture_threshold</code> is the cloud-configured setpoint; <code>low_moisture_alarm</code> is the actual alarm result calculated locally in LabVIEW.</div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-3" id="mqtt" tabindex="-1">
+            <article class="section-card card border-gold">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Build</p>
+                <h2>Configure and test LabVIEW MQTT with ThingsBoard</h2>
+                <p>Download <code>Lab8.zip</code> from Avenue to Learn, extract it, and open <code>Lab8_init.vi</code>. Configure the existing MQTT tab without changing the portal's LabVIEW/LINX architecture.</p>
+                <div class="grid-layout two">
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for revised LabVIEW ThingsBoard MQTT configuration screenshot"><strong>Screenshot required</strong><span>LabVIEW MQTT tab configured for ThingsBoard Cloud with the access token redacted</span></figure>
+                    <div class="mini-card">
+                        <h3>Initial classroom configuration</h3>
+                        <ul>
+                            <li>Broker: <code>mqtt.thingsboard.cloud</code>; port: <code>1883</code>.</li>
+                            <li>Username: the device access token; password: blank.</li>
+                            <li>Client ID: <code>SMRTTECH3CC3-STUDENTNAME-LAB8</code>.</li>
+                            <li>QoS: <strong>1 / At least once</strong>.</li>
+                            <li>Publish: <code>v1/devices/me/telemetry</code> (no leading slash).</li>
+                            <li>Subscribe: <code>v1/devices/me/attributes</code> and <code>v1/devices/me/attributes/response/+</code>.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="warning-card mt-block"><strong>Transport security:</strong> port 1883 is unencrypted and is only for the controlled laboratory setup or initial connectivity testing. Use port 8883 only when the MQTT library explicitly supports TLS and certificate verification; entering 8883 alone does not enable TLS. Every simultaneously connected client must use a unique client ID.</div>
+                <h3 class="mt-block">Send a labelled JSON test</h3>
+                <pre><code>{"raw_voltage":2.81,"moisture_percent":34.6,"low_moisture_alarm":true}</code></pre>
+                <p>Use LabVIEW <strong>Format Into String</strong> or the existing course JSON utility. Do not publish an unlabelled number such as <code>42</code>. Connect, publish once, subscribe, and confirm the JSON keys appear in the device's <strong>Latest Telemetry</strong> tab.</p>
+                <figure class="diagram-card screenshot-placeholder mt-block" role="img" aria-label="Placeholder for ThingsBoard Latest Telemetry tab screenshot"><strong>Screenshot required</strong><span>Device &rarr; Latest Telemetry showing raw_voltage, moisture_percent, and low_moisture_alarm</span></figure>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="mqtt-test-confirmed"><span>MQTT connection, JSON telemetry publish, and both subscriptions were tested successfully.</span></label>
+                    <label class="response-field evidence-upload"><span>Latest Telemetry screenshot with no credential visible</span><input class="persist-file" data-key="latest-telemetry-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="latest-telemetry-screenshot">No file selected.</small></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-4" id="circuit" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Build</p>
+                <h2>Create the capacitive soil moisture sensor circuit</h2>
+                <p>Review the capacitive sensor datasheet, then build the circuit. Connect sensor GND to Arduino GND, VCC to Arduino 5 V, and SIG to Arduino A0.</p>
+                <div class="grid-layout two">
+                    <figure class="diagram-card"><img src="../../assets/lab8-pdf-moisture-circuit.png" alt="Source PDF circuit diagram showing capacitive soil moisture sensor connected to Arduino Mega A0, 5 V, and GND."><figcaption>Source PDF Figure 1: moisture sensor SIG connects to Arduino analog channel A0.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab8-pdf-sensor-depth-warning.png" alt="Source PDF sensor image showing warning line and recommended water depth."><figcaption>Source PDF: do not submerge the top circuitry; use the recommended depth region only.</figcaption></figure>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-gnd"><span>Sensor GND is connected to Arduino GND.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-vcc"><span>Sensor VCC is connected to Arduino 5 V.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-sig"><span>Sensor SIG is connected to Arduino A0.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-water"><span>Cup is one-third full and the top two-thirds are dry.</span></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-5" id="calibrate" tabindex="-1">
+            <article class="section-card card border-success">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Measure</p>
+                <h2>Flash LINX and measure V_dry and V_wet</h2>
+                <p>Flash LINX firmware using Tools - MakerHub - LINX - LINX Firmware Wizard. Add LINX Open, LINX Close, and LINX Analog Read in the Control and Data Acquisition loop. Configure the serial port and set analog channel to 0.</p>
+                <div class="grid-layout two">
+                    <figure class="diagram-card"><img src="../../assets/lab8-pdf-analog-read-block.png" alt="Source PDF LabVIEW block diagram with LINX Open, LINX Analog Read, and LINX Close."><figcaption>Source PDF: first read sensor voltage without pressing Connect in the MQTT tab.</figcaption></figure>
+                    <div class="mini-card">
+                        <h3>Calibration steps</h3>
+                        <ol>
+                            <li>Run LabVIEW without pressing Connect in the MQTT tab.</li>
+                            <li>Record average sensor voltage in air as <code>V_dry</code> for 0% moisture.</li>
+                            <li>Slowly dip the sensor until it touches the bottom of the cup.</li>
+                            <li>Record that voltage as <code>V_wet</code> for 100% moisture.</li>
+                            <li>Stop the VI before editing the block diagram.</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="table-wrap mt-block">
+                    <table>
+                        <thead><tr><th>Calibration reading</th><th>Voltage</th><th>Meaning</th></tr></thead>
+                        <tbody>
+                            <tr><td>V_dry</td><td><input type="number" min="0" max="5" step="0.001" required class="persist-text calc-input" data-key="vdry" data-stage-required></td><td>0% moisture, sensor in air</td></tr>
+                            <tr><td>V_wet</td><td><input type="number" min="0" max="5" step="0.001" required class="persist-text calc-input" data-key="vwet" data-stage-required></td><td>100% moisture, sensor dipped safely in water</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <label class="response-field evidence-upload"><span>HMI front panel screenshot</span><input class="persist-file" data-key="hmi-front-panel" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="hmi-front-panel">No file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>Native LabVIEW calibration block-diagram screenshot</span><input class="persist-file" data-key="hmi-block-diagram" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="hmi-block-diagram">No file selected.</small></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-6" id="percent" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Measure</p>
+                <h2>Convert voltage to percent moisture</h2>
+                <p>Add a numeric <code>moisture_threshold</code> indicator, a LabVIEW front-panel Low Moisture round LED indicator, a <code>moisture_percent</code> numeric indicator, and a <code>moisture_percent</code> waveform chart. Build the calibration and alarm with native LabVIEW arithmetic, comparison functions, Boolean logic, and Case Structures as needed.</p>
+                <div class="grid-layout two">
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for revised LabVIEW HMI screenshot"><strong>Screenshot required</strong><span>LabVIEW HMI with raw_voltage, moisture_percent, moisture_threshold, front-panel Low Moisture LED indicator, and chart</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for native LabVIEW calibration and alarm logic screenshot"><strong>Screenshot required</strong><span>Native LabVIEW arithmetic, clamp, numeric validation, and Less? comparison</span></figure>
+                </div>
+                <pre><code>scaled_percent = (raw_voltage - V_dry) / (V_wet - V_dry) * 100
+moisture_percent = clamp(scaled_percent, 0, 100)
+low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
+                <ol>
+                    <li>Subtract <code>V_dry</code> from <code>raw_voltage</code>, divide by <code>V_wet - V_dry</code>, and multiply by 100.</li>
+                    <li>Use native minimum/maximum or <strong>In Range and Coerce</strong> functions to clamp the result from 0 to 100.</li>
+                    <li>Use the native <strong>Less?</strong> comparison to calculate <code>low_moisture_alarm</code>.</li>
+                    <li>Keep a documented safe local threshold until a valid cloud value arrives. The comparison must continue when the internet is unavailable.</li>
+                </ol>
+                <div class="table-wrap mt-block">
+                    <table>
+                        <thead><tr><th>Practice value</th><th>Input</th><th>Live check</th></tr></thead>
+                        <tbody>
+                            <tr><td>Voltage to convert</td><td><input type="number" min="0" max="5" step="0.001" required class="persist-text calc-input" data-key="voltage-test" data-stage-required></td><td rowspan="3" data-calc-result>Enter V_dry, V_wet, voltage, and threshold.</td></tr>
+                            <tr><td>Threshold percent</td><td><input type="number" min="0" max="100" step="1" required class="persist-text calc-input" data-key="threshold-test" data-stage-required></td></tr>
+                            <tr><td>Expected result</td><td>moisture_percent is clamped to 0-100 and low_moisture_alarm is true when percent is below threshold.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-7" id="publish" tabindex="-1">
+            <article class="section-card card border-success">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Measure</p>
+                <h2>Publish JSON telemetry to ThingsBoard</h2>
+                <p>In the Communication Loop, format the three current LabVIEW values as one JSON object and publish it to <code>v1/devices/me/telemetry</code> at approximately one-second intervals.</p>
+                <pre><code>{"raw_voltage":2.81,"moisture_percent":34.6,"low_moisture_alarm":true}</code></pre>
+                <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW ThingsBoard JSON telemetry publish block screenshot"><strong>Screenshot required</strong><span>LabVIEW JSON formatting and publish event for v1/devices/me/telemetry</span></figure>
+                <div class="warning-card mt-block"><strong>Separate local and cloud timing:</strong> run Arduino/LabVIEW acquisition and alarm logic every 100&ndash;250 ms, but send ThingsBoard telemetry about once per second. Do not publish every sensor sample. Threshold changes are event-driven.</div>
+                <div class="grid-layout two mt-block">
+                    <label class="response-field"><span>Evidence that all three telemetry keys stream to ThingsBoard</span><textarea class="persist-text" data-key="publish-evidence" data-stage-required></textarea></label>
+                    <label class="response-field evidence-upload"><span>Streaming Latest Telemetry screenshot</span><input class="persist-file" data-key="publish-telemetry-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="publish-telemetry-screenshot">No file selected.</small></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-8" id="threshold" tabindex="-1">
+            <article class="section-card card border-gold">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Measure</p>
+                <h2>Receive and synchronize moisture_threshold</h2>
+                <p>Use <code>moisture_threshold</code> as a ThingsBoard <strong>shared attribute</strong>. Subscribe to <code>v1/devices/me/attributes</code> for event-driven live changes such as:</p>
+                <pre><code>{"moisture_threshold":30}</code></pre>
+                <h3>Startup and reconnection synchronization</h3>
+                <ol>
+                    <li>Subscribe to <code>v1/devices/me/attributes</code>.</li>
+                    <li>Subscribe to <code>v1/devices/me/attributes/response/+</code>.</li>
+                    <li>Publish to <code>v1/devices/me/attributes/request/1</code> with the payload below. Another positive request ID is acceptable if generated dynamically.</li>
+                </ol>
+                <pre><code>{"sharedKeys":"moisture_threshold"}</code></pre>
+                <p>The response may be <code>{"shared":{"moisture_threshold":30}}</code>. Parse and validate the number before updating the local setpoint. Until a valid response arrives, retain a documented safe default. On malformed JSON, show a readable error and preserve the last valid threshold instead of stopping the complete VI.</p>
+                <div class="grid-layout two">
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Shared Attributes tab screenshot"><strong>Screenshot required</strong><span>Device &rarr; Shared Attributes showing moisture_threshold</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW shared-attribute startup synchronization screenshot"><strong>Screenshot required</strong><span>LabVIEW subscribe, request, response parse, validation, and safe-default logic</span></figure>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <label class="response-field"><span>What proves LabVIEW received both a live change and the startup-request response?</span><textarea class="persist-text" data-key="threshold-evidence" data-stage-required></textarea></label>
+                    <label class="response-field"><span>How does the VI validate JSON and preserve a safe or last-valid threshold?</span><textarea class="persist-text" data-key="attribute-parse-validation" data-stage-required></textarea></label>
+                </div>
+                <label class="response-field evidence-upload"><span>Shared Attributes screenshot</span><input class="persist-file" data-key="shared-attributes-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="shared-attributes-screenshot">No file selected.</small></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-9" id="dashboard" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Explain</p>
+                <h2>Build the Lab 8 Soil Moisture Dashboard</h2>
+                <ol>
+                    <li>Open <strong>Dashboards</strong>, create a dashboard named <code>Lab 8 Soil Moisture Dashboard</code>, and open edit mode.</li>
+                    <li>Create or select an entity alias that points to your <code>Lab8-Soil-Moisture-StudentName</code> device.</li>
+                    <li>Add a value card for <code>raw_voltage</code>.</li>
+                    <li>Add a 0&ndash;100 gauge and a time-series chart for <code>moisture_percent</code>.</li>
+                    <li>Add an indicator for the Boolean telemetry key <code>low_moisture_alarm</code>.</li>
+                    <li>Add a numeric threshold control that reads and writes the shared attribute <code>moisture_threshold</code>.</li>
+                    <li>Optionally add an alarm-history, event-history, device-activity, or last-update widget.</li>
+                </ol>
+                <div class="grid-layout four">
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard dashboard creation page screenshot"><strong>Screenshot required</strong><span>Dashboard creation page</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard entity alias selection screenshot"><strong>Screenshot required</strong><span>Entity alias selection for the Lab 8 device</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard telemetry widget configuration screenshot"><strong>Screenshot required</strong><span>Telemetry widget configuration</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard shared-attribute threshold control screenshot"><strong>Screenshot required</strong><span>Shared-attribute threshold control configuration</span></figure>
+                </div>
+                <div class="warning-card mt-block"><strong>Threshold control action:</strong> initial state must read shared attribute <code>moisture_threshold</code>; changes must set that shared attribute to a numeric value. Do not write telemetry, set a server-side attribute, or execute RPC. After changing the control, first confirm the value changes under the device's <strong>Shared Attributes</strong> tab, then troubleshoot LabVIEW if needed.</div>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-gauge"><span>raw_voltage value card and moisture_percent gauge display measured telemetry.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-slider"><span>Threshold control updates the shared moisture_threshold attribute.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-line"><span>Time-series chart shows historical moisture_percent values.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-test"><span>Moving the sensor updates telemetry and changing the threshold changes the local alarm when appropriate.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-alarm"><span>low_moisture_alarm indicator is visibly distinct from measured moisture and configured threshold.</span></label>
+                </div>
+                <label class="response-field evidence-upload mt-block"><span>Completed dashboard screenshot</span><input class="persist-file" data-key="dashboard-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="dashboard-screenshot">No file selected.</small></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-10" id="reliability" tabindex="-1">
+            <article class="section-card card border-gold">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Revise</p>
+                <h2>Validate the local alarm and internet-loss behaviour</h2>
+                <p>The primary decision remains in LabVIEW:</p>
+                <pre><code>low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
+                <div class="grid-layout three">
+                    <div class="mini-card"><h3>Normal operation</h3><ol><li>Set a known threshold.</li><li>Move the sensor so moisture crosses the threshold.</li><li>Confirm the local LabVIEW front-panel LED indicator changes immediately.</li><li>Confirm the reported <code>low_moisture_alarm</code> follows.</li></ol></div>
+                    <div class="mini-card"><h3>Cloud-loss test</h3><ol><li>Record the active threshold.</li><li>Disconnect MQTT or internet access.</li><li>Vary the sensor reading.</li><li>Confirm acquisition, calibration, comparison, and the local LabVIEW indicator continue.</li></ol></div>
+                    <div class="mini-card"><h3>Reconnect test</h3><ol><li>Restore connectivity.</li><li>Reconnect and resubscribe.</li><li>Request <code>moisture_threshold</code>.</li><li>Confirm telemetry resumes without unsafe output changes.</li></ol></div>
+                </div>
+                <div class="warning-card mt-block"><strong>Cloud communication is not deterministic.</strong> Never use ThingsBoard as the inner loop of a fast controller. Stale, delayed, duplicate, or repeated commands must not create unsafe behaviour. A ThingsBoard alarm/history widget may observe <code>low_moisture_alarm</code>, but a cloud rule chain must not replace the local decision.</div>
+                <div class="grid-layout two mt-block">
+                    <label class="response-field"><span>Record the normal, cloud-loss, and reconnect test results</span><textarea class="persist-text" data-key="alert-evidence" data-stage-required></textarea></label>
+                    <label class="response-field evidence-upload"><span>Local alarm and internet-loss evidence</span><input class="persist-file" data-key="alarm-reliability-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="alarm-reliability-screenshot">No file selected.</small></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-11" id="analytics" tabindex="-1">
+            <article class="section-card card border-success">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Revise</p>
+                <h2>Add useful ThingsBoard analytics</h2>
+                <p>Use <code>moisture_percent</code> from the Lab 8 device alias to create Minimum Today, Maximum Today, and Average Today cards. Arrange them around the required value, gauge, time-series, threshold, and alarm widgets.</p>
+                <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard aggregate telemetry widgets screenshot"><strong>Screenshot required</strong><span>ThingsBoard minimum, maximum, and average moisture_percent widgets</span></figure>
+                <div class="grid-layout three mt-block">
+                    <div class="mini-card optional-card">Add a weather widget if it is relevant and available.</div>
+                    <div class="mini-card optional-card">Add average moisture over 24 hours.</div>
+                    <div class="mini-card optional-card">Add threshold history.</div>
+                    <div class="mini-card optional-card">Add low-moisture alarm or event history.</div>
+                    <div class="mini-card optional-card">Add sensor-noise smoothing.</div>
+                    <div class="mini-card optional-card">Add calibration-reset controls.</div>
+                </div>
+                <label class="completion-box mt-block"><input type="checkbox" class="persist-check" data-key="analytics-confirmed"><span>Minimum, maximum, and average moisture_percent widgets are configured for the correct Lab 8 device alias and verified.</span></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-12" id="troubleshoot" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Revise</p>
+                <h2>ThingsBoard and LabVIEW troubleshooting</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Observation</th><th>Likely cause</th><th>Test</th><th>Result</th><th>Next action</th></tr></thead>
+                        <tbody>
+                            <tr><td><input class="persist-text" data-key="tr-obs-1" data-stage-required aria-label="Troubleshooting row 1 - Observation"></td><td><input class="persist-text" data-key="tr-cause-1" data-stage-required aria-label="Troubleshooting row 1 - Likely cause"></td><td><input class="persist-text" data-key="tr-test-1" data-stage-required aria-label="Troubleshooting row 1 - Test"></td><td><input class="persist-text" data-key="tr-result-1" data-stage-required aria-label="Troubleshooting row 1 - Result"></td><td><input class="persist-text" data-key="tr-action-1" data-stage-required aria-label="Troubleshooting row 1 - Next action"></td></tr>
+                            <tr><td><input class="persist-text" data-key="tr-obs-2" data-stage-required aria-label="Troubleshooting row 2 - Observation"></td><td><input class="persist-text" data-key="tr-cause-2" data-stage-required aria-label="Troubleshooting row 2 - Likely cause"></td><td><input class="persist-text" data-key="tr-test-2" data-stage-required aria-label="Troubleshooting row 2 - Test"></td><td><input class="persist-text" data-key="tr-result-2" data-stage-required aria-label="Troubleshooting row 2 - Result"></td><td><input class="persist-text" data-key="tr-action-2" data-stage-required aria-label="Troubleshooting row 2 - Next action"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <div class="mini-card"><h3>Publishing works but no dashboard value appears</h3><ul><li>Topic must be exactly <code>v1/devices/me/telemetry</code>, with no leading slash.</li><li>Payload must be valid JSON.</li><li>Telemetry key spelling must match the widget.</li><li>Entity alias must point to the Lab 8 device.</li><li>The access token must belong to that same device.</li></ul></div>
+                    <div class="mini-card"><h3>Connection fails</h3><ul><li>Broker is <code>mqtt.thingsboard.cloud</code> and port is correct.</li><li>Device token is the username and password is blank.</li><li>Client ID is unique.</li><li>Campus firewall is not blocking MQTT.</li><li>A non-TLS client is not attempting TLS; port 8883 requires explicit TLS and certificate support.</li></ul></div>
+                    <div class="mini-card"><h3>Subscribe succeeds but no message arrives</h3><ul><li><code>subscribeSuccess</code> only means the broker accepted the subscription.</li><li>The shared attribute must change after subscribing.</li><li>Live topic is <code>v1/devices/me/attributes</code>.</li><li>The dashboard control must set a shared attribute, not telemetry, RPC, or a server attribute.</li></ul></div>
+                    <div class="mini-card"><h3>Dashboard control moves but LabVIEW receives nothing</h3><p>Confirm the action is <strong>Set shared attribute</strong> for <code>moisture_threshold</code>, not <strong>Execute RPC</strong>, <strong>Add time series</strong>, or <strong>Set server attribute</strong>. Verify the change in the device's Shared Attributes tab.</p></div>
+                    <div class="mini-card"><h3>LabVIEW stops receiving after reconnect</h3><ul><li>Reconnect to MQTT.</li><li>Resubscribe after every connection.</li><li>Request the current shared attribute again.</li><li>Do not reuse an invalid connection reference.</li></ul></div>
+                    <div class="mini-card"><h3>Malformed JSON</h3><p>Display a readable parse or validation error without stopping the complete VI. Keep the last valid threshold, or the documented safe default if no valid value has been received.</p></div>
+                </div>
+                <div class="success-card mt-block"><h3>Forced shared-attribute receive-path test</h3><p>Subscribe to <code>v1/devices/me/attributes/response/+</code>, then publish <code>{"sharedKeys":"moisture_threshold"}</code> to <code>v1/devices/me/attributes/request/1</code>. If a response arrives, the LabVIEW receive path works; inspect the dashboard/shared-attribute configuration next.</p></div>
+                <details><summary>Sensor, hardware, and calibration checks</summary><div><ul><li>Keep the top circuitry dry and use a consistent sensor depth.</li><li>Verify VCC, GND, SIG to A0, USB, serial port, LINX firmware, and NI-VISA.</li><li>Check V_dry and V_wet are measured, different, correctly assigned, and used by the native arithmetic.</li><li>Confirm moisture_percent is clamped and the numeric threshold is in a valid 0&ndash;100 range.</li></ul></div></details>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-13" id="reflect" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Reflect</p>
+                <h2>Deliverables and cleanup</h2>
+                <div class="grid-layout two">
+                    <div class="mini-card"><h3>Submit</h3><ol><li>Sensor circuit evidence and measured V_dry/V_wet.</li><li>Native LabVIEW calibration and local-alarm explanation.</li><li>HMI screenshot with raw_voltage, moisture_percent, moisture_threshold, front-panel Low Moisture LED indicator, and chart.</li><li>ThingsBoard Latest Telemetry evidence for all three telemetry keys.</li><li>Shared moisture_threshold evidence and startup synchronization test.</li><li>Completed dashboard with measured moisture, configured threshold, and locally calculated alarm visibly distinguished.</li><li>Internet-loss and reconnect results.</li><li>Minimum, maximum, and average widgets.</li><li>System block diagram, sensor comparison, application, suggestions, and cleanup confirmation.</li></ol></div>
+                    <div class="danger-card"><h3>Final cleanup warning</h3><ol><li>Stop the VI with its Stop control, not Abort.</li><li>Disconnect MQTT and close MQTT, LINX/NI-VISA, queue, event, and other references.</li><li>Keep the most recently valid threshold or documented safe default active during disconnect.</li><li>Turn off power, disconnect Arduino USB, remove the sensor, and let it dry.</li><li>Remove real credentials from local examples and clear saved front-panel token defaults before distributing a VI.</li></ol></div>
+                </div>
+                <div class="warning-card mt-block"><strong>Credential hygiene:</strong> if a configuration file is provided, distribute only <code>thingsboard-config.example.json</code> containing <code>YOUR_DEVICE_ACCESS_TOKEN</code>. Keep the real local configuration file in <code>.gitignore</code>. Never export, submit, or screenshot a real token.</div>
+            </article>
+            <article class="section-card card border-gold">
+                <h2>Submission questions</h2>
+                <label class="response-field"><span>1. Draw or describe a system block diagram showing data transfer between web HMI, sensors, and actuators.</span><textarea class="persist-text" data-key="reflect-1" data-stage-required></textarea></label>
+                <label class="response-field"><span>2. Compare capacitive and resistive soil moisture sensors. Summarize operation and advantages of the capacitive sensor.</span><textarea class="persist-text" data-key="reflect-2" data-stage-required></textarea></label>
+                <label class="response-field"><span>3. Explain the native LabVIEW calibration and alarm logic, and why measuring V_dry and V_wet is important.</span><textarea class="persist-text" data-key="reflect-3" data-stage-required></textarea></label>
+                <label class="response-field"><span>4. Provide one real-life soil moisture sensor application and explain the benefits of making it IoT.</span><textarea class="persist-text" data-key="reflect-4" data-stage-required></textarea></label>
+                <label class="response-field"><span>5. Include typos or suggestions for improving this lab manual.</span><textarea class="persist-text" data-key="reflect-5" data-stage-required></textarea></label>
+            </article>
+            <article class="section-card card border-success">
+                <h2>Glossary</h2>
+                <div class="grid-layout three">
+                    <details><summary>Capacitive soil moisture sensor</summary><div>Sensor that responds to changes in dielectric properties around the probe rather than relying on exposed resistive electrodes.</div></details>
+                    <details><summary>Resistive soil moisture sensor</summary><div>Sensor that estimates moisture from electrical resistance through soil, often more prone to corrosion.</div></details>
+                    <details><summary>V_dry</summary><div>Voltage measured with the sensor in air, used as the 0% moisture calibration point.</div></details>
+                    <details><summary>V_wet</summary><div>Voltage measured with the sensor safely dipped in water, used as the 100% moisture calibration point.</div></details>
+                    <details><summary>Calibration</summary><div>Mapping raw sensor voltage to a meaningful percent range for this sensor and setup.</div></details>
+                    <details><summary>moisture_percent</summary><div>Telemetry key for the locally calibrated and clamped moisture value from 0 to 100.</div></details>
+                    <details><summary>moisture_threshold</summary><div>ThingsBoard shared attribute containing the persistent cloud-configured setpoint.</div></details>
+                    <details><summary>low_moisture_alarm</summary><div>Boolean telemetry key calculated locally from moisture_percent &lt; moisture_threshold.</div></details>
+                    <details><summary>Arduino A0</summary><div>Analog input channel used to read the sensor SIG voltage.</div></details>
+                    <details><summary>LINX</summary><div>LabVIEW toolkit used to communicate with Arduino.</div></details>
+                    <details><summary>Native LabVIEW logic</summary><div>Arithmetic, clamp, comparison, Boolean, and Case Structure functions that keep calibration and the alarm local.</div></details>
+                    <details><summary>JSON validation</summary><div>Parsing and validating a received shared-attribute value before replacing the last valid threshold.</div></details>
+                    <details><summary>Clamp</summary><div>Limit a calculated value so it stays within an allowed range.</div></details>
+                    <details><summary>MQTT</summary><div>Publish/subscribe protocol used to exchange JSON telemetry and shared attributes with ThingsBoard.</div></details>
+                    <details><summary>Telemetry</summary><div>Measurement or actual-state data published by LabVIEW, including raw_voltage, moisture_percent, and low_moisture_alarm.</div></details>
+                    <details><summary>Shared attribute</summary><div>Persistent cloud-to-device configuration; this lab uses moisture_threshold.</div></details>
+                    <details><summary>Entity alias</summary><div>Dashboard data-source mapping that points widgets to the student's Lab 8 device.</div></details>
+                    <details><summary>Gauge and value card</summary><div>Dashboard widgets for current moisture_percent and raw_voltage values.</div></details>
+                    <details><summary>Time-series chart</summary><div>Dashboard widget used to show historical moisture_percent telemetry.</div></details>
+                    <details><summary>Alarm indicator</summary><div>Dashboard display of the low_moisture_alarm result produced locally by LabVIEW.</div></details>
+                    <details><summary>Aggregation</summary><div>Summary calculation such as minimum, maximum, or average over a time span.</div></details>
+                    <details><summary>IoT plant-monitoring node</summary><div>Local sensor system connected to a cloud dashboard and alert workflow.</div></details>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        (() => {
+            const STORAGE_PREFIX = 'smrttech-lab8-soil-moisture';
+            const STAGE_COUNT = 14;
+            const STAGE_NAMES = ['Prepare', 'Predict', 'ThingsBoard', 'MQTT', 'Circuit', 'Calibrate', 'Percent', 'Publish', 'Threshold', 'Dashboard', 'Reliability', 'Analytics', 'Troubleshoot', 'Reflect'];
+            const ORDER_KEYS = ['chain-sensor','chain-a0','chain-calibration','chain-percent','chain-publish','chain-variable','chain-dashboard'];
+            const LEGACY_DATA_KEYS = {
+                'ubidots-vars': 'thingsboard-device-name',
+                'ubidots-color': 'thingsboard-tenant-check',
+                'str2double-why': 'attribute-parse-validation',
+                'dashboard-tank': 'dashboard-gauge'
+            };
+            document.body.classList.add('js-enabled');
+
+            function storageKey(key) { return `${STORAGE_PREFIX}:${key}`; }
+
+            Object.entries(LEGACY_DATA_KEYS).forEach(([legacyKey, currentKey]) => {
+                const oldStorageKey = storageKey(legacyKey);
+                const newStorageKey = storageKey(currentKey);
+                if (localStorage.getItem(newStorageKey) === null && localStorage.getItem(oldStorageKey) !== null) {
+                    localStorage.setItem(newStorageKey, localStorage.getItem(oldStorageKey));
+                }
+                localStorage.removeItem(oldStorageKey);
+            });
+
+            function setStage(stage) {
+                const safeStage = Math.max(0, Math.min(STAGE_COUNT - 1, Number(stage) || 0));
+                document.body.className = document.body.className.split(' ').filter(name => !/^stage-\d+$/.test(name)).join(' ');
+                document.body.classList.add('pb-24', 'pt-24', 'js-enabled', `stage-${safeStage}`);
+                document.querySelectorAll('[data-stage]').forEach(button => {
+                    const active = Number(button.dataset.stage) === safeStage;
+                    button.classList.toggle('active', active);
+                    button.setAttribute('aria-current', active ? 'step' : 'false');
+                });
+                localStorage.setItem(storageKey('current-stage'), String(safeStage));
+                updateProgress();
+                const panel = document.querySelector(`.stage-panel.stage-${safeStage}`);
+                if (panel) panel.focus({ preventScroll: true });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function updateProgress() {
+                let complete = 0;
+                document.querySelectorAll('[data-stage]').forEach(button => {
+                    const isComplete = localStorage.getItem(storageKey(`stage-${button.dataset.stage}-complete`)) === 'true';
+                    button.classList.toggle('completed', isComplete);
+                    if (isComplete) complete += 1;
+                });
+                document.querySelectorAll('[data-progress-status]').forEach(status => {
+                    status.textContent = `${complete}/${STAGE_COUNT}`;
+                    status.setAttribute('title', `${complete} of ${STAGE_COUNT} phases marked complete.`);
+                });
+            }
+
+            function showStageMessage(stage, message) {
+                const panel = document.querySelector(`.stage-panel.stage-${stage}`);
+                if (!panel) return;
+                let messageBox = panel.querySelector('.stage-message:not([data-order-feedback])');
+                if (!messageBox) {
+                    messageBox = document.createElement('div');
+                    messageBox.className = 'stage-message';
+                    messageBox.setAttribute('role', 'status');
+                    messageBox.setAttribute('aria-live', 'polite');
+                    const footer = panel.querySelector('.stage-footer');
+                    if (footer) footer.before(messageBox);
+                    else panel.appendChild(messageBox);
+                }
+                messageBox.textContent = message;
+                messageBox.className = 'stage-message show success';
+            }
+
+            function markStageComplete(stage) {
+                localStorage.setItem(storageKey(`stage-${stage}-complete`), 'true');
+                updateProgress();
+                showStageMessage(stage, 'Stage complete. Your progress has been saved in this browser.');
+            }
+
+            function buildStageFooters() {
+                document.querySelectorAll('.stage-panel').forEach((panel, index) => {
+                    if (panel.querySelector('.stage-footer')) return;
+                    const footer = document.createElement('div');
+                    footer.className = 'stage-footer';
+                    const previous = document.createElement('button');
+                    previous.type = 'button';
+                    previous.className = 'nav-button secondary';
+                    previous.textContent = index === 0 ? 'Back to portal' : `Back: ${STAGE_NAMES[index - 1]}`;
+                    previous.addEventListener('click', () => {
+                        if (index === 0) window.location.href = '../../index.html';
+                        else setStage(index - 1);
+                    });
+                    const controls = document.createElement('div');
+                    controls.className = 'chip-row compact';
+                    const next = document.createElement('button');
+                    next.type = 'button';
+                    next.className = 'nav-button primary';
+                    next.textContent = index === STAGE_COUNT - 1 ? 'Finish Lab 8' : `Next: ${STAGE_NAMES[index + 1]}`;
+                    next.addEventListener('click', () => {
+                        markStageComplete(index);
+                        if (index < STAGE_COUNT - 1) setStage(index + 1);
+                    });
+                    controls.append(next);
+                    footer.append(previous, controls);
+                    panel.appendChild(footer);
+                });
+            }
+
+            function setupOrderOptions() {
+                document.querySelectorAll('.order-select').forEach(select => {
+                    if (select.options.length) return;
+                    const blank = document.createElement('option');
+                    blank.value = '';
+                    blank.textContent = 'Order';
+                    select.appendChild(blank);
+                    for (let i = 1; i <= ORDER_KEYS.length; i += 1) {
+                        const option = document.createElement('option');
+                        option.value = String(i);
+                        option.textContent = String(i);
+                        select.appendChild(option);
+                    }
+                });
+            }
+
+            function restoreInputs() {
+                document.querySelectorAll('.persist-check').forEach(input => {
+                    input.checked = localStorage.getItem(storageKey(input.dataset.key)) === 'true';
+                    input.addEventListener('change', () => localStorage.setItem(storageKey(input.dataset.key), String(input.checked)));
+                });
+                document.querySelectorAll('.persist-text').forEach(input => {
+                    const saved = localStorage.getItem(storageKey(input.dataset.key));
+                    if (saved !== null) input.value = saved;
+                    input.addEventListener('input', () => {
+                        localStorage.setItem(storageKey(input.dataset.key), input.value);
+                        updateTopicChecks();
+                        updateMoistureCalc();
+                    });
+                    input.addEventListener('change', () => {
+                        localStorage.setItem(storageKey(input.dataset.key), input.value);
+                        updateTopicChecks();
+                        updateMoistureCalc();
+                    });
+                });
+            }
+
+            function checkOrder() {
+                const values = ORDER_KEYS.map(key => document.querySelector(`[data-key="${key}"]`)?.value || '');
+                const feedback = document.querySelector('[data-order-feedback]');
+                if (!feedback) return;
+                if (values.some(value => value === '')) {
+                    feedback.textContent = 'Choose an order for every event.';
+                    return;
+                }
+                if (new Set(values).size !== values.length) {
+                    feedback.textContent = 'Each order number should be used once.';
+                    return;
+                }
+                const correct = values.every((value, index) => value === String(index + 1));
+                feedback.textContent = correct ? 'Correct moisture monitoring chain.' : 'Not yet. Follow the data from sensor voltage to cloud dashboard and analytics.';
+            }
+
+            function updateTopicChecks() {
+                document.querySelectorAll('.topic-input').forEach(input => {
+                    const target = document.querySelector(`[data-topic-result="${input.dataset.key}"]`);
+                    if (!target) return;
+                    const actual = input.value.trim();
+                    const expected = input.dataset.expected.trim();
+                    if (!actual) {
+                        target.textContent = '';
+                        return;
+                    }
+                    const matches = input.hasAttribute('data-case-sensitive')
+                        ? actual === expected
+                        : actual.toLowerCase() === expected.toLowerCase();
+                    target.textContent = matches ? 'Matches expected value.' : `Expected ${input.dataset.expected}.`;
+                });
+            }
+
+            function updateMoistureCalc() {
+                const fields = ['vdry', 'vwet', 'voltage-test', 'threshold-test'].map(key =>
+                    document.querySelector(`[data-key="${key}"]`)
+                );
+                const rawValues = fields.map(field => field?.value.trim() || '');
+                const calibrationValues = rawValues.slice(0, 2).map(Number);
+                const calibrationIsEqual = rawValues[0] !== '' && rawValues[1] !== '' &&
+                    calibrationValues.every(Number.isFinite) && calibrationValues[0] === calibrationValues[1];
+                const calibrationValidityMessage = calibrationIsEqual ? 'V_wet must differ from V_dry.' : '';
+                fields[0]?.setCustomValidity(calibrationValidityMessage);
+                fields[1]?.setCustomValidity(calibrationValidityMessage);
+                const target = document.querySelector('[data-calc-result]');
+                if (!target) return;
+                if (rawValues.some(value => value === '')) {
+                    target.textContent = 'Enter V_dry, V_wet, voltage, and threshold.';
+                    return;
+                }
+                const [vdry, vwet, voltage, threshold] = rawValues.map(Number);
+                if (![vdry, vwet, voltage, threshold].every(Number.isFinite)) {
+                    target.textContent = 'Use numeric values for V_dry, V_wet, voltage, and threshold.';
+                    return;
+                }
+                if ([vdry, vwet, voltage].some(value => value < 0 || value > 5) || threshold < 0 || threshold > 100) {
+                    target.textContent = 'Voltages must be between 0 and 5 V, and threshold must be between 0 and 100%.';
+                    return;
+                }
+                if (vwet === vdry) {
+                    target.textContent = 'V_wet must differ from V_dry.';
+                    return;
+                }
+                const raw = (voltage - vdry) / (vwet - vdry) * 100;
+                const percent = Math.max(0, Math.min(100, raw));
+                const led = percent < threshold ? 'ON' : 'OFF';
+                target.textContent = `moisture_percent = ${percent.toFixed(1)}%; Low Moisture LED = ${led} (LabVIEW front-panel indicator); low_moisture_alarm = ${led === 'ON' ? 'true' : 'false'}.`;
+            }
+
+            function exportResponses() {
+                return window.LabCompletionExport?.download();
+            }
+
+            function resetLocalData() {
+                if (!confirm('Reset only Lab 8 local progress and responses on this browser?')) return;
+                Object.keys(localStorage).filter(key => key.startsWith(`${STORAGE_PREFIX}:`)).forEach(key => localStorage.removeItem(key));
+                window.LabCompletionExport?.clearStoredData();
+                location.reload();
+            }
+
+            function setupSidebars() {
+                document.querySelectorAll('[data-sidebar-toggle]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const selected = document.getElementById(button.dataset.sidebarToggle);
+                        if (!selected) return;
+                        const wasOpen = selected.classList.contains('active');
+                        document.querySelectorAll('.sidebar').forEach(sidebar => sidebar.classList.remove('active'));
+                        if (!wasOpen) selected.classList.add('active');
+                    });
+                });
+            }
+
+            buildStageFooters();
+            setupSidebars();
+            setupOrderOptions();
+            restoreInputs();
+            updateTopicChecks();
+            updateMoistureCalc();
+            document.querySelectorAll('[data-stage]').forEach(button => button.addEventListener('click', () => setStage(button.dataset.stage)));
+            document.querySelector('[data-check-order]')?.addEventListener('click', checkOrder);
+            // Completion-file export is provided by assets/js/lab-export.js.
+            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+            document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
+            setStage(localStorage.getItem(storageKey('current-stage')) || 0);
+        })();
+    </script>
+    <script src="../../assets/js/lab-shared.js"></script>
+    <script src="../../assets/js/lab-export.js"></script>
+</body>
+</html>

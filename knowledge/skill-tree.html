@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMRTTECH 3CC3 — Master Skill Tree</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0">
+  <style>
+    /* ============================================================
+   SMRTTECH 3CC3 — Master Skill Tree (Hub + Docs edition)
+   OOCSS / BEM. No inline styles. McMaster brand.
+   Content is data-driven from ./curriculum.json — see
+   CURRICULUM_GUIDE.md to add or edit topics.
+   Layer 1: center-out radial hub of domains.
+   Layer 2: documentation page (directory + info pane).
+   ============================================================ */
+
+    /* ---- Tokens --------------------------------------------- */
+    :root {
+      --mac-maroon: #7A003C;
+      --mac-gold: #FDBF57;
+      --mac-grey: #5E6A71;
+      --maroon-80: #953360;
+      --maroon-soft: #F3E5EC;
+      --gold-soft: #FFF4DE;
+      --gold-deep: #8A6608;
+      --grey-soft: #ECEEF0;
+      --bg: #F4F5F8;
+      --bg-dot: #E2E6EC;
+      --surface: #FFFFFF;
+      --ink: #2D3338;
+      --ink-soft: #5E6A71;
+      --ink-faint: #9AA3AB;
+      --hairline: #E4E7EB;
+      --line: #C9D2DA;
+      --elev-1: 0 1px 2px rgba(16, 24, 40, .05), 0 1px 3px rgba(16, 24, 40, .09);
+      --elev-2: 0 4px 10px -4px rgba(16, 24, 40, .12), 0 2px 6px -3px rgba(16, 24, 40, .08);
+      --elev-3: 0 14px 32px -10px rgba(73, 89, 101, .20), 0 4px 10px -4px rgba(16, 24, 40, .10);
+      --font: 'Google Sans', 'Google Sans Text', system-ui, sans-serif;
+      --ease: cubic-bezier(.4, 0, .2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .material-symbols-rounded {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* category colour helpers */
+    .t-theory {
+      color: var(--gold-deep);
+    }
+
+    .t-skill {
+      color: var(--mac-maroon);
+    }
+
+    .t-spec {
+      color: var(--mac-grey);
+    }
+
+    /* ============================================================
+   BOOT OVERLAY (loading / error state for curriculum.json)
+   ============================================================ */
+    .boot {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      transition: opacity .3s var(--ease);
+    }
+
+    .boot.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .boot.is-gone {
+      display: none;
+    }
+
+    .boot__card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+    }
+
+    .boot__spinner {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 3px solid var(--hairline);
+      border-top-color: var(--mac-maroon);
+      animation: boot-spin .8s linear infinite;
+    }
+
+    @keyframes boot-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .boot__label {
+      font-size: 13.5px;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    .boot--error .boot__card {
+      max-width: 600px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: 22px;
+      box-shadow: var(--elev-3);
+      padding: 36px 40px;
+      align-items: stretch;
+      text-align: left;
+      gap: 4px;
+    }
+
+    .boot__icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: var(--maroon-soft);
+      color: var(--mac-maroon);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 14px;
+    }
+
+    .boot__icon-wrap .material-symbols-rounded {
+      font-size: 28px;
+    }
+
+    .boot__title {
+      font-size: 19px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      text-align: center;
+    }
+
+    .boot__msg {
+      font-size: 13.5px;
+      color: var(--ink-soft);
+      margin: 0 0 4px;
+      text-align: center;
+    }
+
+    .boot__list {
+      font-size: 13px;
+      color: #8A2B46;
+      background: var(--maroon-soft);
+      border-radius: 12px;
+      padding: 13px 18px;
+      margin: 14px 0 0;
+    }
+
+    .boot__list li+li {
+      margin-top: 5px;
+    }
+
+    .boot__hint {
+      font-size: 12.5px;
+      color: var(--ink-faint);
+      line-height: 1.6;
+      margin: 18px 0 0;
+      padding-top: 16px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .boot__hint code {
+      background: var(--bg);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 5px;
+      color: var(--mac-maroon);
+      font-size: 11.5px;
+    }
+
+    /* ============================================================
+   VIEW 1 — RADIAL HUB
+   ============================================================ */
+    .hubview {
+      position: absolute;
+      inset: 0;
+    }
+
+    .app.is-doc .hubview {
+      display: none;
+    }
+
+    .topbar {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, .95);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--hairline);
+      border-radius: 18px;
+      box-shadow: var(--elev-2);
+    }
+
+    .topbar__brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-right: 16px;
+      border-right: 1px solid var(--hairline);
+    }
+
+    .topbar__logo {
+      height: 38px;
+      width: auto;
+      display: block;
+    }
+
+    .topbar__logo.is-missing {
+      display: none;
+    }
+
+    .topbar__titles {
+      line-height: 1.18;
+    }
+
+    .topbar__course {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--mac-maroon);
+    }
+
+    .topbar__name {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.2px;
+    }
+
+    .topbar__spacer {
+      flex: 1;
+    }
+
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .legend__item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
+
+    .legend__dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    .legend__dot--theory {
+      background: var(--mac-gold);
+    }
+
+    .legend__dot--skill {
+      background: var(--mac-maroon);
+    }
+
+    .legend__dot--spec {
+      background: var(--mac-grey);
+    }
+
+    /* search */
+    .search {
+      position: relative;
+    }
+
+    .search__field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 38px;
+      padding: 0 14px;
+      border: 1.5px solid var(--hairline);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--ink-soft);
+    }
+
+    .search__field .material-symbols-rounded {
+      font-size: 19px;
+      color: var(--ink-faint);
+    }
+
+    .search__field input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: var(--font);
+      font-size: 13.5px;
+      color: var(--ink);
+      width: 178px;
+    }
+
+    .search__results {
+      position: absolute;
+      top: 46px;
+      right: 0;
+      width: 330px;
+      max-height: 60vh;
+      overflow-y: auto;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: 14px;
+      box-shadow: var(--elev-3);
+      padding: 6px;
+      display: none;
+      z-index: 40;
+    }
+
+    .search__results.is-open {
+      display: block;
+    }
+
+    .search__result {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 11px;
+      border: none;
+      background: transparent;
+      border-radius: 9px;
+      cursor: pointer;
+      text-align: left;
+      font-family: var(--font);
+    }
+
+    .search__result:hover,
+    .search__result.is-cursor {
+      background: var(--bg);
+    }
+
+    .search__result-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex: none;
+    }
+
+    .search__result-body {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .search__result-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .search__result-path {
+      font-size: 11px;
+      color: var(--ink-faint);
+      margin-top: 1px;
+    }
+
+    .search__empty {
+      padding: 14px;
+      font-size: 13px;
+      color: var(--ink-faint);
+      text-align: center;
+    }
+
+    /* stage / pan-zoom */
+    .stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background-color: var(--bg);
+      background-image: radial-gradient(var(--bg-dot) 1.4px, transparent 1.4px);
+      background-size: 24px 24px;
+      cursor: grab;
+    }
+
+    .stage.is-panning {
+      cursor: grabbing;
+    }
+
+    .stage__content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: top left;
+    }
+
+    /* --- UPDATED PROFESSIONAL FLEX LAYOUT --- */
+    .hub {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      width: 1060px;
+      /* Increased to allow 3 cards to comfortably fit per row */
+      padding: 64px;
+    }
+
+    /* center card */
+    .center {
+      width: 320px;
+      border-radius: 26px;
+      padding: 24px 28px;
+      color: #fff;
+      text-align: center;
+      background: radial-gradient(circle at 20% 14%, rgba(253, 191, 87, .42), transparent 48%), linear-gradient(125deg, var(--mac-maroon) 0%, var(--maroon-80) 58%, #C26A2E 100%);
+      box-shadow: var(--elev-3);
+      flex: 0 0 auto;
+      /* Prevents the card from shrinking */
+    }
+
+    .center__eyebrow {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .78);
+    }
+
+    .center__title {
+      margin: 8px 0 8px;
+      font-size: 23px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+      line-height: 1.16;
+    }
+
+    .center__desc {
+      margin: 0;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, .85);
+    }
+
+    .center__count {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 14px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .16);
+      border: 1px solid rgba(255, 255, 255, .22);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .center__count .material-symbols-rounded {
+      font-size: 15px;
+    }
+
+    /* domain card */
+    .domain {
+      width: 284px;
+      cursor: pointer;
+      text-align: left;
+      font-family: var(--font);
+      display: flex;
+      flex-direction: column;
+      min-height: 180px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #FFFFFF 0%, #FBFCFD 100%);
+      border: 1px solid var(--hairline);
+      border-top: 5px solid var(--mac-maroon);
+      box-shadow: var(--elev-2);
+      padding: 16px 17px;
+      transition: box-shadow .22s var(--ease), transform .22s var(--ease), border-color .22s var(--ease);
+      flex: 0 0 auto;
+      /* Prevents the card from shrinking */
+    }
+
+    .domain:hover {
+      box-shadow: var(--elev-3);
+      transform: translateY(-3px);
+    }
+
+    .domain__head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .domain__icon {
+      width: 44px;
+      height: 44px;
+      flex: none;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--maroon-soft);
+      color: var(--mac-maroon);
+    }
+
+    .domain__icon .material-symbols-rounded {
+      font-size: 25px;
+    }
+
+    .domain__name {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.2px;
+      line-height: 1.15;
+    }
+
+    .domain__arrow {
+      margin-left: auto;
+      color: var(--ink-faint);
+      transition: transform .22s var(--ease), color .22s var(--ease);
+    }
+
+    .domain:hover .domain__arrow {
+      color: var(--mac-maroon);
+      transform: translateX(3px);
+    }
+
+    .domain__arrow .material-symbols-rounded {
+      font-size: 22px;
+    }
+
+    .domain__blurb {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      line-height: 1.45;
+      margin: 11px 0 0;
+    }
+
+    .domain__cats {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: 14px;
+    }
+
+    .domain__cat {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px 3px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-soft);
+    }
+
+    .domain__cat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .domain__cat-dot--theory {
+      background: var(--mac-gold);
+    }
+
+    .domain__cat-dot--skill {
+      background: var(--mac-maroon);
+    }
+
+    .domain__cat-dot--spec {
+      background: var(--mac-grey);
+    }
+
+    /* controls + hint */
+    .controls {
+      position: absolute;
+      left: 16px;
+      bottom: 20px;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: 12px;
+      box-shadow: var(--elev-2);
+      overflow: hidden;
+    }
+
+    .controls__btn {
+      width: 42px;
+      height: 42px;
+      border: none;
+      background: var(--surface);
+      color: var(--ink-soft);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background .15s var(--ease);
+    }
+
+    .controls__btn:hover {
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    .controls__btn+.controls__btn {
+      border-top: 1px solid var(--hairline);
+    }
+
+    .controls__btn .material-symbols-rounded {
+      font-size: 22px;
+    }
+
+    .hint {
+      position: absolute;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 16px;
+      border-radius: 999px;
+      background: rgba(45, 51, 56, .9);
+      color: #fff;
+      font-size: 12.5px;
+      box-shadow: var(--elev-2);
+      pointer-events: none;
+      transition: opacity .4s var(--ease);
+    }
+
+    .hint .material-symbols-rounded {
+      font-size: 17px;
+    }
+
+    /* ============================================================
+   VIEW 2 — DOCUMENTATION PAGE
+   ============================================================ */
+    .docpage {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      background: var(--bg);
+      display: none;
+      flex-direction: column;
+    }
+
+    .app.is-doc .docpage {
+      display: flex;
+    }
+
+    .docbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 18px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--hairline);
+      box-shadow: var(--elev-1);
+      z-index: 2;
+    }
+
+    .docbar__back {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 38px;
+      padding: 0 14px 0 10px;
+      border: 1.5px solid var(--hairline);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .18s var(--ease);
+    }
+
+    .docbar__back:hover {
+      background: var(--bg);
+      border-color: var(--line);
+    }
+
+    .docbar__back .material-symbols-rounded {
+      font-size: 19px;
+    }
+
+    .docbar__logo {
+      height: 30px;
+      width: auto;
+    }
+
+    .docbar__logo.is-missing {
+      display: none;
+    }
+
+    .crumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--ink-faint);
+      min-width: 0;
+    }
+
+    .crumb__sep {
+      font-size: 16px;
+      color: var(--ink-faint);
+    }
+
+    .crumb__item {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .crumb__item--muted {
+      color: var(--ink-faint);
+    }
+
+    .crumb__item--domain {
+      color: var(--ink-soft);
+    }
+
+    .crumb__item--node {
+      color: var(--ink);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .docbar__spacer {
+      flex: 1;
+    }
+
+    .docmain {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 312px 1fr;
+      overflow: hidden;
+    }
+
+    /* directory / tab bar */
+    .dir {
+      border-right: 1px solid var(--hairline);
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .dir__head {
+      padding: 20px 20px 14px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .dir__domain {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dir__icon {
+      width: 44px;
+      height: 44px;
+      flex: none;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--maroon-soft);
+      color: var(--mac-maroon);
+    }
+
+    .dir__icon .material-symbols-rounded {
+      font-size: 25px;
+    }
+
+    .dir__name {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -.2px;
+    }
+
+    .dir__blurb {
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-top: 2px;
+    }
+
+    .dir__filters {
+      display: flex;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .minichip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 28px;
+      padding: 0 10px 0 8px;
+      border: 1.5px solid var(--hairline);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--ink-soft);
+      font-family: var(--font);
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .16s var(--ease);
+    }
+
+    .minichip__dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+
+    .minichip--theory .minichip__dot {
+      background: var(--mac-gold);
+    }
+
+    .minichip--skill .minichip__dot {
+      background: var(--mac-maroon);
+    }
+
+    .minichip--spec .minichip__dot {
+      background: var(--mac-grey);
+    }
+
+    .minichip:not(.is-active) .minichip__dot {
+      opacity: .32;
+    }
+
+    .minichip.is-active {
+      color: var(--ink);
+      border-color: transparent;
+    }
+
+    .minichip--theory.is-active {
+      background: var(--gold-soft);
+    }
+
+    .minichip--skill.is-active {
+      background: var(--maroon-soft);
+    }
+
+    .minichip--spec.is-active {
+      background: var(--grey-soft);
+    }
+
+    .dir__list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 12px 24px;
+    }
+
+    .dir__group {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--ink-faint);
+      padding: 14px 10px 7px;
+    }
+
+    .dir__item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      font-family: var(--font);
+      transition: background .15s var(--ease);
+    }
+
+    .dir__item:hover {
+      background: var(--bg);
+    }
+
+    .dir__item.is-active {
+      background: var(--maroon-soft);
+    }
+
+    .dir__item.is-hidden {
+      display: none;
+    }
+
+    .dir__item-rail {
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      border-radius: 3px;
+      background: transparent;
+    }
+
+    .dir__item.is-active .dir__item-rail {
+      background: var(--mac-maroon);
+    }
+
+    .dir__item-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex: none;
+    }
+
+    .dir__item-dot--theory {
+      background: var(--mac-gold);
+    }
+
+    .dir__item-dot--skill {
+      background: var(--mac-maroon);
+    }
+
+    .dir__item-dot--spec {
+      background: var(--mac-grey);
+    }
+
+    .dir__item-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.25;
+    }
+
+    .dir__item.is-active .dir__item-name {
+      color: var(--mac-maroon);
+    }
+
+    .dir__none {
+      display: none;
+      padding: 18px 12px;
+      font-size: 13px;
+      color: var(--ink-faint);
+    }
+
+    /* info pane */
+    .pane {
+      overflow-y: auto;
+    }
+
+    .pane__inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 34px 40px 80px;
+    }
+
+    .pane__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 26px;
+      padding: 0 12px 0 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .pane__badge::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+
+    .pane__badge--theory {
+      background: var(--gold-soft);
+      color: var(--gold-deep);
+    }
+
+    .pane__badge--theory::before {
+      background: var(--mac-gold);
+    }
+
+    .pane__badge--skill {
+      background: var(--maroon-soft);
+      color: var(--mac-maroon);
+    }
+
+    .pane__badge--skill::before {
+      background: var(--mac-maroon);
+    }
+
+    .pane__badge--spec {
+      background: var(--grey-soft);
+      color: #3F4A51;
+    }
+
+    .pane__badge--spec::before {
+      background: var(--mac-grey);
+    }
+
+    .pane__title {
+      margin: 14px 0 6px;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -.5px;
+      line-height: 1.12;
+    }
+
+    .pane__question {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      line-height: 1.4;
+    }
+
+    /* figure: real image if present, else placeholder */
+    .figure {
+      margin: 26px 0;
+    }
+
+    .figure__img {
+      display: none;
+      width: 100%;
+      height: auto;
+      border-radius: 14px;
+      box-shadow: var(--elev-2);
+      border: 1px solid var(--hairline);
+    }
+
+    .figure.is-loaded .figure__img {
+      display: block;
+    }
+
+    .figure.is-loaded .asset {
+      display: none;
+    }
+
+    .asset {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 170px;
+      padding: 26px;
+      border: 2px dashed #CFD5DA;
+      border-radius: 14px;
+      text-align: center;
+      background: repeating-linear-gradient(45deg, #FAFBFC 0 11px, #F1F3F5 11px 22px);
+    }
+
+    .asset__icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: var(--surface);
+      box-shadow: var(--elev-1);
+      color: var(--ink-faint);
+    }
+
+    .asset__icon .material-symbols-rounded {
+      font-size: 23px;
+    }
+
+    .asset__label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--ink-faint);
+      font-weight: 600;
+    }
+
+    .asset__file {
+      font-size: 13px;
+      color: var(--mac-maroon);
+      background: var(--surface);
+      padding: 6px 13px;
+      border-radius: 7px;
+      box-shadow: var(--elev-1);
+      word-break: break-all;
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .section__h {
+      margin: 0 0 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--ink-soft);
+    }
+
+    .section__p {
+      margin: 0;
+      font-size: 15.5px;
+      line-height: 1.65;
+      color: #353B42;
+    }
+
+    .section__p+.section__p {
+      margin-top: 10px;
+    }
+
+    .section__p code {
+      font-size: 13px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 5px;
+      color: var(--mac-maroon);
+    }
+
+    .scenario {
+      margin: 30px 0 8px;
+      padding: 20px 20px 20px 22px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, var(--gold-soft), #FDEFCF);
+      border: 1px solid #F4D99A;
+      border-left: 5px solid var(--mac-gold);
+      box-shadow: var(--elev-1);
+    }
+
+    .scenario__h {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 9px;
+      font-size: 12.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--gold-deep);
+    }
+
+    .scenario__h .material-symbols-rounded {
+      font-size: 18px;
+    }
+
+    .scenario__p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #5B4814;
+    }
+
+    .connections {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .connections__h {
+      margin: 0 0 13px;
+      font-size: 12.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--ink-soft);
+    }
+
+    .connections__list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .conn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px 8px 10px;
+      border: 1px solid var(--hairline);
+      border-radius: 999px;
+      background: var(--surface);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      font-family: var(--font);
+      transition: all .18s var(--ease);
+    }
+
+    .conn:hover {
+      box-shadow: var(--elev-1);
+      transform: translateY(-1px);
+      border-color: var(--line);
+    }
+
+    .conn__dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex: none;
+    }
+
+    .conn--theory .conn__dot {
+      background: var(--mac-gold);
+    }
+
+    .conn--skill .conn__dot {
+      background: var(--mac-maroon);
+    }
+
+    .conn--spec .conn__dot {
+      background: var(--mac-grey);
+    }
+
+    .conn__home {
+      margin-left: 2px;
+      font-size: 11px;
+      color: var(--ink-faint);
+      font-weight: 600;
+    }
+
+    /* prev / next pager — equal-width grid, reserved space when disabled */
+    .pager {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 38px;
+      padding-top: 26px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .pager__btn {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-width: 0;
+      padding: 14px 16px;
+      border: 1px solid var(--hairline);
+      border-radius: 14px;
+      background: var(--surface);
+      cursor: pointer;
+      font-family: var(--font);
+      text-align: left;
+      transition: all .18s var(--ease);
+    }
+
+    .pager__btn:hover {
+      box-shadow: var(--elev-2);
+      border-color: var(--line);
+      transform: translateY(-1px);
+    }
+
+    .pager__btn--next {
+      flex-direction: row-reverse;
+      text-align: right;
+    }
+
+    .pager__btn.is-disabled {
+      visibility: hidden;
+      cursor: default;
+    }
+
+    .pager__icon {
+      width: 36px;
+      height: 36px;
+      flex: none;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--maroon-soft);
+      color: var(--mac-maroon);
+    }
+
+    .pager__icon .material-symbols-rounded {
+      font-size: 20px;
+    }
+
+    .pager__text {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .pager__lab {
+      display: block;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--ink-faint);
+      font-weight: 700;
+    }
+
+    .pager__name {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-top: 3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @media (max-width:860px) {
+      .docmain {
+        grid-template-columns: 1fr;
+      }
+
+      .dir {
+        display: none;
+      }
+    }
+  </style>
+    <link rel="icon" type="image/png" href="../assets/McMaster-logo.png">
+</head>
+
+<body>
+  <div class="app" id="app">
+
+    <!-- ===================== HUB ===================== -->
+    <div class="hubview">
+      <div class="stage" id="stage">
+        <div class="stage__content" id="stageContent"></div>
+      </div>
+
+      <header class="topbar">
+        <div class="topbar__brand">
+          <img class="topbar__logo" id="hubLogo" src="../assets/McMaster-logo.png" alt="McMaster University">
+          <div class="topbar__titles">
+            <div class="topbar__course">SMRTTECH 3CC3 · Cloud Computing and Internet of Things</div>
+            <div class="topbar__name">Master Skill Tree</div>
+          </div>
+        </div>
+        <div class="legend">
+          <span class="legend__item"><span class="legend__dot legend__dot--theory"></span>Theory</span>
+          <span class="legend__item"><span class="legend__dot legend__dot--skill"></span>Skill</span>
+          <span class="legend__item"><span class="legend__dot legend__dot--spec"></span>Spec</span>
+        </div>
+        <div class="topbar__spacer"></div>
+        <a class="docbar__back" id="returnToLabTop" href="#" hidden>Back to Lab</a>
+        <div class="search" id="search">
+          <label class="search__field">
+            <span class="material-symbols-rounded">search</span>
+            <input id="searchInput" type="search" placeholder="Search any concept…" autocomplete="off"
+              aria-label="Search concepts">
+          </label>
+          <div class="search__results" id="searchResults"></div>
+        </div>
+      </header>
+
+      <div class="controls">
+        <button class="controls__btn" id="zoomIn" title="Zoom in"><span
+            class="material-symbols-rounded">add</span></button>
+        <button class="controls__btn" id="zoomOut" title="Zoom out"><span
+            class="material-symbols-rounded">remove</span></button>
+        <button class="controls__btn" id="zoomFit" title="Fit to screen"><span
+            class="material-symbols-rounded">fit_screen</span></button>
+      </div>
+
+      <div class="hint" id="hint">
+        <span class="material-symbols-rounded">drag_pan</span>
+        Drag to pan · scroll to zoom · open a branch to explore its topics
+      </div>
+    </div>
+
+    <!-- ===================== DOC PAGE ===================== -->
+    <div class="docpage" id="docpage">
+      <div class="docbar">
+        <button class="docbar__back" id="back"><span class="material-symbols-rounded">arrow_back</span>Skill
+          Tree</button>
+        <a class="docbar__back" id="returnToLabDoc" href="#" hidden>Return to previous lab section</a>
+        <img class="docbar__logo" id="docLogo" src="../assets/McMaster-logo.png" alt="McMaster">
+        <nav class="crumb" id="crumb"></nav>
+        <div class="docbar__spacer"></div>
+      </div>
+      <div class="docmain">
+        <aside class="dir" id="dir"></aside>
+        <main class="pane" id="pane"></main>
+      </div>
+    </div>
+
+    <!-- ===================== BOOT / LOADING / ERROR ===================== -->
+    <div class="boot" id="boot">
+      <div class="boot__card">
+        <div class="boot__spinner"></div>
+        <div class="boot__label">Loading skill tree...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="curriculum-data.js"></script>
+  <script>
+    /* ============================================================
+       CATEGORY MODEL (structural — not course content)
+       ============================================================ */
+    const CATEGORIES = {
+      theory: { label: 'Theory', icon: 'lightbulb', plural: 'Theory' },
+      skill: { label: 'Skill', icon: 'build', plural: 'Skills' },
+      spec: { label: 'Spec', icon: 'memory', plural: 'Specs' },
+    };
+    const CAT_ORDER = ['theory', 'skill', 'spec'];
+
+    /* ============================================================
+       DATA MODEL — OOP. Content lives in ./curriculum.json
+       (see CURRICULUM_GUIDE.md to add/edit topics without touching code).
+       ============================================================ */
+    class SkillNode {
+      constructor(domainId, raw) { Object.assign(this, raw); this.domainId = domainId; }
+    }
+    class Domain {
+      constructor(raw) {
+        this.id = raw.id; this.title = raw.title; this.icon = raw.icon; this.blurb = raw.blurb;
+        this.nodes = raw.nodes.map(n => new SkillNode(this.id, n));
+      }
+      count(type) { return this.nodes.filter(n => n.type === type).length; }
+    }
+    class Curriculum {
+      constructor(meta, domains) {
+        this.meta = meta;
+        this.domains = domains.map(d => new Domain(d));
+        this._index = new Map();
+        this.domains.forEach(d => d.nodes.forEach(n => this._index.set(n.id, n)));
+      }
+      get(id) { return this._index.get(id); }
+      get allNodes() { return [...this._index.values()]; }
+      domain(id) { return this.domains.find(d => d.id === id); }
+      domainOf(node) { return this.domain(node.domainId); }
+      searchText(node) {
+        const rel = (node.related || []).map(id => this.get(id)?.name || '').join(' ');
+        return [node.name, node.title, node.summary, CATEGORIES[node.type].label, ...(node.keywords || []), rel].join(' ').toLowerCase();
+      }
+      /** Validates a raw parsed curriculum.json payload. Returns an array of
+       *  human-readable problem strings (empty = valid). Non-throwing by design
+       *  so the app can show every problem at once instead of failing on the first. */
+      static validate(payload) {
+        const problems = [];
+        if (!payload || typeof payload !== 'object') { problems.push('The root of curriculum.json must be an object with "course" and "domains".'); return problems; }
+        if (!payload.course || typeof payload.course !== 'object') problems.push('Missing a "course" object (title/eyebrow/desc).');
+        if (!Array.isArray(payload.domains) || !payload.domains.length) { problems.push('Missing or empty "domains" array.'); return problems; }
+
+        const domainIds = new Set(), nodeIds = new Set();
+        payload.domains.forEach((d, di) => {
+          const dLabel = d && d.id ? `"${d.id}"` : `#${di + 1}`;
+          if (!d || !d.id) problems.push(`Domain ${dLabel} is missing an "id".`);
+          else if (domainIds.has(d.id)) problems.push(`Duplicate domain id "${d.id}" — ids must be unique.`);
+          else domainIds.add(d.id);
+          if (!d || !d.title) problems.push(`Domain ${dLabel} is missing a "title".`);
+          if (!d || !d.icon) problems.push(`Domain ${dLabel} is missing an "icon" (a Material Symbols name).`);
+          if (!d || !Array.isArray(d.nodes) || !d.nodes.length) { problems.push(`Domain ${dLabel} needs a non-empty "nodes" array.`); return; }
+          d.nodes.forEach((n, ni) => {
+            const nLabel = n && n.id ? `"${n.id}"` : `#${ni + 1} in domain ${dLabel}`;
+            if (!n || !n.id) problems.push(`Node ${nLabel} is missing an "id".`);
+            else if (nodeIds.has(n.id)) problems.push(`Duplicate node id "${n.id}" — ids must be unique across the whole file.`);
+            else nodeIds.add(n.id);
+            if (!n || !CAT_ORDER.includes(n.type)) problems.push(`Node ${nLabel} has type "${n && n.type}" — must be one of: ${CAT_ORDER.join(', ')}.`);
+            if (!n || !n.name) problems.push(`Node ${nLabel} is missing a short "name" (shown in the directory).`);
+            if (!n || !n.title) problems.push(`Node ${nLabel} is missing the deeper "title" question (shown on its page).`);
+            if (!n || !Array.isArray(n.sections) || !n.sections.length) problems.push(`Node ${nLabel} needs at least one entry in "sections".`);
+            if (!n || !n.hint) problems.push(`Node ${nLabel} is missing a "hint" (Scenario Hint box).`);
+            if (!n || !n.asset) problems.push(`Node ${nLabel} is missing an "asset" filename.`);
+          });
+        });
+        payload.domains.forEach(d => (d.nodes || []).forEach(n => {
+          (n.related || []).forEach(rid => { if (!nodeIds.has(rid)) problems.push(`Node "${n.id}" lists related id "${rid}", which does not exist.`); });
+        }));
+        return problems;
+      }
+    }
+
+    /* ============================================================
+    RADIAL HUB (view 1) — Professional Cluster Layout
+    Uses CSS Flexbox to tightly pack domain cards around a central
+    hero card. Prevents overlapping entirely.
+    ============================================================ */
+    class Hub {
+      constructor(stage, content, curriculum, onOpenDomain) {
+        this.stage = stage; this.content = content; this.curriculum = curriculum; this.onOpenDomain = onOpenDomain;
+        this.view = { scale: 1, x: 0, y: 0 };
+        this._build();
+        this._bindPanZoom();
+        this._layoutWhenReady();
+      }
+      _el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+
+      _build() {
+        this.hub = this._el('div', 'hub');
+
+        // 1. Build the center card
+        this.centerCard = this._centerCard();
+
+        // 2. Build all the outer domain cards
+        const domainCards = this.curriculum.domains.map(domain => this._domainCard(domain));
+
+        // 3. To surround the center card naturally, inject it into the middle of the array
+        const middleIndex = Math.ceil(domainCards.length / 2);
+        domainCards.splice(middleIndex, 0, this.centerCard);
+
+        // 4. Append them straight to the flex container (no absolute positioning or SVG lines needed)
+        domainCards.forEach(card => this.hub.appendChild(card));
+
+        this.content.appendChild(this.hub);
+      }
+
+      _centerCard() {
+        const c = this.curriculum.meta;
+        const total = this.curriculum.allNodes.length;
+        return this._el('div', 'center', `
+      <div class="center__eyebrow">${c.eyebrow}</div>
+      <h1 class="center__title">${c.title}</h1>
+      <p class="center__desc">${c.desc}</p>
+      <span class="center__count"><span class="material-symbols-rounded">account_tree</span>${this.curriculum.domains.length} domains · ${total} topics</span>`);
+      }
+
+      _domainCard(domain) {
+        const cats = CAT_ORDER.filter(t => domain.count(t) > 0).map(t =>
+          `<span class="domain__cat"><span class="domain__cat-dot domain__cat-dot--${t}"></span>${domain.count(t)} ${CATEGORIES[t].label}</span>`).join('');
+        const card = this._el('button', 'domain', `
+      <div class="domain__head">
+        <span class="domain__icon"><span class="material-symbols-rounded">${domain.icon}</span></span>
+        <span class="domain__name">${domain.title}</span>
+        <span class="domain__arrow"><span class="material-symbols-rounded">chevron_right</span></span>
+      </div>
+      <div class="domain__blurb">${domain.blurb}</div>
+      <div class="domain__cats">${cats}</div>`);
+        card.addEventListener('click', e => { e.stopPropagation(); this.onOpenDomain(domain.id); });
+        return card;
+      }
+
+      layout() {
+        // The browser's native CSS Flex engine now handles the layout!
+        // We just need to read the final width/height for the pan-zoom 'fit' calculations.
+        this.W = this.hub.offsetWidth;
+        this.H = this.hub.offsetHeight;
+      }
+
+      /* pan / zoom */
+      _apply() { this.content.style.transform = `translate(${Math.round(this.view.x)}px, ${Math.round(this.view.y)}px) scale(${this.view.scale})`; }
+      _bindPanZoom() {
+        let panning = false, sx = 0, sy = 0, ox = 0, oy = 0;
+        this.stage.addEventListener('pointerdown', e => { if (e.target.closest('.domain')) return; panning = true; this.stage.classList.add('is-panning'); sx = e.clientX; sy = e.clientY; ox = this.view.x; oy = this.view.y; });
+        window.addEventListener('pointermove', e => { if (!panning) return; this.view.x = ox + (e.clientX - sx); this.view.y = oy + (e.clientY - sy); this._apply(); });
+        window.addEventListener('pointerup', () => { panning = false; this.stage.classList.remove('is-panning'); });
+        this.stage.addEventListener('wheel', e => { e.preventDefault(); const r = this.stage.getBoundingClientRect(); this._zoomAt(e.clientX - r.left, e.clientY - r.top, e.deltaY < 0 ? 1.12 : 1 / 1.12); }, { passive: false });
+      }
+      _zoomAt(px, py, f) { const s = Math.min(1.6, Math.max(0.3, this.view.scale * f)); const k = s / this.view.scale; this.view.x = px - (px - this.view.x) * k; this.view.y = py - (py - this.view.y) * k; this.view.scale = s; this._apply(); }
+      zoomBy(f) { const r = this.stage.getBoundingClientRect(); this._zoomAt(r.width / 2, r.height / 2, f); }
+      fit() {
+        if (!this.W || !this.H) return;
+        this.content.style.transform = 'none';
+        const sw = this.stage.clientWidth, sh = this.stage.clientHeight;
+        const scale = Math.min(1.5, (sw - 48) / this.W, (sh - 150) / this.H);
+        this.view.scale = Math.max(0.3, Math.round(scale * 100) / 100);
+        this.view.x = Math.round((sw - this.W * this.view.scale) / 2);
+        this.view.y = Math.round(Math.max(80, (sh - this.H * this.view.scale) / 2));
+        this._apply();
+      }
+      _layoutWhenReady() {
+        const run = () => { this.layout(); this.fit(); };
+        requestAnimationFrame(run);
+        setTimeout(run, 140);
+        setTimeout(run, 360);
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
+        window.addEventListener('load', run);
+      }
+    }
+
+    /* ============================================================
+       DOC PAGE (view 2)
+       ============================================================ */
+    class DocPage {
+      constructor(refs, curriculum, hooks) {
+        this.dir = refs.dir; this.pane = refs.pane; this.crumb = refs.crumb;
+        this.curriculum = curriculum; this.hooks = hooks;
+        this.activeFilters = new Set(CAT_ORDER);
+        refs.back.addEventListener('click', () => this.hooks.onBack());
+      }
+      _el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+
+      open(domainId, nodeId) {
+        this.domain = this.curriculum.domain(domainId);
+        this.nodeId = nodeId || this.domain.nodes[0].id;
+        this.activeFilters = new Set(CAT_ORDER);
+        this._renderDir();
+        this._renderPane();
+      }
+
+      _renderDir() {
+        const d = this.domain;
+        const head = this._el('div', 'dir__head', `
+      <div class="dir__domain">
+        <span class="dir__icon"><span class="material-symbols-rounded">${d.icon}</span></span>
+        <div><div class="dir__name">${d.title}</div><div class="dir__blurb">${d.nodes.length} topics</div></div>
+      </div>
+      <div class="dir__filters">
+        ${CAT_ORDER.filter(t => d.count(t) > 0).map(t => `<button class="minichip minichip--${t} is-active" data-cat="${t}"><span class="minichip__dot"></span>${CATEGORIES[t].label}</button>`).join('')}
+      </div>`);
+        const list = this._el('div', 'dir__list');
+        CAT_ORDER.forEach(type => {
+          const nodes = d.nodes.filter(n => n.type === type);
+          if (!nodes.length) return;
+          list.appendChild(this._el('div', 'dir__group', CATEGORIES[type].plural));
+          nodes.forEach(node => {
+            const item = this._el('button', `dir__item dir__item--${type}`, `
+          <span class="dir__item-rail"></span>
+          <span class="dir__item-dot dir__item-dot--${type}"></span>
+          <span class="dir__item-name">${node.name}</span>`);
+            item.dataset.nodeId = node.id; item.dataset.cat = type;
+            item.addEventListener('click', () => { this.nodeId = node.id; this._sync(); this._renderPane(); });
+            list.appendChild(item);
+          });
+        });
+        const none = this._el('div', 'dir__none', 'No topics in this filter.');
+        this.dir.replaceChildren(head, list, none);
+        head.querySelectorAll('.minichip').forEach(c => c.addEventListener('click', () => this._toggleFilter(c.dataset.cat, c)));
+        this._sync();
+      }
+
+      _toggleFilter(cat, chip) {
+        if (this.activeFilters.has(cat)) { if (this.activeFilters.size === 1) return; this.activeFilters.delete(cat); chip.classList.remove('is-active'); }
+        else { this.activeFilters.add(cat); chip.classList.add('is-active'); }
+        this._sync();
+      }
+      _sync() {
+        let shown = 0;
+        this.dir.querySelectorAll('.dir__item').forEach(it => {
+          const vis = this.activeFilters.has(it.dataset.cat);
+          it.classList.toggle('is-hidden', !vis);
+          it.classList.toggle('is-active', it.dataset.nodeId === this.nodeId);
+          if (vis) shown++;
+        });
+        this.dir.querySelectorAll('.dir__group').forEach(g => {
+          const cat = Object.keys(CATEGORIES).find(k => CATEGORIES[k].plural === g.textContent);
+          g.style.display = this.activeFilters.has(cat) ? '' : 'none';
+        });
+        const none = this.dir.querySelector('.dir__none'); if (none) none.style.display = shown ? 'none' : 'block';
+      }
+
+      _pagerBtn(item, dir) {
+        if (!item) return `<button class="pager__btn is-disabled" tabindex="-1"></button>`;
+        const icon = dir === 'prev' ? 'arrow_back' : 'arrow_forward';
+        const label = dir === 'prev' ? 'Previous' : 'Next';
+        return `<button class="pager__btn pager__btn--${dir}" data-id="${item.id}">
+        <span class="pager__icon"><span class="material-symbols-rounded">${icon}</span></span>
+        <span class="pager__text"><span class="pager__lab">${label}</span><span class="pager__name">${item.name}</span></span>
+      </button>`;
+      }
+
+      _renderPane() {
+        const node = this.curriculum.get(this.nodeId);
+        const meta = CATEGORIES[node.type];
+        const sections = node.sections.map(s => `<div class="section"><h3 class="section__h">${s.heading}</h3><p class="section__p">${s.body}</p></div>`).join('');
+        const conns = (node.related || []).map(id => {
+          const n = this.curriculum.get(id); if (!n) return '';
+          const home = n.domainId !== node.domainId ? `<span class="conn__home">· ${this.curriculum.domain(n.domainId).title}</span>` : '';
+          return `<button class="conn conn--${n.type}" data-id="${n.id}"><span class="conn__dot"></span>${n.name}${home}</button>`;
+        }).join('');
+
+        const idx = this.domain.nodes.findIndex(n => n.id === node.id);
+        const pager = `<div class="pager">${this._pagerBtn(this.domain.nodes[idx - 1], 'prev')}${this._pagerBtn(this.domain.nodes[idx + 1], 'next')}</div>`;
+
+        this.pane.innerHTML = `<div class="pane__inner">
+      <span class="pane__badge pane__badge--${node.type}">${meta.label}</span>
+      <h1 class="pane__title">${node.name}</h1>
+      <p class="pane__question">${node.title}</p>
+      <div class="figure">
+        <img class="figure__img" src="../assets/${node.asset}" alt="${node.name}">
+        <div class="asset">
+          <div class="asset__icon"><span class="material-symbols-rounded">image</span></div>
+          <div class="asset__label">Asset Required</div>
+          <div class="asset__file">../assets/${node.asset}</div>
+        </div>
+      </div>
+      ${sections}
+      <div class="scenario">
+        <h3 class="scenario__h"><span class="material-symbols-rounded">lightbulb</span>Scenario Hint — Lab Troubleshooting</h3>
+        <p class="scenario__p">${node.hint}</p>
+      </div>
+      ${conns ? `<div class="connections"><h3 class="connections__h">Connected concepts</h3><div class="connections__list">${conns}</div></div>` : ''}
+      ${pager}
+    </div>`;
+        this.pane.scrollTop = 0;
+
+        const img = this.pane.querySelector('.figure__img');
+        const figure = this.pane.querySelector('.figure');
+        img.addEventListener('load', () => figure.classList.add('is-loaded'));
+        img.addEventListener('error', () => figure.classList.remove('is-loaded'));
+
+        this.pane.querySelectorAll('.conn').forEach(c => c.addEventListener('click', () => this.hooks.onNavigate(c.dataset.id)));
+        this.pane.querySelectorAll('.pager__btn[data-id]').forEach(b => b.addEventListener('click', () => { this.nodeId = b.dataset.id; this._sync(); this._renderPane(); }));
+
+        this.crumb.innerHTML = `
+      <span class="crumb__item crumb__item--muted">${this.curriculum.meta.title.replace(' Skill Tree', '')}</span>
+      <span class="crumb__sep material-symbols-rounded">chevron_right</span>
+      <span class="crumb__item crumb__item--domain">${this.domain.title}</span>
+      <span class="crumb__sep material-symbols-rounded">chevron_right</span>
+      <span class="crumb__item crumb__item--node">${node.name}</span>`;
+      }
+    }
+
+    /* ============================================================
+       GLOBAL SEARCH
+       ============================================================ */
+    class Search {
+      constructor(input, results, curriculum, onPick) {
+        this.input = input; this.results = results; this.curriculum = curriculum; this.onPick = onPick; this.cursor = -1;
+        input.addEventListener('input', () => this._run());
+        input.addEventListener('focus', () => { if (input.value.trim()) this._run(); });
+        input.addEventListener('keydown', e => this._key(e));
+        document.addEventListener('click', e => { if (!e.target.closest('#search')) this._close(); });
+      }
+      _run() {
+        const q = this.input.value.trim().toLowerCase();
+        if (!q) { this._close(); return; }
+        this.matches = this.curriculum.allNodes
+          .filter(n => this.curriculum.searchText(n).includes(q)).slice(0, 8);
+        this.cursor = -1;
+        if (!this.matches.length) { this.results.innerHTML = `<div class="search__empty">No concepts match “${q}”.</div>`; this.results.classList.add('is-open'); return; }
+        this.results.innerHTML = this.matches.map((n, i) => `
+      <button class="search__result" data-id="${n.id}" data-i="${i}">
+        <span class="search__result-dot t-${n.type}" style="background:currentColor"></span>
+        <span class="search__result-body">
+          <span class="search__result-name">${n.name}</span>
+          <span class="search__result-path">${this.curriculum.domain(n.domainId).title} · ${CATEGORIES[n.type].label}</span>
+        </span>
+      </button>`).join('');
+        this.results.classList.add('is-open');
+        this.results.querySelectorAll('.search__result').forEach(b => b.addEventListener('click', () => this._pick(b.dataset.id)));
+      }
+      _key(e) {
+        if (!this.results.classList.contains('is-open')) return;
+        const items = [...this.results.querySelectorAll('.search__result')];
+        if (e.key === 'ArrowDown') { e.preventDefault(); this.cursor = Math.min(items.length - 1, this.cursor + 1); this._cursor(items); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); this.cursor = Math.max(0, this.cursor - 1); this._cursor(items); }
+        else if (e.key === 'Enter') { e.preventDefault(); const pick = this.cursor >= 0 ? this.matches[this.cursor] : this.matches && this.matches[0]; if (pick) this._pick(pick.id); }
+        else if (e.key === 'Escape') { this._close(); this.input.blur(); }
+      }
+      _cursor(items) { items.forEach((it, i) => it.classList.toggle('is-cursor', i === this.cursor)); }
+      _pick(id) { this._close(); this.input.value = ''; this.onPick(id); }
+      _close() { this.results.classList.remove('is-open'); }
+    }
+
+    /* ============================================================
+       APP — loads ./curriculum.json, validates it, then boots the UI.
+       ============================================================ */
+    class App {
+      constructor() {
+        this.appEl = document.getElementById('app');
+        this.boot = document.getElementById('boot');
+        ['hubLogo', 'docLogo'].forEach(id => {
+          const img = document.getElementById(id);
+          img.addEventListener('error', () => img.classList.add('is-missing'));
+        });
+        this._boot();
+      }
+
+      _readReturnTarget() {
+        const params = new URLSearchParams(window.location.search);
+        const target = params.get('return') || sessionStorage.getItem('smrttech-skill-tree:return');
+        if (!target || !/\/labs\/lab-\d+/i.test(target)) return '';
+        sessionStorage.setItem('smrttech-skill-tree:return', target);
+        return target;
+      }
+
+      _setupLabReturn() {
+        const target = this._readReturnTarget();
+        ['returnToLabTop', 'returnToLabDoc'].forEach(id => {
+          const link = document.getElementById(id);
+          if (!link) return;
+          link.hidden = !target;
+          if (target) link.href = target;
+        });
+      }
+
+      _initialTopicId() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('topic') || window.location.hash.replace(/^#/, '');
+      }
+
+      async _boot() {
+        let payload;
+        try {
+          if (window.SMRTTECH_CURRICULUM) {
+            payload = window.SMRTTECH_CURRICULUM;
+          } else {
+            const res = await fetch('curriculum.json', { cache: 'no-store' });
+            if (!res.ok) throw new Error(`Server responded ${res.status} for curriculum.json`);
+            payload = await res.json();
+          }
+        } catch (err) {
+          this._bootError('Couldn\u2019t load curriculum.json', err.message, []);
+          return;
+        }
+        const problems = Curriculum.validate(payload);
+        if (problems.length) {
+          this._bootError('curriculum.json has a few problems', 'Fix these and reload:', problems);
+          return;
+        }
+        this.curriculum = new Curriculum(payload.course, payload.domains);
+        this._buildUI();
+        this._setupLabReturn();
+        const initialTopic = this._initialTopicId();
+        if (initialTopic && this.curriculum.get(initialTopic)) this.openNode(initialTopic);
+        this.boot.classList.add('is-hidden');
+        setTimeout(() => this.boot.classList.add('is-gone'), 320);
+      }
+
+      _bootError(title, msg, problems) {
+        const list = problems && problems.length
+          ? `<ul class="boot__list">${problems.map(p => `<li>${p}</li>`).join('')}</ul>` : '';
+        this.boot.classList.add('boot--error');
+        this.boot.innerHTML = `
+      <div class="boot__card">
+        <div class="boot__icon-wrap"><span class="material-symbols-rounded">error</span></div>
+        <h1 class="boot__title">${title}</h1>
+        <p class="boot__msg">${msg}</p>
+        ${list}
+        <p class="boot__hint">If the tree does not load, make sure <code>skill-tree.html</code>, <code>curriculum-data.js</code>, <code>curriculum.json</code>, and the shared <code>../assets/</code> folder were uploaded together.</p>
+      </div>`;
+      }
+
+      _buildUI() {
+        this.hub = new Hub(document.getElementById('stage'), document.getElementById('stageContent'), this.curriculum, id => this.openDomain(id));
+        this.doc = new DocPage(
+          { dir: document.getElementById('dir'), pane: document.getElementById('pane'), crumb: document.getElementById('crumb'), back: document.getElementById('back') },
+          this.curriculum, { onBack: () => this.toHub(), onNavigate: id => this.openNode(id) }
+        );
+        this.search = new Search(document.getElementById('searchInput'), document.getElementById('searchResults'), this.curriculum, id => this.openNode(id));
+
+        document.getElementById('zoomIn').addEventListener('click', () => this.hub.zoomBy(1.2));
+        document.getElementById('zoomOut').addEventListener('click', () => this.hub.zoomBy(1 / 1.2));
+        document.getElementById('zoomFit').addEventListener('click', () => this.hub.fit());
+        window.addEventListener('resize', () => { if (!this.appEl.classList.contains('is-doc')) this.hub.fit(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && this.appEl.classList.contains('is-doc')) this.toHub(); });
+
+        this.hint = document.getElementById('hint');
+      }
+      openDomain(domainId, nodeId) {
+        this.doc.open(domainId, nodeId);
+        this.appEl.classList.add('is-doc');
+      }
+      openNode(id) {
+        const node = this.curriculum.get(id); if (!node) return;
+        this.openDomain(node.domainId, id);
+      }
+      toHub() {
+        this.appEl.classList.remove('is-doc');
+        if (this.hint) this.hint.style.opacity = '';
+        requestAnimationFrame(() => this.hub.fit());
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { window.__app = new App(); });
+  </script>
+</body>
+
+</html>

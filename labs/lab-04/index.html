@@ -1,0 +1,942 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SMRTTECH 3CC3 Lab 4: Load Cells, Strain Gauges, and Signal Amplification.">
+    <title>Lab 4 | Load Cells, Strain Gauges, and Signal Amplification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mac-maroon: #7A003C;
+            --mac-gold: #FDBF57;
+            --mac-grey: #495965;
+            --mac-maroon-20: #E4CCDA;
+            --mac-maroon-80: #953360;
+            --mac-gold-20: #FFF2DD;
+            --mac-gold-60: #FED999;
+            --mac-grey-20: #DBDEE0;
+            --mac-grey-40: #B6BDC1;
+            --mac-grey-80: #6D7A82;
+            --lab-background: #F7F8FA;
+            --lab-surface: #FFFFFF;
+            --lab-text: #2D3338;
+            --success: #287A4B;
+            --danger: #B42318;
+            --content: 1180px;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        body {
+            margin: 0;
+            font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--lab-background);
+            color: var(--lab-text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        a { color: inherit; }
+        button, input, select, textarea { font: inherit; }
+        code, .font-mono { font-family: 'Roboto Mono', Consolas, monospace; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+        .gradient-text { background: linear-gradient(135deg, var(--mac-maroon) 0%, var(--mac-maroon-80) 62%, var(--mac-gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stage-bar { position: fixed; inset: 0 0 auto 0; z-index: 40; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(73,89,101,0.12); box-shadow: 0 4px 20px rgba(0,0,0,0.04); max-width: 100vw; overflow: hidden; }
+        .stage-bar-inner { width: 100%; max-width: var(--content); margin: 0 auto; padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.65rem; overflow-x: auto; }
+        .stage-label { flex: 0 0 auto; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mac-grey-80); margin-right: 0.3rem; }
+        .stage-btn { flex: 0 0 auto; min-height: 38px; padding: 0.55rem 0.95rem; border-radius: 9px; border: 1px solid transparent; font-size: 0.83rem; font-weight: 700; color: var(--mac-grey); background: transparent; text-decoration: none; transition: all 0.2s ease; white-space: nowrap; cursor: pointer; }
+        .stage-btn:hover { background: var(--mac-grey-20); }
+        .stage-btn:focus-visible, .utility-button:focus-visible, .nav-button:focus-visible, details summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--mac-gold); outline-offset: 3px; }
+        .stage-btn.active, .stage-btn.page-current { color: white; background: var(--mac-maroon); box-shadow: 0 5px 13px rgba(122,0,60,0.28); }
+        .stage-btn.completed:not(.active)::after { content: "âœ“"; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 6px; border-radius: 50%; color: white; background: var(--success); font-size: 0.68rem; font-weight: 700; }
+        .lab-stage-label { margin-left: 0.65rem; padding-left: 0.85rem; border-left: 1px solid rgba(73,89,101,0.18); }
+        .auto-score-chip { flex: 0 0 auto; margin-left: auto; padding: 0.45rem 0.7rem; border-radius: 999px; border: 1px solid var(--mac-gold-60); background: var(--mac-gold-20); color: #5B3900; font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
+        .page-header { padding: 0 0 2.2rem; }
+        h1, h2, h3 { line-height: 1.15; margin-top: 0; }
+        h1 { margin: 0 0 0.7rem; letter-spacing: 0; }
+        p { margin-top: 0; }
+        .card { background: var(--lab-surface); border: 1px solid rgba(73,89,101,0.10); border-radius: 16px; box-shadow: 0 10px 18px -8px rgba(0,0,0,0.16), 0 4px 8px -4px rgba(0,0,0,0.08); }
+        .section-card { padding: 1.75rem; margin-bottom: 2rem; }
+        .border-maroon { border-left: 4px solid var(--mac-maroon); }
+        .border-gold { border-left: 4px solid var(--mac-gold); }
+        .border-success { border-left: 4px solid var(--success); }
+        .border-warning { border-left: 4px solid var(--mac-gold); }
+        .stage-panel { display: block; padding-bottom: 2rem; }
+        .js-enabled .stage-panel { display: none; }
+        .js-enabled.stage-0 .stage-panel.stage-0,
+        .js-enabled.stage-1 .stage-panel.stage-1,
+        .js-enabled.stage-2 .stage-panel.stage-2,
+        .js-enabled.stage-3 .stage-panel.stage-3,
+        .js-enabled.stage-4 .stage-panel.stage-4,
+        .js-enabled.stage-5 .stage-panel.stage-5,
+        .js-enabled.stage-6 .stage-panel.stage-6,
+        .js-enabled.stage-7 .stage-panel.stage-7,
+        .js-enabled.stage-8 .stage-panel.stage-8,
+        .js-enabled.stage-9 .stage-panel.stage-9 { display: block; }
+        .grid-layout { display: grid; gap: 1rem; }
+        .grid-layout.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-layout.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid-layout.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .mini-card { border: 1px solid rgba(73,89,101,0.13); border-radius: 12px; padding: 1rem; background: #fff; }
+        .briefing-card { background: #F8FAFC; border-radius: 12px; padding: 18px; border-left: 4px solid var(--mac-maroon); }
+        .warning-card { background: var(--mac-gold-20); border: 1px solid var(--mac-gold-60); border-left: 5px solid var(--mac-gold); color: #5B3900; border-radius: 12px; padding: 16px; }
+        .danger-card { background: #FFF3F2; border: 1px solid #FECACA; border-left: 5px solid var(--danger); color: #7A271A; border-radius: 12px; padding: 16px; }
+        .success-card { background: #EFFAF3; border: 1px solid #B7E4C7; border-left: 5px solid var(--success); color: #174D2D; border-radius: 12px; padding: 16px; }
+        .chip-row { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 1rem 0; }
+        .chip-row.compact { margin: 0; }
+        .mt-block { margin-top: 1rem; }
+        .stage-summary-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.42rem 0.7rem; border-radius: 999px; background: var(--mac-gold-20); color: #5B3900; border: 1px solid rgba(253,191,87,0.35); font-size: 0.82rem; font-weight: 700; }
+        .signal-chain { display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 0.7rem; margin-top: 1rem; }
+        .signal-step { min-height: 88px; padding: 0.85rem; border-radius: 12px; background: #fff; border: 1px solid rgba(122,0,60,0.16); color: var(--mac-maroon); font-weight: 800; }
+        .signal-step span { display: block; margin-top: 0.3rem; color: var(--mac-grey); font-size: 0.82rem; font-weight: 500; }
+        .completion-box { display: flex; align-items: flex-start; gap: 0.7rem; min-height: 44px; padding: 0.75rem; border-radius: 10px; border: 1px solid rgba(73,89,101,0.14); background: #fff; }
+        .completion-box input { margin-top: 0.25rem; min-width: 18px; min-height: 18px; accent-color: var(--mac-maroon); }
+        .response-field { display: grid; gap: 0.35rem; margin-bottom: 0.85rem; }
+        .response-field span { font-weight: 700; }
+        .response-input, .response-field textarea, .response-field input, .response-field select, table input, table select, table textarea { width: 100%; border: 1px solid #CBD5E1; border-radius: 9px; padding: 0.65rem 0.75rem; background: #fff; color: var(--lab-text); }
+        textarea { min-height: 92px; resize: vertical; }
+        details { border: 1px solid rgba(73,89,101,0.14); border-radius: 12px; background: #fff; margin: 0.75rem 0; }
+        details summary { cursor: pointer; padding: 0.9rem 1rem; font-weight: 800; color: var(--mac-maroon); }
+        details > div { padding: 0 1rem 1rem; }
+        .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(73,89,101,0.14); background: #fff; }
+        table { width: 100%; border-collapse: collapse; min-width: 720px; }
+        th, td { padding: 0.75rem; border-bottom: 1px solid rgba(73,89,101,0.12); text-align: left; vertical-align: top; }
+        th { background: #F3F4F6; color: var(--mac-grey); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; }
+        .diagram-card { padding: 1rem; border-radius: 14px; background: #fff; border: 1px solid rgba(73,89,101,0.14); }
+        .diagram-card img, .diagram-card svg { max-width: 100%; height: auto; display: block; }
+        figcaption { color: var(--mac-grey); font-size: 0.92rem; margin-top: 0.6rem; }
+        .logic-flow { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+        .logic-flow span { padding: 0.6rem 0.75rem; border-radius: 10px; background: #fff; border: 1px solid rgba(122,0,60,0.15); font-weight: 700; }
+        .logic-flow b { color: var(--mac-gold); }
+        .order-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+        .order-item { display: grid; grid-template-columns: auto 1fr; gap: 0.6rem; align-items: center; padding: 0.75rem; border-radius: 10px; background: #fff; border: 1px solid rgba(73,89,101,0.14); }
+        .sidebar { position: fixed; top: 0; height: 100vh; width: min(500px, calc(100vw - 48px)); background: white; box-shadow: 0 0 50px rgba(0,0,0,0.22); z-index: 60; transition: transform 0.38s cubic-bezier(0.25,1,0.5,1); display: flex; flex-direction: column; }
+        #hardwareSidebar { left: 0; transform: translateX(-100%); }
+        #hardwareSidebar.active { transform: translateX(0); }
+        #softwareSidebar { right: 0; transform: translateX(100%); }
+        #softwareSidebar.active { transform: translateX(0); }
+        .sidebar-handle { position: absolute; top: 50%; width: 34px; height: 62px; border: 0; background: var(--mac-maroon); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; z-index: 65; }
+        .sidebar-handle:hover { background: var(--mac-maroon-80); }
+        #handle-hw { right: -34px; border-radius: 0 9px 9px 0; box-shadow: 4px 0 12px rgba(0,0,0,0.16); }
+        #handle-sw { left: -34px; border-radius: 9px 0 0 9px; box-shadow: -4px 0 12px rgba(0,0,0,0.16); }
+        .handle-icon { transition: transform 0.4s ease; stroke-width: 3px; }
+        #hardwareSidebar.active #handle-hw .handle-icon, #softwareSidebar.active #handle-sw .handle-icon { transform: rotate(180deg); }
+        .utility-button, .nav-button { min-height: 42px; padding: 0.72rem 1rem; border-radius: 9px; font-size: 0.88rem; font-weight: 800; transition: all 0.2s ease; cursor: pointer; text-decoration: none; }
+        .utility-button, .nav-button.secondary { background: white; color: var(--mac-grey); border: 1px solid var(--mac-grey-40); }
+        .utility-button:hover, .nav-button.secondary:hover { background: var(--mac-grey-20); }
+        .nav-button.primary { background: var(--mac-maroon); color: white; border: 1px solid var(--mac-maroon); }
+        .nav-button.primary:hover { background: var(--mac-maroon-80); }
+        .stage-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #E5E7EB; }
+        .stage-message { display: none; width: 100%; margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.88rem; font-weight: 600; }
+        .stage-message.show { display: block; }
+        .stage-message.success { background: #EFFAF3; border: 1px solid #B7E4C7; color: #174D2D; }
+        .knowledge-skill-list { display: grid; gap: 0.55rem; margin: 0; padding: 0; list-style: none; }
+        .knowledge-skill-list a { display: block; padding: 0.7rem 0.8rem; border-radius: 10px; border: 1px solid #DDE3E8; background: white; color: var(--lab-text); font-weight: 700; text-decoration: none; }
+        .optional-card { border-left: 5px solid var(--mac-gold); }
+        @media (max-width: 900px) {
+            .grid-layout.two, .grid-layout.three, .grid-layout.four, .order-grid { grid-template-columns: 1fr; }
+            .signal-chain { grid-template-columns: 1fr; }
+            .auto-score-chip { margin-left: 0; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.001ms !important; animation-duration: 0.001ms !important; }
+        }
+        @media print {
+            .stage-bar { display: none !important; }
+            .stage-panel { display: block !important; break-inside: avoid; }
+            body { background: #fff; }
+            .card { box-shadow: none; }
+            a::after { content: " (" attr(href) ")"; font-size: 0.8em; }
+        }
+        /* Completion indicator: use a CSS escape so the glyph remains valid in every file encoding. */
+        .stage-btn.completed::after { content: "\2713"; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 6px; border: 1px solid #23834d; border-radius: 50%; color: #126b3a; background: #e3f5e9; font-size: 0.84rem; font-weight: 800; line-height: 1; }
+    </style>
+    <link rel="icon" type="image/png" href="../../assets/McMaster-logo.png">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+</head>
+<body class="pb-24 pt-24 stage-0">
+    <nav class="stage-bar" aria-label="Lab progress">
+        <div class="stage-bar-inner">
+            <span class="stage-label">Student Space</span>
+            <a class="stage-btn" href="../../index.html">Home</a>
+            <span class="stage-btn page-current" aria-current="page">Lab 4</span>
+            <span class="stage-label lab-stage-label">Lab Progress</span>
+            <button class="stage-btn active" id="btn-stage-0" type="button" data-stage="0">Prepare</button>
+            <button class="stage-btn" id="btn-stage-1" type="button" data-stage="1">Predict</button>
+            <button class="stage-btn" id="btn-stage-2" type="button" data-stage="2">Build Load Cell</button>
+            <button class="stage-btn" id="btn-stage-3" type="button" data-stage="3">Raw Signal</button>
+            <button class="stage-btn" id="btn-stage-4" type="button" data-stage="4">Stage 1 Amp</button>
+            <button class="stage-btn" id="btn-stage-5" type="button" data-stage="5">Stage 2 Amp</button>
+            <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">LabVIEW</button>
+            <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Extend</button>
+            <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Troubleshoot</button>
+            <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Reflect</button>
+            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/10</strong></div>
+        </div>
+    </nav>
+
+    <aside id="hardwareSidebar" class="sidebar" aria-label="Lab tools and access reference">
+        <button id="handle-hw" class="sidebar-handle" type="button" data-sidebar-toggle="hardwareSidebar" title="Open lab tools reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            <span class="sr-only">Open lab tools reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Tools & Access</h3>
+            <p class="text-sm text-white/75 mt-1">Load cell, LMC6484, voltmeter, Arduino A0</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Setup Checklist</h4>
+                <ul class="text-sm text-gray-600 list-disc ml-5">
+                    <li>Read the load-cell datasheet from Avenue to Learn.</li>
+                    <li>Read the op-amp datasheet and confirm the correct component with your instructor.</li>
+                    <li>Confirm LINX firmware is loaded and Arduino Mega appears on the expected port.</li>
+                    <li>Have a voltmeter ready for SIG+, SIG-, V2, and V3 measurements.</li>
+                </ul>
+            </div>
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Key Values</h4>
+                <dl class="grid grid-cols-2 gap-y-3 text-sm">
+                    <dt class="text-gray-500">Stage 1 pins</dt><dd class="font-semibold text-right">1, 2, 3</dd>
+                    <dt class="text-gray-500">Stage 2 pins</dt><dd class="font-semibold text-right">8, 9, 10</dd>
+                    <dt class="text-gray-500">AV1</dt><dd class="font-semibold text-right">100</dd>
+                    <dt class="text-gray-500">AV2</dt><dd class="font-semibold text-right">11</dd>
+                    <dt class="text-gray-500">Ideal total</dt><dd class="font-semibold text-right">1100</dd>
+                </dl>
+            </div>
+            <div class="warning-card text-sm">
+                <h4 class="font-bold uppercase mb-2">Component Note</h4>
+                <p>The PDF prelab names LMC6482, while the materials and procedure use LMC6484. Use the component in your kit and confirm the datasheet with your instructor.</p>
+            </div>
+        </div>
+    </aside>
+
+    <aside id="softwareSidebar" class="sidebar" aria-label="Formula and concept reference">
+        <button id="handle-sw" class="sidebar-handle" type="button" data-sidebar-toggle="softwareSidebar" title="Open formula and concept reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            <span class="sr-only">Open formula and concept reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Gain & Concepts</h3>
+            <p class="text-sm text-white/75 mt-1">Bridge signal, amplification, LabVIEW voltage</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Lab 4 Knowledge Skills</h4>
+                <ul class="knowledge-skill-list text-sm">
+                    <li><a href="../../knowledge/skill-tree.html?topic=experimental-evidence">Measurement evidence</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=analog-input">Analog input and ADC</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW interface</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Troubleshooting sequence</a></li>
+                </ul>
+            </div>
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Gain Equations</h4>
+                <p class="font-mono text-base">AV1 = R3 / R1 = 100</p>
+                <p class="font-mono text-base mt-2">AV2 = 1 + R6 / R5 = 11</p>
+                <p class="font-mono text-base mt-2">AVtotal = AV1 * AV2 = 1100</p>
+            </div>
+            <div class="card p-5">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Worksheet Tools</h4>
+                <div class="grid gap-2">
+                    <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
+                    <button class="utility-button" type="button" data-print>Print worksheet</button>
+                    <button class="utility-button" type="button" data-reset>Reset Lab 4 local data</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <header class="page-header max-w-6xl mx-auto px-6 lg:px-8 mb-10">
+        <div class="flex flex-col md:flex-row md:items-center gap-7 border-b border-gray-200 pb-8">
+            <img src="../../assets/McMaster-logo.png" alt="McMaster University logo" class="h-20 w-auto object-contain">
+            <div class="hidden md:block h-16 w-px bg-gray-200" aria-hidden="true"></div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#7A003C] mb-2">SMRTTECH 3CC3 &middot; Cloud Computing and Internet of Things</p>
+                <h1 class="lab-page-title text-4xl lg:text-5xl font-extrabold tracking-tight mb-2">
+                    <span class="lab-title-prefix">Lab 4:</span> <span class="lab-title-gradient">Load Cells, Strain Gauges, and Signal Amplification</span>
+                </h1>
+                <p class="text-[#495965] text-lg lg:text-xl font-light max-w-4xl">From mechanical strain to amplified voltage to LabVIEW data.</p>
+            </div>
+        </div>
+        <div class="flex flex-wrap gap-2 mt-5">
+            <span class="stage-summary-chip">Software: LabVIEW + LINX</span>
+            <span class="stage-summary-chip">Hardware: load cell + LMC6484</span>
+            <span class="stage-summary-chip">Core concept: tiny differential voltage</span>
+            <span class="stage-summary-chip">Deliverables: measurements, VI, gain redesign</span>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 lg:px-8">
+        <noscript><section class="section-card card border-warning"><h2>JavaScript is disabled</h2><p>This lab remains readable. Interactive progress saving, gain checks, ordering checks, and response export require JavaScript.</p></section></noscript>
+
+        <section class="stage-panel stage-0" id="prepare" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Scenario</p>
+                <h2>Build the local force-measurement layer</h2>
+                <div class="briefing-card mt-block">
+                    <h3 class="text-lg font-bold mb-2">Central question</h3>
+                    <p class="mb-0">How does an applied force become a measurable voltage and then a live LabVIEW reading?</p>
+                </div>
+                <p>You are building a local IoT measurement node that can detect applied force. Before this measurement can be logged or sent to the cloud, the system must safely excite a load cell, amplify its very small voltage output, read the amplified voltage with Arduino, and display a trustworthy live value in LabVIEW.</p>
+                <p>This lab focuses on the local sensing and signal-conditioning layer. It does not yet upload force data to the cloud.</p>
+                <div class="signal-chain" aria-label="Conceptual signal chain">
+                    <div class="signal-step">Applied force<span>Metal bar bends slightly.</span></div>
+                    <div class="signal-step">Strain gauges<span>Resistance changes in the bridge.</span></div>
+                    <div class="signal-step">SIG+ and SIG-<span>Tiny differential voltage appears.</span></div>
+                    <div class="signal-step">Amplifiers<span>V2 and then V3 increase the signal.</span></div>
+                    <div class="signal-step">A0 and LabVIEW<span>Voltage is displayed live.</span></div>
+                </div>
+                <p class="warning-card mt-block">LabVIEW does not directly measure force. It reads amplified voltage. Calibration is required to display force units.</p>
+            </article>
+
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Overview</p>
+                <h2>Time, tools, and prerequisites</h2>
+                <div class="grid-layout four">
+                    <div class="mini-card"><strong>Pre-lab</strong><p>30-45 minutes</p></div>
+                    <div class="mini-card"><strong>Lab time</strong><p>3 hours</p></div>
+                    <div class="mini-card"><strong>Post-lab</strong><p>45-60 minutes</p></div>
+                    <div class="mini-card"><strong>Safety</strong><p>Low-voltage electronics with mechanical-force and op-amp wiring caution.</p></div>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <div class="mini-card"><h3>Software</h3><p>LabVIEW, NI LabVIEW LINX Toolkit, and LINX firmware loaded to Arduino.</p></div>
+                    <div class="mini-card"><h3>Hardware</h3><p>Arduino Mega, breadboard, jumper wires, load cell, screw terminals, LMC6484 op-amp, 10 kOhm, 100 kOhm, and 1 MOhm resistors, voltmeter, and USB cable.</p></div>
+                </div>
+                <p class="briefing-card mt-block">Prerequisite: LabVIEW LINX analog reading from previous labs.</p>
+            </article>
+
+            <article class="section-card card border-success">
+                <p class="eyebrow">Learning Outcomes</p>
+                <h2>By the end of this lab, you should be able to...</h2>
+                <div class="learning-outcome-grid">
+                    <div class="learning-outcome-card"><strong>Load-cell behavior</strong><span>Explain how applied force causes strain in a load cell.</span></div>
+                    <div class="learning-outcome-card"><strong>Strain gauges</strong><span>Explain how deformation becomes resistance change.</span></div>
+                    <div class="learning-outcome-card"><strong>Bridge output</strong><span>Explain why the Wheatstone Bridge produces a small differential voltage.</span></div>
+                    <div class="learning-outcome-card"><strong>Measurement</strong><span>Measure SIG+ to SIG- and compare readings across load conditions.</span></div>
+                    <div class="learning-outcome-card"><strong>Amplification</strong><span>Build and test the first and second op-amp stages.</span></div>
+                    <div class="learning-outcome-card"><strong>Gain math</strong><span>Calculate first-stage, second-stage, and total cascaded gain.</span></div>
+                    <div class="learning-outcome-card"><strong>LabVIEW readout</strong><span>Read amplified voltage using Arduino A0 and LabVIEW LINX.</span></div>
+                    <div class="learning-outcome-card"><strong>Design revision</strong><span>Propose a modification that halves total amplification.</span></div>
+                </div>
+            </article>
+
+            <article class="section-card card border-warning">
+                <p class="eyebrow">Safety And Setup</p>
+                <h2>Pre-power checklist</h2>
+                <div class="danger-card"><strong>STOP - Check the load-cell wiring, op-amp orientation, resistor values, and Arduino input voltage range before powering the circuit.</strong><p>This checklist supports safe work, but does not replace instructor approval when approval is required.</p></div>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-power"><span>USB or power is disconnected before wiring changes.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-rails"><span>5 V and GND rails are verified before powering.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-short"><span>5 V is not shorted to GND.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-opamp"><span>Op-amp orientation and LMC6484 pin numbers are checked.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-resistors"><span>Resistor values are verified, with a multimeter if uncertain.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-a0"><span>Arduino A0 will not be connected to voltage outside the allowed analog-input range.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-force"><span>Force will be applied gently and only in the indicated direction.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-loadcell"><span>The load cell is stable at the table edge and will not be overloaded.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-meter"><span>Measurement reference is confirmed before recording voltage.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-help"><span>I will ask for help if Arduino, op-amp, or load cell becomes hot or behaves unexpectedly.</span></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-1" id="predict" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Pre-Lab</p>
+                <h2>Predict before building</h2>
+                <div class="warning-card">
+                    <strong>Datasheet note:</strong> The PDF prelab names LMC6482, while the materials and circuit procedure use LMC6484. Use the component provided in your lab kit and confirm the correct datasheet with your instructor.
+                </div>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-loadcell"><span>Load-cell datasheet reviewed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-opamp"><span>LMC6484 op-amp datasheet reviewed or confirmed with instructor.</span></label>
+                </div>
+
+                <h3>Activity B: Build the measurement chain</h3>
+                <p>Drag the events into order, or use the numbered selects if you prefer keyboard entry.</p>
+                <div class="order-grid" data-dnd-order>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-force"></select><span>Force is applied</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-bend"></select><span>Load cell bends slightly</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-strain"></select><span>Strain gauges change resistance</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-bridge"></select><span>Bridge output creates SIG+ and SIG-</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-meter"></select><span>Voltmeter measures small differential voltage</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-stage1"></select><span>First op-amp stage amplifies the signal</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-stage2"></select><span>Second op-amp stage amplifies again</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-a0"></select><span>Arduino A0 reads amplified voltage</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-linx"></select><span>LabVIEW LINX receives analog value</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-display"></select><span>LabVIEW displays voltage</span></label>
+                </div>
+                <div class="chip-row"><button class="utility-button" type="button" data-check-order>Check order</button><span data-order-feedback aria-live="polite"></span></div>
+
+                <label class="response-field"><span>Why might the raw voltage across SIG+ and SIG- be too small to read accurately with Arduino?</span><textarea class="persist-text" data-key="predict-raw-small"></textarea></label>
+                <details><summary>Hint after you predict</summary><div><p>Arduino's analog input has limited resolution. Amplifying a tiny sensor voltage allows more of the input range to be used, improving useful measurement sensitivity.</p></div></details>
+
+                <h3>Activity D: Gain calculations</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Calculation</th><th>Given values</th><th>Your answer</th><th>Check</th></tr></thead>
+                        <tbody>
+                            <tr><td>AV1 = R3 / R1</td><td>R3 = 1 MOhm, R1 = 10 kOhm</td><td><input type="number" class="persist-text gain-input" data-key="gain-av1" data-expected="100"></td><td data-gain-result="gain-av1"></td></tr>
+                            <tr><td>AV2 = 1 + R6 / R5</td><td>R6 = 100 kOhm, R5 = 10 kOhm</td><td><input type="number" class="persist-text gain-input" data-key="gain-av2" data-expected="11"></td><td data-gain-result="gain-av2"></td></tr>
+                            <tr><td>AVtotal = AV1 * AV2</td><td>100 * 11</td><td><input type="number" class="persist-text gain-input" data-key="gain-total" data-expected="1100"></td><td data-gain-result="gain-total"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-2" id="build-load-cell" tabindex="-1">
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Checkpoint 1</p>
+                <h2>Build the raw load-cell sensing circuit</h2>
+                <p>Use Arduino 5 V and GND, connect the load cell through screw terminals, and construct the initial circuit at the far end of the breadboard because later amplifier stages will be added.</p>
+                <div class="grid-layout three">
+                    <figure class="diagram-card">
+                        <img src="../../assets/lab4-pdf-load-cell-photo.jpg" alt="Source PDF photo of the load cell mounted at the edge of a table.">
+                        <figcaption>Source PDF load-cell setup: pin one end and apply force gently in the indicated direction.</figcaption>
+                    </figure>
+                    <figure class="diagram-card">
+                        <img src="../../assets/lab4-pdf-raw-circuit.png" alt="Source PDF schematic for the initial load-cell circuit connected to Arduino 5 volts and ground.">
+                        <figcaption>Source PDF raw circuit: Arduino 5 V and GND excite the load-cell bridge before amplification.</figcaption>
+                    </figure>
+                    <figure class="diagram-card">
+                        <img src="../../assets/lab4-pdf-opamp-pinout.png" alt="Source PDF LMC6484 op-amp pinout diagram showing four op-amps and pin numbers.">
+                        <figcaption>Source PDF LMC6484 pinout: use this pin reference before wiring amplifier stages.</figcaption>
+                    </figure>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <div class="mini-card">
+                        <h3>Think it through</h3>
+                        <ul>
+                            <li>Which wires supply the load cell?</li>
+                            <li>Which wires carry the measurement signal?</li>
+                            <li>Why are SIG+ and SIG- measured relative to each other first?</li>
+                            <li>What would happen if SIG+ or SIG- were loose?</li>
+                            <li>Why is the load cell placed at the edge of the table?</li>
+                            <li>Why must force be applied in the indicated direction?</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Required evidence</h3>
+                        <label class="response-field"><span>Excitation voltage used</span><input class="persist-text" data-key="raw-excitation" value="5 V"></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="raw-ground"><span>Ground reference checked.</span></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="raw-terminals"><span>Load-cell screw-terminal connections checked.</span></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="raw-sig"><span>SIG+ and SIG- identified.</span></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="raw-force-direction"><span>Force direction confirmed.</span></label>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-3" id="raw-signal" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Checkpoint 2</p>
+                <h2>Measure the tiny differential output</h2>
+                <p>Put the load cell at the edge of the table, pin one end carefully, and apply force gently to the other end in the indicated direction. Record a range rather than trusting one reading.</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Condition</th><th>Measurement point</th><th>Voltage</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>No load</td><td>SIG+ to SIG-</td><td><input class="persist-text" data-key="raw-no-load" data-stage-required></td><td><input class="persist-text" data-key="raw-no-load-notes"></td></tr>
+                            <tr><td>Gentle load</td><td>SIG+ to SIG-</td><td><input class="persist-text" data-key="raw-gentle"></td><td><input class="persist-text" data-key="raw-gentle-notes"></td></tr>
+                            <tr><td>Maximum safe load</td><td>SIG+ to SIG-</td><td><input class="persist-text" data-key="raw-max"></td><td><input class="persist-text" data-key="raw-max-notes"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h3>Think it through</h3>
+                <ul>
+                    <li>Is the raw signal single-ended or differential?</li>
+                    <li>Is the no-load output exactly zero? Why or why not?</li>
+                    <li>What might cause the reading to drift?</li>
+                    <li>Why might hand-applied force produce inconsistent readings?</li>
+                    <li>Why is this raw signal not yet ideal for direct IoT measurement?</li>
+                </ul>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-4" id="stage1" tabindex="-1">
+            <article class="section-card card border-success">
+                <p class="eyebrow">Checkpoint 3</p>
+                <h2>Amplify the load-cell signal with the first op-amp stage</h2>
+                <p>Add the first-stage amplifier using the LMC6484. Use pin 2 for SIG-, pin 3 for SIG+, and pin 1 for output V2. Use R3 = R4 = 1 MOhm and R1 = R2 = 10 kOhm. The ideal gain is AV = R3 / R1 = 100.</p>
+                <figure class="diagram-card">
+                    <img src="../../assets/lab4-pdf-stage1-circuit.png" alt="Source PDF schematic showing the first LMC6484 amplifier stage for the load-cell signal.">
+                    <figcaption>Source PDF first-stage amplifier: R3/R1 sets the ideal gain of 100 for the V2 output.</figcaption>
+                </figure>
+                <div class="danger-card"><strong>Before connecting V2 to Arduino A0, verify that V2 remains within the Arduino analog input range.</strong></div>
+                <div class="table-wrap mt-block">
+                    <table>
+                        <thead><tr><th>Condition</th><th>Measurement point</th><th>Expected relationship</th><th>Voltage</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>No load</td><td>V2 to GND</td><td>Amplified output</td><td><input class="persist-text" data-key="v2-no-load" data-stage-required></td><td><input class="persist-text" data-key="v2-no-load-notes"></td></tr>
+                            <tr><td>Gentle load</td><td>V2 to GND</td><td>Larger or smaller depending on force direction</td><td><input class="persist-text" data-key="v2-gentle"></td><td><input class="persist-text" data-key="v2-gentle-notes"></td></tr>
+                            <tr><td>Maximum safe load</td><td>V2 to GND</td><td>Within Arduino input range</td><td><input class="persist-text" data-key="v2-max"></td><td><input class="persist-text" data-key="v2-max-notes"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h3>Think it through</h3>
+                <ul>
+                    <li>Why do we amplify the load-cell signal?</li>
+                    <li>What does the resistor ratio determine?</li>
+                    <li>Why are R3 and R4 equal?</li>
+                    <li>Why are R1 and R2 equal?</li>
+                    <li>What does V2 represent?</li>
+                    <li>What would happen if SIG+ and SIG- were reversed?</li>
+                    <li>How can you verify that the gain is approximately correct?</li>
+                </ul>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-5" id="stage2" tabindex="-1">
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Checkpoint 4</p>
+                <h2>Add a non-inverting second-stage amplifier</h2>
+                <p>Add the second-stage amplifier using op-amp number three on the LMC6484 chip, pins 8, 9, and 10. Use R5 = 10 kOhm and R6 = 100 kOhm. The additional ideal gain is AV = 1 + R6 / R5 = 11.</p>
+                <figure class="diagram-card">
+                    <img src="../../assets/lab4-pdf-stage2-circuit.png" alt="Source PDF schematic showing the complete two-stage LMC6484 amplifier circuit connected to Arduino analog input.">
+                    <figcaption>Source PDF second-stage amplifier: the non-inverting stage increases V2 to V3 before Arduino A0 reads it.</figcaption>
+                </figure>
+                <p class="warning-card">V3 should be about 11 times greater than V2, subject to supply and saturation limits. Verify V3 is safe before connecting it to Arduino A0.</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Condition</th><th>V2 measured</th><th>V3 measured</th><th>V3/V2 ratio</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>No load</td><td><input class="persist-text" data-key="ratio-v2-no"></td><td><input class="persist-text" data-key="ratio-v3-no"></td><td><input class="persist-text" data-key="ratio-no"></td><td><input class="persist-text" data-key="ratio-no-notes"></td></tr>
+                            <tr><td>Gentle load</td><td><input class="persist-text" data-key="ratio-v2-gentle"></td><td><input class="persist-text" data-key="ratio-v3-gentle"></td><td><input class="persist-text" data-key="ratio-gentle"></td><td><input class="persist-text" data-key="ratio-gentle-notes"></td></tr>
+                            <tr><td>Maximum safe load</td><td><input class="persist-text" data-key="ratio-v2-max"></td><td><input class="persist-text" data-key="ratio-v3-max"></td><td><input class="persist-text" data-key="ratio-max"></td><td><input class="persist-text" data-key="ratio-max-notes"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <label class="response-field mt-block"><span>Does your measured V3/V2 ratio support the expected gain of 11? Explain using your data.</span><textarea class="persist-text" data-key="stage2-ratio-explain" data-stage-required></textarea></label>
+                <h3>Think it through</h3>
+                <ul>
+                    <li>Why add a second stage instead of changing the first stage?</li>
+                    <li>What does non-inverting mean?</li>
+                    <li>Why is the gain 1 + R6/R5 rather than R6/R5?</li>
+                    <li>What is the ideal total gain of the two stages?</li>
+                    <li>What is op-amp saturation?</li>
+                    <li>How could excessive gain make the measurement worse?</li>
+                </ul>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-6" id="labview" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Checkpoint 5</p>
+                <h2>Display amplified voltage in LabVIEW</h2>
+                <p>Create a LabVIEW VI that reads the amplified signal on Arduino A0 and displays it with a numeric indicator named <code>Voltage Reading</code>.</p>
+                <figure class="diagram-card">
+                    <img src="../../assets/lab4-pdf-labview-analog-read.png" alt="Source PDF LabVIEW block diagram showing LINX Open, Analog Read channel 0, timing, stop control, and voltage reading indicator.">
+                    <figcaption>Source PDF LabVIEW analog-read VI: read Arduino analog channel 0 and display the amplified voltage.</figcaption>
+                </figure>
+                <div class="logic-flow" aria-label="LabVIEW analog read flow"><span>V3</span><b>-&gt;</b><span>Arduino A0</span><b>-&gt;</b><span>LINX Analog Read</span><b>-&gt;</b><span>LabVIEW Voltage Reading</span></div>
+                <div class="grid-layout three mt-block">
+                    <details open><summary>A. Front Panel</summary><div><p>Add a numeric indicator named <code>Voltage Reading</code>.</p></div></details>
+                    <details><summary>B. Block Diagram</summary><div><p>Use LINX Open, LINX Analog Read, While Loop, Wait Until Next ms Multiple, Stop button, and LINX Close.</p></div></details>
+                    <details><summary>C. Analog Read</summary><div><p>Set Analog Channel constant to <code>0</code>.</p></div></details>
+                    <details><summary>D. Timing</summary><div><p>Set Wait Until Next ms Multiple to numeric constant <code>100</code>.</p></div></details>
+                    <details><summary>E. Stop And Close</summary><div><p>Use Stop for normal shutdown and keep LINX Close after the loop.</p></div></details>
+                    <details><summary>F. Run And Compare</summary><div><p>Repeat force application and compare LabVIEW displayed range with voltmeter V3 range.</p></div></details>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <div class="mini-card">
+                        <h3>Required evidence</h3>
+                        <label class="response-field evidence-upload"><span>Front panel screenshot</span><input class="persist-file" data-key="lv-front" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="lv-front">No file selected.</small></label>
+                        <label class="response-field evidence-upload"><span>Block diagram screenshot</span><input class="persist-file" data-key="lv-block" type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="lv-block">No file selected.</small></label>
+                        <label class="response-field"><span>Voltmeter V3 range</span><input class="persist-text" data-key="lv-meter-range"></label>
+                        <label class="response-field"><span>LabVIEW displayed range</span><input class="persist-text" data-key="lv-display-range"></label>
+                        <label class="response-field"><span>Difference and possible causes</span><textarea class="persist-text" data-key="lv-difference"></textarea></label>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Think it through</h3>
+                        <ul>
+                            <li>What physical quantity does Arduino A0 actually measure?</li>
+                            <li>Does LabVIEW display force or voltage in this lab?</li>
+                            <li>Why should LabVIEW match the voltmeter range?</li>
+                            <li>Why is the while loop needed?</li>
+                            <li>Why use a 100 ms wait?</li>
+                            <li>What is required to display force rather than voltage?</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-7" id="extend" tabindex="-1">
+            <article class="section-card card border-success">
+                <p class="eyebrow">Checkpoint 6</p>
+                <h2>Redesign the circuit to halve total amplification</h2>
+                <p>The original ideal gains are AV1 = 100, AV2 = 11, and AVtotal = 1100. The halved ideal total gain is 550. Do not change the circuit while powered. Confirm modified resistor values and expected output range before reconnecting Arduino A0.</p>
+                <div class="grid-layout two">
+                    <div class="mini-card">
+                        <h3>Valid design paths</h3>
+                        <ul>
+                            <li>Reduce first-stage gain while keeping the second stage unchanged.</li>
+                            <li>Reduce second-stage gain while keeping the first stage unchanged.</li>
+                            <li>Use available course components if possible.</li>
+                            <li>Propose theoretical resistor values if the exact resistor is not physically available.</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Required evidence</h3>
+                        <label class="response-field"><span>Original total gain calculation</span><input class="persist-text" data-key="extend-original"></label>
+                        <label class="response-field"><span>New target gain</span><input class="persist-text" data-key="extend-target" value="550"></label>
+                        <label class="response-field"><span>Modified resistor values</span><input class="persist-text" data-key="extend-resistors"></label>
+                        <label class="response-field"><span>New schematic or annotated circuit diagram</span><input class="persist-text" data-key="extend-schematic"></label>
+                        <label class="response-field"><span>New measured voltage range</span><input class="persist-text" data-key="extend-range"></label>
+                        <label class="response-field"><span>Explain old versus new range</span><textarea class="persist-text" data-key="extend-explain" data-stage-required></textarea></label>
+                    </div>
+                </div>
+                <h3>Think it through</h3>
+                <ul>
+                    <li>Which stage is easier and safer to modify?</li>
+                    <li>If you halve one stage's gain, what happens to total gain?</li>
+                    <li>Are the required resistor values available in the lab kit?</li>
+                    <li>Would the new output still use enough of the Arduino input range?</li>
+                    <li>Would the new output avoid saturation?</li>
+                    <li>What measurement would show that your redesign worked?</li>
+                </ul>
+            </article>
+
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Optional Extensions</p>
+                <h2>Try these after required evidence is complete</h2>
+                <div class="grid-layout two">
+                    <div class="mini-card optional-card">Calibrate voltage to known weights.</div>
+                    <div class="mini-card optional-card">Plot voltage versus time.</div>
+                    <div class="mini-card optional-card">Add a moving average filter.</div>
+                    <div class="mini-card optional-card">Add a zero/tare button in LabVIEW.</div>
+                    <div class="mini-card optional-card">Add a threshold indicator for overload.</div>
+                    <div class="mini-card optional-card">Compare voltmeter and LabVIEW readings.</div>
+                    <div class="mini-card optional-card">Estimate sensor noise under no load.</div>
+                    <div class="mini-card optional-card">Investigate op-amp saturation.</div>
+                    <div class="mini-card optional-card">Add a simulated cloud-upload placeholder.</div>
+                    <div class="mini-card optional-card">Explain how this force node could later publish data to a cloud dashboard.</div>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-8" id="troubleshoot" tabindex="-1">
+            <article class="section-card card border-warning">
+                <p class="eyebrow">Troubleshooting Challenge</p>
+                <h2>Use evidence before changing the system</h2>
+                <div class="danger-card"><strong>Before changing the circuit or LabVIEW block diagram, write one hypothesis and one measurement or inspection that could support or reject it.</strong></div>
+                <div class="table-wrap mt-block">
+                    <table>
+                        <thead><tr><th>Observation</th><th>Possible cause</th><th>Test</th><th>Expected evidence</th><th>Actual evidence</th><th>Decision</th></tr></thead>
+                        <tbody><tr>
+                            <td><textarea class="persist-text" data-key="trouble-observation"></textarea></td>
+                            <td><textarea class="persist-text" data-key="trouble-cause"></textarea></td>
+                            <td><textarea class="persist-text" data-key="trouble-test"></textarea></td>
+                            <td><textarea class="persist-text" data-key="trouble-expected"></textarea></td>
+                            <td><textarea class="persist-text" data-key="trouble-actual"></textarea></td>
+                            <td><textarea class="persist-text" data-key="trouble-decision" data-stage-required></textarea></td>
+                        </tr></tbody>
+                    </table>
+                </div>
+                <div class="grid-layout three mt-block">
+                    <div class="mini-card"><h3>Load-cell and wiring faults</h3><ul><li>Excitation not connected</li><li>SIG+ and SIG- swapped</li><li>Loose screw-terminal connection</li><li>Load applied in wrong direction</li><li>Missing ground reference</li><li>Breadboard row mistake</li></ul></div>
+                    <div class="mini-card"><h3>Op-amp faults</h3><ul><li>LMC6484 inserted backwards</li><li>Wrong pins used</li><li>10 kOhm and 100 kOhm confused</li><li>100 kOhm and 1 MOhm confused</li><li>Feedback resistor missing</li><li>Output saturated</li><li>V2 or V3 outside Arduino input range</li></ul></div>
+                    <div class="mini-card"><h3>LabVIEW and interpretation faults</h3><ul><li>LINX firmware not loaded</li><li>Analog channel not set to 0</li><li>Numeric indicator not wired</li><li>A0 connected to V2 when student thinks it is V3</li><li>Assuming LabVIEW displays force directly</li><li>Ignoring no-load offset</li><li>Assuming larger gain is always better</li></ul></div>
+                </div>
+                <div class="briefing-card mt-block"><h3>Troubleshooting discussion</h3><p>Use evidence before changing the system: identify the observation, choose one possible cause, test it, record evidence, and decide the next safe change.</p></div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-9" id="reflect" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Deliverables</p>
+                <h2>Submission checklist</h2>
+                <div class="grid-layout two">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-raw"><span>Completed raw load-cell measurement table.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-stage1"><span>Completed first-stage amplifier measurement table.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-stage2"><span>Completed second-stage amplifier measurement table.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-vi"><span>LabVIEW VI displays voltage reading from Arduino A0.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-screens"><span>Front panel and block diagram screenshots included.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-gain"><span>First-stage, second-stage, and total gain calculations included.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-bridge"><span>Wheatstone Bridge and load-cell explanations included.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-opamp"><span>Role of op-amps and pressure transducer strain-gauge explanation included.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-extension"><span>Gain-halving extension, schematic, and measured range included.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-report"><span>Report follows REPORT WRITING For IoT.pdf from Avenue to Learn.</span></label>
+                </div>
+            </article>
+
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Assessment Guide</p>
+                <h2>Suggested weighting</h2>
+                <div class="table-wrap"><table><thead><tr><th>Category</th><th>Weight</th><th>Assessment type</th></tr></thead><tbody>
+                    <tr><td>Pre-lab and gain predictions</td><td>10%</td><td>Structured evidence</td></tr>
+                    <tr><td>Raw load-cell construction and measurements</td><td>15%</td><td>Instructor assessed</td></tr>
+                    <tr><td>First-stage amplifier construction and explanation</td><td>15%</td><td>Instructor assessed</td></tr>
+                    <tr><td>Second-stage amplifier construction and explanation</td><td>15%</td><td>Instructor assessed</td></tr>
+                    <tr><td>LabVIEW voltage-reading VI</td><td>15%</td><td>Structured and instructor assessed</td></tr>
+                    <tr><td>Data tables and gain comparison</td><td>10%</td><td>Structured evidence</td></tr>
+                    <tr><td>Gain-halving extension</td><td>10%</td><td>Instructor assessed</td></tr>
+                    <tr><td>Report explanations and reflection</td><td>10%</td><td>Instructor assessed</td></tr>
+                </tbody></table></div>
+            </article>
+
+            <article class="section-card card border-success">
+                <p class="eyebrow">Reflection</p>
+                <h2>Final questions</h2>
+                <label class="response-field"><span>1. What physical change occurs in the load cell when force is applied?</span><textarea class="persist-text" data-key="reflect-1"></textarea></label>
+                <label class="response-field"><span>2. What do SIG+ and SIG- represent?</span><textarea class="persist-text" data-key="reflect-2"></textarea></label>
+                <label class="response-field"><span>3. Why is the raw load-cell signal small?</span><textarea class="persist-text" data-key="reflect-3"></textarea></label>
+                <label class="response-field"><span>4. Why is amplification needed before reading the signal with Arduino?</span><textarea class="persist-text" data-key="reflect-4"></textarea></label>
+                <label class="response-field"><span>5. What is the gain of the first amplifier stage?</span><textarea class="persist-text" data-key="reflect-5"></textarea></label>
+                <label class="response-field"><span>6. What is the gain of the second amplifier stage?</span><textarea class="persist-text" data-key="reflect-6"></textarea></label>
+                <label class="response-field"><span>7. What is the ideal total gain?</span><textarea class="persist-text" data-key="reflect-7"></textarea></label>
+                <label class="response-field"><span>8. Why might measured gain differ from ideal calculated gain?</span><textarea class="persist-text" data-key="reflect-8"></textarea></label>
+                <label class="response-field"><span>9. What does Arduino A0 actually measure in this lab?</span><textarea class="persist-text" data-key="reflect-9"></textarea></label>
+                <label class="response-field"><span>10. Does LabVIEW display force or voltage? What would be required to display force?</span><textarea class="persist-text" data-key="reflect-10"></textarea></label>
+                <label class="response-field"><span>11. Why is a Wheatstone Bridge useful for load cells?</span><textarea class="persist-text" data-key="reflect-11"></textarea></label>
+                <label class="response-field"><span>12. What could cause the output to saturate?</span><textarea class="persist-text" data-key="reflect-12"></textarea></label>
+                <label class="response-field"><span>13. Is larger amplification always better? Explain.</span><textarea class="persist-text" data-key="reflect-13"></textarea></label>
+                <label class="response-field"><span>14. Does this lab create a complete IoT system? If not, which IoT layer has been completed and what still needs to be added?</span><textarea class="persist-text" data-key="reflect-14"></textarea></label>
+                <label class="response-field"><span>15. What did you initially believe about force measurement that this lab changed or clarified?</span><textarea class="persist-text" data-key="reflect-15"></textarea></label>
+            </article>
+
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Glossary</p>
+                <h2>Key terms</h2>
+                <div class="grid-layout three">
+                    <details><summary>Load cell</summary><div>A sensor assembly that converts applied force into an electrical signal.</div></details>
+                    <details><summary>Strain gauge</summary><div>A resistive element whose resistance changes when stretched or compressed.</div></details>
+                    <details><summary>Force</summary><div>A push or pull applied to the load cell.</div></details>
+                    <details><summary>Strain</summary><div>Small deformation caused by applied force.</div></details>
+                    <details><summary>Wheatstone Bridge</summary><div>A resistor bridge used to convert small resistance changes into a differential voltage.</div></details>
+                    <details><summary>Excitation voltage</summary><div>The supply voltage used to power the sensor bridge.</div></details>
+                    <details><summary>SIG+</summary><div>Positive side of the differential load-cell signal.</div></details>
+                    <details><summary>SIG-</summary><div>Negative side of the differential load-cell signal.</div></details>
+                    <details><summary>Differential voltage</summary><div>Voltage measured between two signal nodes.</div></details>
+                    <details><summary>Single-ended voltage</summary><div>Voltage measured relative to a common ground reference.</div></details>
+                    <details><summary>Ground reference</summary><div>The 0 V reference used by the circuit and measurements.</div></details>
+                    <details><summary>Op-amp</summary><div>Operational amplifier used here to amplify sensor voltage.</div></details>
+                    <details><summary>LMC6484</summary><div>The op-amp component used in the lab procedure and materials list.</div></details>
+                    <details><summary>Gain</summary><div>The ratio between output signal size and input signal size.</div></details>
+                    <details><summary>First-stage amplifier</summary><div>The differential amplifier producing V2.</div></details>
+                    <details><summary>Second-stage amplifier</summary><div>The non-inverting amplifier producing V3.</div></details>
+                    <details><summary>Non-inverting amplifier</summary><div>An amplifier whose output has the same polarity trend as its input.</div></details>
+                    <details><summary>Feedback resistor</summary><div>A resistor connected in the amplifier feedback path that helps set gain.</div></details>
+                    <details><summary>Source resistor</summary><div>A resistor in the gain-setting network.</div></details>
+                    <details><summary>Saturation</summary><div>When the op-amp output cannot increase further because it reaches supply limits.</div></details>
+                    <details><summary>Arduino Analog Pin</summary><div>A microcontroller input that measures voltage.</div></details>
+                    <details><summary>A0</summary><div>Arduino Analog Pin 0.</div></details>
+                    <details><summary>ADC</summary><div>Analog-to-digital converter.</div></details>
+                    <details><summary>LabVIEW</summary><div>A graphical programming environment.</div></details>
+                    <details><summary>VI</summary><div>Virtual Instrument, a LabVIEW program.</div></details>
+                    <details><summary>Front Panel</summary><div>The user-facing controls and indicators of a VI.</div></details>
+                    <details><summary>Block Diagram</summary><div>The graphical program logic of a VI.</div></details>
+                    <details><summary>LINX</summary><div>LabVIEW toolkit for communicating with Arduino.</div></details>
+                    <details><summary>Analog Read</summary><div>A LINX block that reads an analog voltage channel.</div></details>
+                    <details><summary>While Loop</summary><div>A repeated LabVIEW structure.</div></details>
+                    <details><summary>Wait Until Next ms Multiple</summary><div>Timing function used to pace loop execution.</div></details>
+                    <details><summary>Stop button</summary><div>A controlled way to end a VI and allow cleanup logic to run.</div></details>
+                    <details><summary>Abort button</summary><div>An emergency interruption that should not be normal operation.</div></details>
+                    <details><summary>Voltage Reading</summary><div>The LabVIEW numeric indicator for the amplified voltage.</div></details>
+                    <details><summary>Calibration</summary><div>Relating voltage output to known force or weight values.</div></details>
+                    <details><summary>Sensor offset</summary><div>Nonzero output when no load is applied.</div></details>
+                    <details><summary>Noise</summary><div>Small unwanted variation in measured signal.</div></details>
+                    <details><summary>IoT sensing node</summary><div>A local device that senses and conditions data before later cloud connection.</div></details>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        (() => {
+            const STORAGE_PREFIX = 'smrttech-lab4-load-cell';
+            const STAGE_COUNT = 10;
+            const STAGE_NAMES = ['Prepare', 'Predict', 'Build Load Cell', 'Raw Signal', 'Stage 1 Amp', 'Stage 2 Amp', 'LabVIEW', 'Extend', 'Troubleshoot', 'Reflect'];
+            const ORDER_KEYS = ['chain-force','chain-bend','chain-strain','chain-bridge','chain-meter','chain-stage1','chain-stage2','chain-a0','chain-linx','chain-display'];
+            const CORRECT_ORDER = ['1','2','3','4','5','6','7','8','9','10'];
+            document.body.classList.add('js-enabled');
+
+            function storageKey(key) { return `${STORAGE_PREFIX}:${key}`; }
+
+            function setStage(stage) {
+                const safeStage = Math.max(0, Math.min(STAGE_COUNT - 1, Number(stage) || 0));
+                document.body.className = document.body.className.split(' ').filter(name => !/^stage-\d+$/.test(name)).join(' ');
+                document.body.classList.add('pb-24', 'pt-24', 'js-enabled', `stage-${safeStage}`);
+                document.querySelectorAll('[data-stage]').forEach(button => {
+                    const active = Number(button.dataset.stage) === safeStage;
+                    button.classList.toggle('active', active);
+                    button.setAttribute('aria-current', active ? 'step' : 'false');
+                });
+                localStorage.setItem(storageKey('current-stage'), String(safeStage));
+                updateProgress();
+                const panel = document.querySelector(`.stage-panel.stage-${safeStage}`);
+                if (panel) panel.focus({ preventScroll: true });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function updateProgress() {
+                let complete = 0;
+                document.querySelectorAll('[data-stage]').forEach(button => {
+                    const isComplete = localStorage.getItem(storageKey(`stage-${button.dataset.stage}-complete`)) === 'true';
+                    button.classList.toggle('completed', isComplete);
+                    if (isComplete) complete += 1;
+                });
+                document.querySelectorAll('[data-progress-status]').forEach(status => {
+                    status.textContent = `${complete}/${STAGE_COUNT}`;
+                    status.setAttribute('title', `${complete} of ${STAGE_COUNT} phases marked complete.`);
+                });
+            }
+
+            function showStageMessage(stage, message) {
+                const panel = document.querySelector(`.stage-panel.stage-${stage}`);
+                if (!panel) return;
+                let messageBox = panel.querySelector('.stage-message');
+                if (!messageBox) {
+                    messageBox = document.createElement('div');
+                    messageBox.className = 'stage-message';
+                    messageBox.setAttribute('role', 'status');
+                    messageBox.setAttribute('aria-live', 'polite');
+                    const footer = panel.querySelector('.stage-footer');
+                    if (footer) footer.before(messageBox);
+                    else panel.appendChild(messageBox);
+                }
+                messageBox.textContent = message;
+                messageBox.className = 'stage-message show success';
+            }
+
+            function markStageComplete(stage) {
+                localStorage.setItem(storageKey(`stage-${stage}-complete`), 'true');
+                updateProgress();
+                showStageMessage(stage, 'Stage complete. Your progress has been saved in this browser.');
+            }
+
+            function buildStageFooters() {
+                document.querySelectorAll('.stage-panel').forEach((panel, index) => {
+                    if (panel.querySelector('.stage-footer')) return;
+                    const footer = document.createElement('div');
+                    footer.className = 'stage-footer';
+                    const previous = document.createElement('button');
+                    previous.type = 'button';
+                    previous.className = 'nav-button secondary';
+                    previous.textContent = index === 0 ? 'Back to portal' : `Back: ${STAGE_NAMES[index - 1]}`;
+                    previous.addEventListener('click', () => {
+                        if (index === 0) window.location.href = '../../index.html';
+                        else setStage(index - 1);
+                    });
+                    const controls = document.createElement('div');
+                    controls.className = 'chip-row compact';
+                    const next = document.createElement('button');
+                    next.type = 'button';
+                    next.className = 'nav-button primary';
+                    next.textContent = index === STAGE_COUNT - 1 ? 'Finish Lab 4' : `Next: ${STAGE_NAMES[index + 1]}`;
+                    next.addEventListener('click', () => {
+                        markStageComplete(index);
+                        if (index < STAGE_COUNT - 1) setStage(index + 1);
+                    });
+                    controls.append(next);
+                    footer.append(previous, controls);
+                    panel.appendChild(footer);
+                });
+            }
+
+            function setupOrderOptions() {
+                document.querySelectorAll('.order-select').forEach(select => {
+                    if (select.options.length) return;
+                    const blank = document.createElement('option');
+                    blank.value = '';
+                    blank.textContent = 'Order';
+                    select.appendChild(blank);
+                    for (let i = 1; i <= 10; i += 1) {
+                        const option = document.createElement('option');
+                        option.value = String(i);
+                        option.textContent = String(i);
+                        select.appendChild(option);
+                    }
+                });
+            }
+
+            function restoreInputs() {
+                document.querySelectorAll('.persist-check').forEach(input => {
+                    input.checked = localStorage.getItem(storageKey(input.dataset.key)) === 'true';
+                    input.addEventListener('change', () => localStorage.setItem(storageKey(input.dataset.key), String(input.checked)));
+                });
+                document.querySelectorAll('.persist-text').forEach(input => {
+                    const saved = localStorage.getItem(storageKey(input.dataset.key));
+                    if (saved !== null) input.value = saved;
+                    input.addEventListener('input', () => {
+                        localStorage.setItem(storageKey(input.dataset.key), input.value);
+                        updateGainChecks();
+                    });
+                    input.addEventListener('change', () => {
+                        localStorage.setItem(storageKey(input.dataset.key), input.value);
+                        updateGainChecks();
+                    });
+                });
+            }
+
+            function checkOrder() {
+                const values = ORDER_KEYS.map(key => document.querySelector(`[data-key="${key}"]`)?.value || '');
+                const feedback = document.querySelector('[data-order-feedback]');
+                if (!feedback) return;
+                if (values.some(value => value === '')) {
+                    feedback.textContent = 'Choose an order for every event.';
+                    return;
+                }
+                if (new Set(values).size !== values.length) {
+                    feedback.textContent = 'Each order number should be used once.';
+                    return;
+                }
+                const correct = values.every((value, index) => value === CORRECT_ORDER[index]);
+                feedback.textContent = correct ? 'Correct measurement chain.' : 'Not yet. Trace the path from applied force to LabVIEW voltage.';
+            }
+
+            function updateGainChecks() {
+                document.querySelectorAll('.gain-input').forEach(input => {
+                    const target = document.querySelector(`[data-gain-result="${input.dataset.key}"]`);
+                    if (!target) return;
+                    if (input.value === '') {
+                        target.textContent = '';
+                        return;
+                    }
+                    const expected = Number(input.dataset.expected);
+                    const value = Number(input.value);
+                    target.textContent = Math.abs(value - expected) < 0.01 ? 'Matches expected value.' : `Expected ${expected}.`;
+                });
+            }
+
+            function exportResponses() {
+                return window.LabCompletionExport?.download();
+            }
+
+            function resetLocalData() {
+                if (!confirm('Reset only Lab 4 local progress and responses on this browser?')) return;
+                window.LabCompletionExport?.clearStoredData();
+                Object.keys(localStorage).filter(key => key.startsWith(`${STORAGE_PREFIX}:`)).forEach(key => localStorage.removeItem(key));
+                location.reload();
+            }
+
+            function setupSidebars() {
+                document.querySelectorAll('[data-sidebar-toggle]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const selected = document.getElementById(button.dataset.sidebarToggle);
+                        if (!selected) return;
+                        const wasOpen = selected.classList.contains('active');
+                        document.querySelectorAll('.sidebar').forEach(sidebar => sidebar.classList.remove('active'));
+                        if (!wasOpen) selected.classList.add('active');
+                    });
+                });
+            }
+
+            buildStageFooters();
+            setupSidebars();
+            setupOrderOptions();
+            restoreInputs();
+            updateGainChecks();
+            document.querySelectorAll('[data-stage]').forEach(button => button.addEventListener('click', () => setStage(button.dataset.stage)));
+            document.querySelector('[data-check-order]')?.addEventListener('click', checkOrder);
+            // Completion-file export is provided by assets/js/lab-export.js.
+            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+            document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
+            setStage(localStorage.getItem(storageKey('current-stage')) || 0);
+        })();
+    </script>
+    <script src="../../assets/js/lab-shared.js"></script>
+    <script src="../../assets/js/lab-export.js"></script>
+</body>
+</html>

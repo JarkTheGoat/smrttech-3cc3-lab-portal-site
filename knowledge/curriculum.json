@@ -1,0 +1,4693 @@
+{
+  "course": {
+    "title": "SMRTTECH 3CC3 Cloud Computing and Internet of Things Skill Tree",
+    "eyebrow": "McMaster University - SMRTTECH 3CC3",
+    "desc": "Branch out from the course centre. Pick a domain to open its topics, then drill from the general idea to the theory, skill, or component reference you need."
+  },
+  "domains": [
+    {
+      "id": "circuit-theory",
+      "title": "Circuit Theory",
+      "icon": "functions",
+      "blurb": "The electrical laws every lab is built on.",
+      "nodes": [
+        {
+          "id": "ohms-law",
+          "type": "theory",
+          "name": "Ohm's Law & Power",
+          "title": "What is Ohm's Law, and how does power follow from it",
+          "asset": "Ohms_Law_Power_Triangle.png",
+          "summary": "V = I·R and the power it implies.",
+          "keywords": [
+            "voltage",
+            "current",
+            "resistance",
+            "watt",
+            "heat"
+          ],
+          "sections": [
+            {
+              "heading": "The fundamental relationship",
+              "body": "Voltage, current and resistance are locked together by <code>V = I·R</code>. Rearranged, it sizes a current-limiting resistor, predicts the voltage across a sensor, or confirms a wire can carry the load. Dividers, bridges and amplifier gain are all this law applied repeatedly."
+            },
+            {
+              "heading": "Power dissipation",
+              "body": "Power is <code>P = V·I = I²·R</code>. A resistor turns electrical energy into heat; exceed its rating and it browns, smells, and drifts. Assume 1/4 W resistors on the bench and check <code>I²R</code> before powering anything that draws real current."
+            }
+          ],
+          "hint": "A resistor getting hot or smelling burnt means you exceeded its 1/4 W rating — compute I²R, then raise the resistance or use a higher-wattage part before re-testing.",
+          "related": [
+            "voltage-divider",
+            "wheatstone",
+            "measure-resistance"
+          ]
+        },
+        {
+          "id": "voltage-divider",
+          "type": "theory",
+          "name": "Voltage Divider Rule",
+          "title": "How does a voltage divider turn resistance into a readable voltage",
+          "asset": "Voltage_Divider_Schematic.png",
+          "summary": "Reading resistive sensors as a voltage.",
+          "keywords": [
+            "vout",
+            "r1",
+            "r2",
+            "divider",
+            "analog"
+          ],
+          "sections": [
+            {
+              "heading": "Splitting a voltage",
+              "body": "Two series resistors split the supply: <code>Vout = Vin · R2 / (R1 + R2)</code>. Almost every resistive sensor here — the LDR, the thermistor, the soil probe — is read by making it one leg of a divider and watching how Vout moves as its resistance changes."
+            },
+            {
+              "heading": "Choosing the fixed resistor",
+              "body": "Pick the fixed resistor near the sensor's mid-range resistance so the output swings across the widest part of the ADC range. A poor choice squashes your signal into a handful of counts."
+            }
+          ],
+          "hint": "An ADC reading pinned at 0 or 1023 means the fixed resistor is mismatched to the sensor — measure the sensor at both extremes and choose a fixed resistor in between.",
+          "related": [
+            "ohms-law",
+            "photoresistor",
+            "thermistor",
+            "build-divider"
+          ]
+        },
+        {
+          "id": "pullup-pulldown",
+          "type": "theory",
+          "name": "Pull-up / Pull-down",
+          "title": "Why does a digital input need a pull-up or pull-down resistor",
+          "asset": "PullUp_PullDown_Logic.png",
+          "summary": "Giving a floating input a defined state.",
+          "keywords": [
+            "floating",
+            "input_pullup",
+            "logic level",
+            "switch"
+          ],
+          "sections": [
+            {
+              "heading": "Why inputs float",
+              "body": "A digital input wired to nothing is \"floating\" — it picks up noise and reads randomly. A pull-up ties it to 5 V (reads HIGH until a switch pulls it LOW); a pull-down ties it to ground."
+            },
+            {
+              "heading": "On the Arduino",
+              "body": "Skip the external resistor with <code>pinMode(pin, INPUT_PULLUP)</code>, which enables the internal pull-up. The logic then inverts: a pressed/closed switch reads LOW."
+            }
+          ],
+          "hint": "A switch that reads erratically when untouched is floating — enable INPUT_PULLUP (or add a 10 kΩ pull resistor) and invert your logic test.",
+          "related": [
+            "tilt-switch",
+            "arduino"
+          ]
+        },
+        {
+          "id": "wheatstone",
+          "type": "theory",
+          "name": "Wheatstone Bridge",
+          "title": "How does a Wheatstone bridge resolve a tiny resistance change",
+          "asset": "Wheatstone_Bridge_Diagram.jpg",
+          "summary": "Turning a small ΔR into a differential voltage.",
+          "keywords": [
+            "bridge",
+            "balance",
+            "quarter",
+            "strain"
+          ],
+          "sections": [
+            {
+              "heading": "The balanced bridge",
+              "body": "Four resistors in a diamond give zero differential output when <code>R1/R2 = R4/R3</code>. Replace one arm with a sensing element and a tiny resistance change unbalances the bridge, producing a small differential voltage proportional to that change."
+            },
+            {
+              "heading": "Quarter, half, full",
+              "body": "Using one active arm (quarter), two (half), or all four (full) trades complexity for sensitivity and temperature compensation. The strain-gauge load cell is the canonical application."
+            }
+          ],
+          "hint": "A bridge output of only a few millivolts buried in noise is expected — null the offset to ~0 V at rest first, then amplify with an op-amp stage before reading it.",
+          "related": [
+            "ohms-law",
+            "strain-gauge",
+            "opamp-gain",
+            "wire-bridge"
+          ]
+        },
+        {
+          "id": "opamp-gain",
+          "type": "theory",
+          "name": "Op-Amp Gain",
+          "title": "How does an op-amp amplify a weak signal to a readable range",
+          "asset": "OpAmp_Gain_Configs.png",
+          "summary": "Setting gain and respecting the rails.",
+          "keywords": [
+            "gain",
+            "non-inverting",
+            "rail",
+            "offset"
+          ],
+          "sections": [
+            {
+              "heading": "Setting the gain",
+              "body": "A non-inverting amplifier has gain <code>G = 1 + Rf/Rin</code>; an inverting one has <code>G = −Rf/Rin</code>. This lifts millivolt bridge or sensor signals to a volt-level range the ADC can resolve."
+            },
+            {
+              "heading": "Rails and offset",
+              "body": "A single-supply op-amp only outputs between its rails (0–5 V here), so centre your signal and watch for clipping. Input offset voltage gets amplified too — trim or reference it deliberately."
+            }
+          ],
+          "hint": "An output stuck at a supply rail means the gain is too high for the input swing, or a DC offset is being amplified into saturation — reduce gain and bias the signal to re-centre it.",
+          "related": [
+            "wheatstone",
+            "lmc6484",
+            "strain-gauge"
+          ]
+        },
+        {
+          "id": "pwm",
+          "type": "theory",
+          "name": "PWM & Duty Cycle",
+          "title": "How does PWM fake an analog level with a square wave",
+          "asset": "PWM_DutyCycle_Waveforms.png",
+          "summary": "Duty cycle as an average voltage.",
+          "keywords": [
+            "duty cycle",
+            "analogwrite",
+            "frequency",
+            "average"
+          ],
+          "sections": [
+            {
+              "heading": "Duty cycle = average",
+              "body": "PWM switches a pin fully on/off fast; the fraction of time it is HIGH (duty cycle) sets the effective average voltage. <code>analogWrite(pin, 0..255)</code> maps to 0–100% duty, driving LED brightness, motor speed and heater power efficiently."
+            },
+            {
+              "heading": "Frequency matters",
+              "body": "The right frequency depends on the load. A servo expects a specific ~50 Hz pulse train, not the default analogWrite frequency — which is why you use the Servo library to position it."
+            }
+          ],
+          "hint": "A servo buzzing or refusing to hold position is getting the wrong PWM frequency — use the Servo library (correct ~50 Hz, 1–2 ms pulse) rather than analogWrite.",
+          "related": [
+            "servo",
+            "arduino"
+          ]
+        },
+        {
+          "id": "dc-circuits",
+          "type": "theory",
+          "name": "DC circuit fundamentals",
+          "title": "How does dc circuit fundamentals support the 3CC3 lab workflow",
+          "asset": "Voltage_Divider_Schematic.png",
+          "summary": "Understand source, load, path, and reference in a direct-current circuit.",
+          "keywords": [
+            "circuit",
+            "DC",
+            "Lab 1",
+            "Circuits and components",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Understand source, load, path, and reference in a direct-current circuit."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Use this as a reusable reference when the lab does not give a step-by-step reminder."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Understand source, load, path, and reference in a direct-current circuit.",
+          "related": [
+            "voltage-divider",
+            "power-rails-common-ground"
+          ]
+        },
+        {
+          "id": "resistor-values",
+          "type": "spec",
+          "name": "Resistor values and units",
+          "title": "How does resistor values and units support the 3CC3 lab workflow",
+          "asset": "Voltage_Divider_Schematic.png",
+          "summary": "Use ohms, kilo-ohms, and component values consistently.",
+          "keywords": [
+            "ohm",
+            "kOhm",
+            "MOhm",
+            "4.7",
+            "10 kOhm",
+            "100 kOhm",
+            "1 MOhm",
+            "Lab 1",
+            "Lab 2",
+            "Lab 3",
+            "Lab 4",
+            "Circuits and components",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use ohms, kilo-ohms, and component values consistently."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 3, Lab 4. Prerequisites: dc-circuits."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use ohms, kilo-ohms, and component values consistently.",
+          "related": [
+            "measurement-units",
+            "led-current-limiting",
+            "pull-down-resistor",
+            "op-amp-gain",
+            "dc-circuits"
+          ]
+        },
+        {
+          "id": "breadboard",
+          "type": "spec",
+          "name": "Breadboard connectivity",
+          "title": "How does breadboard connectivity support the 3CC3 lab workflow",
+          "asset": "Breadboard_Power_Rails.jpg",
+          "summary": "Understand how connected rows, separated halves, and component placement affect wiring.",
+          "keywords": [
+            "breadboard",
+            "Tinkercad",
+            "Lab 1",
+            "Lab 2",
+            "Lab 3",
+            "Lab 4",
+            "Lab 5",
+            "Lab 6",
+            "Lab 7",
+            "Lab 8",
+            "Circuits and components",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Understand how connected rows, separated halves, and component placement affect wiring."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 3, Lab 4, Lab 5, Lab 6, Lab 7, Lab 8. Prerequisites: dc-circuits."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Understand how connected rows, separated halves, and component placement affect wiring.",
+          "related": [
+            "wiring-map",
+            "systematic-troubleshooting",
+            "dc-circuits"
+          ]
+        },
+        {
+          "id": "power-rails-common-ground",
+          "type": "theory",
+          "name": "Power rails and common ground",
+          "title": "How does power rails and common ground support the 3CC3 lab workflow",
+          "asset": "Breadboard_Power_Rails.jpg",
+          "summary": "Provide a shared voltage reference so measurements and signals make sense.",
+          "keywords": [
+            "ground",
+            "GND",
+            "rails",
+            "0 V reference",
+            "Lab 1",
+            "Lab 2",
+            "Lab 3",
+            "Lab 4",
+            "Lab 5",
+            "Lab 6",
+            "Lab 7",
+            "Lab 8",
+            "Circuits and components",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Provide a shared voltage reference so measurements and signals make sense."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 3, Lab 4, Lab 5, Lab 6, Lab 7, Lab 8. Prerequisites: dc-circuits."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Provide a shared voltage reference so measurements and signals make sense.",
+          "related": [
+            "analog-input",
+            "systematic-troubleshooting",
+            "ms15-interface",
+            "external-motor-power",
+            "dc-circuits"
+          ]
+        },
+        {
+          "id": "external-motor-power",
+          "type": "skill",
+          "name": "External motor power",
+          "title": "How does external motor power support the 3CC3 lab workflow",
+          "asset": "Voltage_Divider_Schematic.png",
+          "summary": "Use a separate regulated motor supply when actuator current exceeds what Arduino should provide.",
+          "keywords": [
+            "external power",
+            "9 V",
+            "5 V rail",
+            "breadboard power supply",
+            "Lab 6",
+            "Circuits and components",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use a separate regulated motor supply when actuator current exceeds what Arduino should provide."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 6. Prerequisites: power-rails-common-ground, safe-bench-practice."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use a separate regulated motor supply when actuator current exceeds what Arduino should provide.",
+          "related": [
+            "motor-driver",
+            "stepper-motor",
+            "power-rails-common-ground",
+            "safe-bench-practice"
+          ]
+        },
+        {
+          "id": "pull-down-resistor",
+          "type": "theory",
+          "name": "Pull-down resistor",
+          "title": "How does pull-down resistor support the 3CC3 lab workflow",
+          "asset": "PullUp_PullDown_Logic.png",
+          "summary": "Hold a digital input LOW when a switch is open so the input does not float.",
+          "keywords": [
+            "floating input",
+            "10 kOhm",
+            "digital logic",
+            "Lab 3",
+            "Circuits and components",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Hold a digital input LOW when a switch is open so the input does not float."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 3. Prerequisites: resistor-values, power-rails-common-ground."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Hold a digital input LOW when a switch is open so the input does not float.",
+          "related": [
+            "tilt-switch",
+            "digital-input",
+            "resistor-values",
+            "power-rails-common-ground"
+          ]
+        },
+        {
+          "id": "led-polarity",
+          "type": "theory",
+          "name": "LED polarity",
+          "title": "How does led polarity support the 3CC3 lab workflow",
+          "asset": "Voltage_Divider_Schematic.png",
+          "summary": "Orient the LED correctly so current can flow in the intended direction.",
+          "keywords": [
+            "LED",
+            "anode",
+            "cathode",
+            "Lab 1",
+            "Circuits and components",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Orient the LED correctly so current can flow in the intended direction."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: dc-circuits."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Orient the LED correctly so current can flow in the intended direction.",
+          "related": [
+            "led-current-limiting",
+            "digital-output",
+            "dc-circuits"
+          ]
+        },
+        {
+          "id": "led-current-limiting",
+          "type": "theory",
+          "name": "LED current-limiting resistors",
+          "title": "How does led current-limiting resistors support the 3CC3 lab workflow",
+          "asset": "Voltage_Divider_Schematic.png",
+          "summary": "Protect the LED by limiting current in the output path.",
+          "keywords": [
+            "220 ohm",
+            "resistor",
+            "Lab 1",
+            "Lab 7",
+            "Circuits and components",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Protect the LED by limiting current in the output path."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 7. Prerequisites: resistor-values, led-polarity."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Protect the LED by limiting current in the output path.",
+          "related": [
+            "digital-output",
+            "remote-control",
+            "resistor-values",
+            "led-polarity"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sensors",
+      "title": "Sensors",
+      "icon": "sensors",
+      "blurb": "How physical quantities become electrical signals.",
+      "nodes": [
+        {
+          "id": "photoresistor",
+          "type": "spec",
+          "name": "Photoresistor (LDR)",
+          "title": "What is a photoresistor and how do you read it",
+          "asset": "LDR_Photoresistor.jpg",
+          "summary": "Light-dependent resistance via a divider.",
+          "keywords": [
+            "ldr",
+            "light",
+            "divider",
+            "analog"
+          ],
+          "sections": [
+            {
+              "heading": "How it senses",
+              "body": "An LDR's resistance falls as light increases — from hundreds of kΩ in darkness to a few kΩ in bright light. Wired as one leg of a voltage divider, the divider output tracks brightness."
+            },
+            {
+              "heading": "Reading it",
+              "body": "Feed the divider midpoint into an analog pin. A ~10 kΩ fixed resistor gives usable swing for room lighting. The response is nonlinear, so calibrate against the conditions you care about."
+            }
+          ],
+          "hint": "If readings barely change between light and dark, the divider resistor is far from the LDR's working resistance — measure the LDR in your actual lighting and match it.",
+          "related": [
+            "voltage-divider",
+            "calibrate-sensor",
+            "arduino"
+          ]
+        },
+        {
+          "id": "thermistor",
+          "type": "spec",
+          "name": "Thermistor (NTC)",
+          "title": "What is an NTC thermistor and how do you convert it to °C",
+          "asset": "NTC_Thermistor.jpg",
+          "summary": "A steeply nonlinear temperature resistor.",
+          "keywords": [
+            "ntc",
+            "temperature",
+            "beta",
+            "steinhart"
+          ],
+          "sections": [
+            {
+              "heading": "Negative coefficient",
+              "body": "An NTC thermistor's resistance drops as temperature rises. Like the LDR it is read through a voltage divider, but its resistance-vs-temperature curve is steep and strongly nonlinear."
+            },
+            {
+              "heading": "Converting to °C",
+              "body": "Do not use a linear map. Apply the Beta-parameter equation or Steinhart-Hart with the datasheet coefficients to convert resistance to temperature accurately."
+            }
+          ],
+          "hint": "Readings that look right at room temperature but drift badly when hot or cold mean a linear conversion — switch to the Beta equation with the part's datasheet constants.",
+          "related": [
+            "voltage-divider",
+            "calibrate-sensor"
+          ]
+        },
+        {
+          "id": "tilt-switch",
+          "type": "spec",
+          "name": "Tilt Ball Switch",
+          "title": "What is a tilt ball switch and how do you wire it",
+          "asset": "Tilt_Ball_Switch.jpg",
+          "summary": "An orientation-sensitive contact switch.",
+          "keywords": [
+            "tilt",
+            "ball",
+            "orientation",
+            "debounce"
+          ],
+          "sections": [
+            {
+              "heading": "How it works",
+              "body": "A conductive ball rolls to bridge two contacts when tilted past a threshold, closing the circuit. It is effectively an orientation-sensitive switch — good for detecting flips, knocks or vibration."
+            },
+            {
+              "heading": "Wiring",
+              "body": "Treat it like any momentary switch: it needs a pull resistor for a defined open state, and benefits from software debouncing because the rolling ball chatters."
+            }
+          ],
+          "hint": "Multiple triggers per single tilt mean contact bounce — add INPUT_PULLUP and debounce in software (ignore changes within ~20–50 ms).",
+          "related": [
+            "pullup-pulldown",
+            "arduino"
+          ]
+        },
+        {
+          "id": "strain-gauge",
+          "type": "spec",
+          "name": "Strain Gauge / Load Cell",
+          "title": "What is a strain gauge and how does it measure force",
+          "asset": "Strain_Gauge_LoadCell.jpg",
+          "summary": "Force as a tiny resistance change.",
+          "keywords": [
+            "strain",
+            "load cell",
+            "force",
+            "gauge factor",
+            "hx711"
+          ],
+          "sections": [
+            {
+              "heading": "How it senses",
+              "body": "A bonded foil grid changes resistance slightly when stretched or compressed (its gauge factor relates ΔR/R to strain). Mounted on a flexure and wired into a Wheatstone bridge, four gauges form a load cell."
+            },
+            {
+              "heading": "Conditioning the signal",
+              "body": "Bridge output is on the order of millivolts per volt of excitation, so it must be amplified — a dedicated 24-bit bridge ADC (HX711) or an op-amp instrumentation stage."
+            }
+          ],
+          "hint": "A reading that drifts with no load change is usually thermal drift or a loose mount — use the opposite bridge arm for temperature compensation, tighten the fixture, and warm up before zeroing.",
+          "related": [
+            "wheatstone",
+            "opamp-gain",
+            "lmc6484",
+            "wire-bridge"
+          ]
+        },
+        {
+          "id": "ultrasonic",
+          "type": "spec",
+          "name": "Ultrasonic (HC-SR04)",
+          "title": "What is the HC-SR04 and how does time-of-flight give distance",
+          "asset": "HCSR04_Ultrasonic.jpg",
+          "summary": "Distance from an echo round-trip.",
+          "keywords": [
+            "ultrasonic",
+            "distance",
+            "echo",
+            "trigger",
+            "hc-sr04"
+          ],
+          "sections": [
+            {
+              "heading": "Time of flight",
+              "body": "A 10 µs trigger pulse fires a burst of ultrasound; the echo pin then stays HIGH for the round-trip time. Distance is <code>time × 343 / 2</code> (speed of sound, there and back)."
+            },
+            {
+              "heading": "Practical range",
+              "body": "Reliable from roughly 2 cm to 4 m, within a cone. Soft or angled surfaces scatter the echo. It is a 5 V part with separate trigger and echo pins."
+            }
+          ],
+          "hint": "Distance that reads zero, max, or wildly unstable means a missed or scattered echo — aim at a flat hard surface within ~4 m, keep the trigger at ~10 µs, and add a timeout on pulseIn().",
+          "related": [
+            "arduino",
+            "arduino-threshold"
+          ]
+        },
+        {
+          "id": "soil-moisture",
+          "type": "spec",
+          "name": "Soil Moisture",
+          "title": "What is a capacitive soil moisture sensor and how is it calibrated",
+          "asset": "Capacitive_Soil_Moisture.jpg",
+          "summary": "Water content via dielectric constant.",
+          "keywords": [
+            "soil",
+            "moisture",
+            "capacitive",
+            "calibrate"
+          ],
+          "sections": [
+            {
+              "heading": "Capacitive sensing",
+              "body": "It measures the dielectric constant of the surrounding soil, which rises with water content, and outputs an analog voltage. Capacitive probes avoid the electrode corrosion that plagues resistive sensors."
+            },
+            {
+              "heading": "Calibration",
+              "body": "Raw readings are arbitrary, so record the value fully dry (in air) and fully wet (to the line in water) and map between them. Never submerge the electronics at the top of the board."
+            }
+          ],
+          "hint": "A moisture percentage that makes no sense is uncalibrated — capture the dry-in-air and wet-in-water raw values, map() between them, and keep the circuitry out of the soil.",
+          "related": [
+            "voltage-divider",
+            "calibrate-sensor",
+            "thingsboard"
+          ]
+        },
+        {
+          "id": "load-cell",
+          "type": "theory",
+          "name": "Load cell",
+          "title": "How does load cell support the 3CC3 lab workflow",
+          "asset": "Strain_Gauge_LoadCell.jpg",
+          "summary": "Convert applied force into a tiny electrical bridge signal through strain.",
+          "keywords": [
+            "force",
+            "load cell",
+            "SIG+",
+            "SIG-",
+            "Lab 4",
+            "Sensors and interfaces",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Convert applied force into a tiny electrical bridge signal through strain."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 4. Prerequisites: measuring-voltage."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Convert applied force into a tiny electrical bridge signal through strain.",
+          "related": [
+            "strain-gauge",
+            "wheatstone-bridge",
+            "signal-amplification",
+            "measuring-voltage"
+          ]
+        },
+        {
+          "id": "wheatstone-bridge",
+          "type": "theory",
+          "name": "Wheatstone Bridge",
+          "title": "How does wheatstone bridge support the 3CC3 lab workflow",
+          "asset": "Wheatstone_Bridge_Diagram.jpg",
+          "summary": "Convert small resistance changes into a measurable differential voltage.",
+          "keywords": [
+            "bridge",
+            "differential voltage",
+            "SIG+",
+            "SIG-",
+            "Lab 4",
+            "Sensors and interfaces",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Convert small resistance changes into a measurable differential voltage."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 4. Prerequisites: strain-gauge, resistor-values."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Convert small resistance changes into a measurable differential voltage.",
+          "related": [
+            "signal-amplification",
+            "strain-gauge",
+            "resistor-values"
+          ]
+        },
+        {
+          "id": "signal-amplification",
+          "type": "theory",
+          "name": "Signal amplification",
+          "title": "How does signal amplification support the 3CC3 lab workflow",
+          "asset": "Sensor_Calibration_Curve.png",
+          "summary": "Increase tiny sensor voltages so Arduino analog input can use more of its measurement range.",
+          "keywords": [
+            "amplifier",
+            "V2",
+            "V3",
+            "LMC6484",
+            "Lab 4",
+            "Sensors and interfaces",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Increase tiny sensor voltages so Arduino analog input can use more of its measurement range."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 4. Prerequisites: wheatstone-bridge, measuring-voltage."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Increase tiny sensor voltages so Arduino analog input can use more of its measurement range.",
+          "related": [
+            "op-amp-gain",
+            "analog-input",
+            "wheatstone-bridge",
+            "measuring-voltage"
+          ]
+        },
+        {
+          "id": "resistance-to-voltage",
+          "type": "theory",
+          "name": "Resistance-to-voltage conversion",
+          "title": "How does resistance-to-voltage conversion support the 3CC3 lab workflow",
+          "asset": "Sensor_Calibration_Curve.png",
+          "summary": "Use a divider to convert resistance changes into voltage changes.",
+          "keywords": [
+            "sensor interface",
+            "Lab 1",
+            "Lab 2",
+            "Sensors and interfaces",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use a divider to convert resistance changes into voltage changes."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2. Prerequisites: photoresistor, thermistor, voltage-divider."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use a divider to convert resistance changes into voltage changes.",
+          "related": [
+            "analog-input",
+            "photoresistor",
+            "thermistor",
+            "voltage-divider"
+          ]
+        },
+        {
+          "id": "sensor-calibration",
+          "type": "skill",
+          "name": "Sensor calibration",
+          "title": "How does sensor calibration support the 3CC3 lab workflow",
+          "asset": "Sensor_Calibration_Curve.png",
+          "summary": "Choose a threshold or mapping using measured sensor readings and operating conditions.",
+          "keywords": [
+            "calibration",
+            "mapping",
+            "Lab 1",
+            "Lab 2",
+            "Sensors and interfaces",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Choose a threshold or mapping using measured sensor readings and operating conditions."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2. Prerequisites: analog-sensor-signals."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Choose a threshold or mapping using measured sensor readings and operating conditions.",
+          "related": [
+            "threshold-selection",
+            "sampled-data",
+            "temperature-conversion",
+            "analog-sensor-signals"
+          ]
+        },
+        {
+          "id": "potentiometer",
+          "type": "spec",
+          "name": "Potentiometer",
+          "title": "How does potentiometer support the 3CC3 lab workflow",
+          "asset": "PWM_DutyCycle_Waveforms.png",
+          "summary": "Create a variable voltage from a physical rotation command.",
+          "keywords": [
+            "potentiometer",
+            "wiper",
+            "middle terminal",
+            "manual control",
+            "Lab 5",
+            "Sensors and interfaces",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Create a variable voltage from a physical rotation command."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 5. Prerequisites: power-rails-common-ground."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Create a variable voltage from a physical rotation command.",
+          "related": [
+            "analog-input",
+            "servo-motor",
+            "power-rails-common-ground"
+          ]
+        },
+        {
+          "id": "ultrasonic-sensor",
+          "type": "spec",
+          "name": "HC-SR04 ultrasonic sensor",
+          "title": "How does hc-sr04 ultrasonic sensor support the 3CC3 lab workflow",
+          "asset": "HCSR04_Ultrasonic.jpg",
+          "summary": "Measure distance by sending a pulse on Trig and timing the returned Echo signal.",
+          "keywords": [
+            "ultrasonic",
+            "HC-SR04",
+            "Trig",
+            "Echo",
+            "distance",
+            "Lab 7",
+            "Sensors and interfaces",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Measure distance by sending a pulse on Trig and timing the returned Echo signal."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 7. Prerequisites: power-rails-common-ground, digital-output."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Measure distance by sending a pulse on Trig and timing the returned Echo signal.",
+          "related": [
+            "sampled-data",
+            "cloud-hmi",
+            "power-rails-common-ground",
+            "digital-output"
+          ]
+        },
+        {
+          "id": "soil-moisture-sensor",
+          "type": "spec",
+          "name": "Capacitive soil moisture sensor",
+          "title": "How does capacitive soil moisture sensor support the 3CC3 lab workflow",
+          "asset": "Capacitive_Soil_Moisture.jpg",
+          "summary": "Respond to moisture around the probe and produce an analog voltage for Arduino A0.",
+          "keywords": [
+            "soil moisture",
+            "SEN0193",
+            "SIG",
+            "A0",
+            "plant monitoring",
+            "Lab 8",
+            "Sensors and interfaces",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Respond to moisture around the probe and produce an analog voltage for Arduino A0."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 8. Prerequisites: power-rails-common-ground, analog-input."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Respond to moisture around the probe and produce an analog voltage for Arduino A0.",
+          "related": [
+            "capacitive-sensing",
+            "moisture-calibration",
+            "percent-moisture",
+            "power-rails-common-ground",
+            "analog-input"
+          ]
+        },
+        {
+          "id": "capacitive-sensing",
+          "type": "theory",
+          "name": "Capacitive sensing",
+          "title": "How does capacitive sensing support the 3CC3 lab workflow",
+          "asset": "Sensor_Calibration_Curve.png",
+          "summary": "Infer moisture from changes in capacitance rather than current through exposed resistive probes.",
+          "keywords": [
+            "capacitive",
+            "resistive",
+            "corrosion",
+            "dielectric",
+            "Lab 8",
+            "Sensors and interfaces",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Infer moisture from changes in capacitance rather than current through exposed resistive probes."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 8. Prerequisites: soil-moisture-sensor."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Infer moisture from changes in capacitance rather than current through exposed resistive probes.",
+          "related": [
+            "source-evaluation",
+            "measurement-uncertainty",
+            "soil-moisture-sensor"
+          ]
+        },
+        {
+          "id": "moisture-calibration",
+          "type": "skill",
+          "name": "Dry/wet moisture calibration",
+          "title": "How does dry/wet moisture calibration support the 3CC3 lab workflow",
+          "asset": "Sensor_Calibration_Curve.png",
+          "summary": "Measure V_dry and V_wet so this sensor setup maps voltage to 0-100 percent moisture.",
+          "keywords": [
+            "V_dry",
+            "V_wet",
+            "calibration",
+            "water cup",
+            "Lab 8",
+            "Sensors and interfaces",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Measure V_dry and V_wet so this sensor setup maps voltage to 0-100 percent moisture."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 8. Prerequisites: measuring-voltage, soil-moisture-sensor."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Measure V_dry and V_wet so this sensor setup maps voltage to 0-100 percent moisture.",
+          "related": [
+            "percent-moisture",
+            "native-labview-calibration",
+            "measuring-voltage",
+            "soil-moisture-sensor"
+          ]
+        },
+        {
+          "id": "percent-moisture",
+          "type": "theory",
+          "name": "Percent moisture",
+          "title": "How does percent moisture support the 3CC3 lab workflow",
+          "asset": "Sensor_Calibration_Curve.png",
+          "summary": "Convert calibrated voltage into a bounded 0-100 moisture value for cloud display and logic.",
+          "keywords": [
+            "percent_moisture",
+            "clamp",
+            "0 to 100",
+            "Lab 8",
+            "Sensors and interfaces",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Convert calibrated voltage into a bounded 0-100 moisture value for cloud display and logic."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 8. Prerequisites: moisture-calibration."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Convert calibrated voltage into a bounded 0-100 moisture value for cloud display and logic.",
+          "related": [
+            "threshold-control",
+            "cloud-dashboard",
+            "moisture-calibration"
+          ]
+        },
+        {
+          "id": "analog-sensor-signals",
+          "type": "theory",
+          "name": "Analog sensor signals",
+          "title": "How does analog sensor signals support the 3CC3 lab workflow",
+          "asset": "Sensor_Calibration_Curve.png",
+          "summary": "Treat sensor output as a range of values rather than only on or off.",
+          "keywords": [
+            "analog",
+            "potentiometer",
+            "thermistor",
+            "soil moisture",
+            "Lab 1",
+            "Lab 2",
+            "Lab 5",
+            "Lab 8",
+            "Sensors and interfaces",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Treat sensor output as a range of values rather than only on or off."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 5, Lab 8. Prerequisites: resistance-to-voltage."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Treat sensor output as a range of values rather than only on or off.",
+          "related": [
+            "analog-input",
+            "sampled-data",
+            "potentiometer",
+            "soil-moisture-sensor",
+            "resistance-to-voltage"
+          ]
+        },
+        {
+          "id": "threshold-selection",
+          "type": "skill",
+          "name": "Threshold selection",
+          "title": "How does threshold selection support the 3CC3 lab workflow",
+          "asset": "Sensor_Calibration_Curve.png",
+          "summary": "Choose the comparison value that separates desired operating states.",
+          "keywords": [
+            "lowLightLim",
+            "400",
+            "Lab 1",
+            "Sensors and interfaces",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Choose the comparison value that separates desired operating states."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: sensor-calibration, analog-input."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Choose the comparison value that separates desired operating states.",
+          "related": [
+            "threshold-control",
+            "sensor-calibration",
+            "analog-input"
+          ]
+        },
+        {
+          "id": "sensor-nonlinearity",
+          "type": "theory",
+          "name": "Sensor response and nonlinearity",
+          "title": "How does sensor response and nonlinearity support the 3CC3 lab workflow",
+          "asset": "Sensor_Calibration_Curve.png",
+          "summary": "Recognize that sensor readings may not change evenly across all operating ranges.",
+          "keywords": [
+            "nonlinear",
+            "Lab 1",
+            "Lab 2",
+            "Sensors and interfaces",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Recognize that sensor readings may not change evenly across all operating ranges."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2. Prerequisites: photoresistor, thermistor."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Recognize that sensor readings may not change evenly across all operating ranges.",
+          "related": [
+            "measurement-uncertainty",
+            "photoresistor",
+            "thermistor"
+          ]
+        },
+        {
+          "id": "ms15-interface",
+          "type": "spec",
+          "name": "MS15 interface signals",
+          "title": "How does ms15 interface signals support the 3CC3 lab workflow",
+          "asset": "Sensor_Calibration_Curve.png",
+          "summary": "Identify MS15 power rails, 0 V references, position feedback, tachogenerator feedback, and motor-drive command before wiring.",
+          "keywords": [
+            "MS15",
+            "tachogenerator",
+            "position potentiometer",
+            "motor drive",
+            "Sensors and interfaces",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Identify MS15 power rails, 0 V references, position feedback, tachogenerator feedback, and motor-drive command before wiring."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in course practice. Prerequisites: power-rails-common-ground, safe-bench-practice."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Identify MS15 power rails, 0 V references, position feedback, tachogenerator feedback, and motor-drive command before wiring.",
+          "related": [
+            "sensor-calibration",
+            "actuator-command",
+            "power-rails-common-ground",
+            "safe-bench-practice"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actuators",
+      "title": "Actuators & Output",
+      "icon": "cycle",
+      "blurb": "Turning signals back into motion and sound.",
+      "nodes": [
+        {
+          "id": "buzzer",
+          "type": "spec",
+          "name": "Active Buzzer",
+          "title": "What is an active buzzer and how is it different from a passive one",
+          "asset": "Active_Buzzer.jpg",
+          "summary": "A self-oscillating audible alert.",
+          "keywords": [
+            "buzzer",
+            "active",
+            "passive",
+            "tone"
+          ],
+          "sections": [
+            {
+              "heading": "Active vs passive",
+              "body": "An active buzzer contains its own oscillator — apply DC and it sounds at a fixed pitch. A passive buzzer is a tiny speaker that needs a driving frequency. For simple alerts the active type is just digitalWrite HIGH/LOW."
+            },
+            {
+              "heading": "Driving it",
+              "body": "It is polarised, so orientation matters, and draws more than an LED — drive louder buzzers through a transistor rather than directly from a pin."
+            }
+          ],
+          "hint": "An active buzzer that stays silent on a HIGH pin usually has reversed polarity — and if you need melodies, you actually need a passive buzzer driven with tone().",
+          "related": [
+            "arduino",
+            "pwm"
+          ]
+        },
+        {
+          "id": "servo",
+          "type": "spec",
+          "name": "Servo Motor",
+          "title": "What is a servo motor and how do pulses set its angle",
+          "asset": "Servo_Motor.jpg",
+          "summary": "Angle from pulse width at ~50 Hz.",
+          "keywords": [
+            "servo",
+            "angle",
+            "pulse",
+            "50hz"
+          ],
+          "sections": [
+            {
+              "heading": "Position from pulses",
+              "body": "A hobby servo reads a ~50 Hz pulse train and moves its horn to an angle set by the pulse width (≈1 ms → 0°, ≈2 ms → 180°). Internal feedback holds that angle against load."
+            },
+            {
+              "heading": "Driving it",
+              "body": "Use the Arduino <code>Servo</code> library, which generates the correct timing on a digital pin. Signal is logic-level; power should be separate."
+            }
+          ],
+          "hint": "A servo that twitches or browns out the board on movement is drawing current spikes the 5 V rail cannot supply — power it from an external 5–6 V source with a common ground.",
+          "related": [
+            "pwm",
+            "arduino",
+            "common-ground"
+          ]
+        },
+        {
+          "id": "stepper",
+          "type": "spec",
+          "name": "Stepper & Driver",
+          "title": "What is a stepper motor, and why does it always need a driver",
+          "asset": "Stepper_Motor_Driver.jpg",
+          "summary": "Open-loop rotation in fixed steps.",
+          "keywords": [
+            "stepper",
+            "driver",
+            "a4988",
+            "uln2003",
+            "coil"
+          ],
+          "sections": [
+            {
+              "heading": "Coils and drivers",
+              "body": "Steppers move in fixed steps by energising coil pairs in sequence. Never drive them from a pin — a driver (ULN2003 for the 28BYJ-48, or A4988/DRV8825 for bipolar NEMA motors) sequences the coils and limits current."
+            },
+            {
+              "heading": "Identifying wiring",
+              "body": "Use a multimeter to find coil pairs (a pair shows continuity; across pairs is open) before connecting, so the step sequence energises the right windings."
+            }
+          ],
+          "hint": "A motor that vibrates in place but will not rotate has its coil wiring/sequence wrong — buzz out the coil pairs with a multimeter and re-map the driver outputs.",
+          "related": [
+            "stepper-torque",
+            "arduino",
+            "measure-resistance"
+          ]
+        },
+        {
+          "id": "stepper-torque",
+          "type": "theory",
+          "name": "Holding Torque",
+          "title": "What is holding torque, and why do steppers skip steps",
+          "asset": "Stepper_Torque_Curve.png",
+          "summary": "The torque–speed limit of a stepper.",
+          "keywords": [
+            "holding torque",
+            "torque speed",
+            "microstep",
+            "slip"
+          ],
+          "sections": [
+            {
+              "heading": "Discrete steps",
+              "body": "A stepper moves in fixed angular increments and can hold a position by energising its coils — that static resisting force is holding torque, giving open-loop positioning without an encoder."
+            },
+            {
+              "heading": "Torque vs speed",
+              "body": "Available torque falls as step rate rises (the torque-speed curve). Push too fast or too hard and the rotor slips — it skips steps silently and loses position with no error reported."
+            }
+          ],
+          "hint": "A motor that stutters or silently loses position under load is past the torque-speed curve — slow the step rate and/or raise the driver's current limit to recover holding torque.",
+          "related": [
+            "stepper"
+          ]
+        },
+        {
+          "id": "servo-motor",
+          "type": "spec",
+          "name": "Servo motor",
+          "title": "How does servo motor support the 3CC3 lab workflow",
+          "asset": "Servo_Motor.jpg",
+          "summary": "Interpret a pulse-width command as a target shaft position.",
+          "keywords": [
+            "servo",
+            "brown red orange",
+            "horn",
+            "coupling",
+            "motion",
+            "Lab 5",
+            "Sensors and interfaces",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Interpret a pulse-width command as a target shaft position."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 5. Prerequisites: power-rails-common-ground, digital-output."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Interpret a pulse-width command as a target shaft position.",
+          "related": [
+            "pulse-width",
+            "servo-pulse-limits",
+            "automatic-wave-subvi",
+            "power-rails-common-ground",
+            "digital-output"
+          ]
+        },
+        {
+          "id": "stepper-motor",
+          "type": "spec",
+          "name": "Stepper motor",
+          "title": "How does stepper motor support the 3CC3 lab workflow",
+          "asset": "Stepper_Motor_Driver.jpg",
+          "summary": "Move in discrete increments by energizing windings in sequence and holding position with energized coils.",
+          "keywords": [
+            "stepper",
+            "holding torque",
+            "steps per revolution",
+            "2048",
+            "micro-stepping",
+            "Lab 6",
+            "Sensors and interfaces",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Move in discrete increments by energizing windings in sequence and holding position with energized coils."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 6. Prerequisites: external-motor-power, motor-driver."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Move in discrete increments by energizing windings in sequence and holding position with energized coils.",
+          "related": [
+            "command-parsing",
+            "actuator-command",
+            "external-motor-power",
+            "motor-driver"
+          ]
+        },
+        {
+          "id": "motor-driver",
+          "type": "spec",
+          "name": "Stepper motor driver",
+          "title": "How does stepper motor driver support the 3CC3 lab workflow",
+          "asset": "Stepper_Motor_Driver.jpg",
+          "summary": "Switch motor coils and supply motor current from the external power circuit under Arduino control.",
+          "keywords": [
+            "IN1",
+            "IN2",
+            "IN3",
+            "IN4",
+            "driver",
+            "Lab 6",
+            "Sensors and interfaces",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Switch motor coils and supply motor current from the external power circuit under Arduino control."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 6. Prerequisites: external-motor-power, digital-output."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Switch motor coils and supply motor current from the external power circuit under Arduino control.",
+          "related": [
+            "stepper-motor",
+            "safe-bench-practice",
+            "external-motor-power",
+            "digital-output"
+          ]
+        },
+        {
+          "id": "actuator-command",
+          "type": "skill",
+          "name": "Actuator command path",
+          "title": "How does actuator command path support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Trace how a number in software becomes a bounded physical output command.",
+          "keywords": [
+            "actuator",
+            "command",
+            "sense decide act",
+            "Lab 5",
+            "Lab 6",
+            "Lab 7",
+            "Design Project",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Trace how a number in software becomes a bounded physical output command."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 5, Lab 6, Lab 7, Design Project. Prerequisites: pwm-output, safe-bench-practice."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Trace how a number in software becomes a bounded physical output command.",
+          "related": [
+            "open-loop-control",
+            "ms15-interface",
+            "servo-motor",
+            "stepper-motor",
+            "remote-control",
+            "smart-system-design",
+            "pwm-output",
+            "safe-bench-practice"
+          ]
+        },
+        {
+          "id": "open-loop-control",
+          "type": "theory",
+          "name": "Open-loop versus closed-loop control",
+          "title": "How does open-loop versus closed-loop control support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Decide whether measured output is fed back to revise the next command.",
+          "keywords": [
+            "open-loop",
+            "closed-loop",
+            "feedback",
+            "Engineering practice",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Decide whether measured output is fed back to revise the next command."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in course practice. Prerequisites: actuator-command, experimental-evidence."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Decide whether measured output is fed back to revise the next command.",
+          "related": [
+            "systematic-troubleshooting",
+            "smart-system-design",
+            "actuator-command",
+            "experimental-evidence"
+          ]
+        },
+        {
+          "id": "active-buzzer",
+          "type": "spec",
+          "name": "Active buzzer",
+          "title": "How does active buzzer support the 3CC3 lab workflow",
+          "asset": "Active_Buzzer.jpg",
+          "summary": "Produce an audible alert when a digital output drives the buzzer input HIGH with correct polarity.",
+          "keywords": [
+            "buzzer",
+            "alarm",
+            "D3",
+            "Lab 3",
+            "Arduino and embedded programming",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Produce an audible alert when a digital output drives the buzzer input HIGH with correct polarity."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 3. Prerequisites: digital-output, safe-bench-practice."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Produce an audible alert when a digital output drives the buzzer input HIGH with correct polarity.",
+          "related": [
+            "event-counting",
+            "digital-output",
+            "safe-bench-practice"
+          ]
+        },
+        {
+          "id": "pwm-output",
+          "type": "theory",
+          "name": "PWM output",
+          "title": "How does pwm output support the 3CC3 lab workflow",
+          "asset": "PWM_DutyCycle_Waveforms.png",
+          "summary": "Command apparent output intensity or servo position by switching between low and high states with timing constraints.",
+          "keywords": [
+            "PWM",
+            "duty cycle",
+            "oscilloscope",
+            "multimeter",
+            "Lab 5",
+            "Arduino and embedded programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Command apparent output intensity or servo position by switching between low and high states with timing constraints."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 5. Prerequisites: digital-output."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Command apparent output intensity or servo position by switching between low and high states with timing constraints.",
+          "related": [
+            "actuator-command",
+            "measurement-uncertainty",
+            "pulse-width",
+            "digital-output"
+          ]
+        },
+        {
+          "id": "pulse-width",
+          "type": "theory",
+          "name": "Servo pulse width",
+          "title": "How does servo pulse width support the 3CC3 lab workflow",
+          "asset": "PWM_DutyCycle_Waveforms.png",
+          "summary": "Map a command angle into a timed servo pulse measured in microseconds.",
+          "keywords": [
+            "pulse width",
+            "microseconds",
+            "1500",
+            "600",
+            "2400",
+            "PW",
+            "Lab 5",
+            "Arduino and embedded programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Map a command angle into a timed servo pulse measured in microseconds."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 5. Prerequisites: servo-motor, mathscript-node."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Map a command angle into a timed servo pulse measured in microseconds.",
+          "related": [
+            "servo-pulse-limits",
+            "pwm-output",
+            "servo-motor",
+            "mathscript-node"
+          ]
+        },
+        {
+          "id": "servo-pulse-limits",
+          "type": "skill",
+          "name": "Servo pulse-width limits",
+          "title": "How does servo pulse-width limits support the 3CC3 lab workflow",
+          "asset": "PWM_DutyCycle_Waveforms.png",
+          "summary": "Confirm safe lower and upper pulse-width values for the actual servo before testing extremes.",
+          "keywords": [
+            "LRV",
+            "URV",
+            "jitter",
+            "mechanical limit",
+            "Lab 5",
+            "Arduino and embedded programming",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Confirm safe lower and upper pulse-width values for the actual servo before testing extremes."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 5. Prerequisites: pulse-width, safe-bench-practice."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Confirm safe lower and upper pulse-width values for the actual servo before testing extremes.",
+          "related": [
+            "systematic-troubleshooting",
+            "pulse-width",
+            "safe-bench-practice"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "platforms",
+      "title": "Boards & Chips",
+      "icon": "developer_board",
+      "blurb": "The controller and the conditioning silicon.",
+      "nodes": [
+        {
+          "id": "arduino",
+          "type": "spec",
+          "name": "Arduino Mega 2560",
+          "title": "What is the Arduino Mega 2560 and what are its limits",
+          "asset": "Arduino_Mega_2560_Pinout.png",
+          "summary": "The central 5 V microcontroller board.",
+          "keywords": [
+            "arduino",
+            "mega",
+            "adc",
+            "digital",
+            "analog"
+          ],
+          "sections": [
+            {
+              "heading": "What it offers",
+              "body": "The Mega gives 54 digital I/O pins (15 PWM-capable), 16 analog inputs with a 10-bit ADC (0–1023), and multiple hardware serial ports. It is the hub every sensor and actuator connects to."
+            },
+            {
+              "heading": "Logic levels",
+              "body": "It runs 5 V logic. Analog reads return 0–1023 across 0–5 V; digital writes are a clean 0 V / 5 V. Respect the ~20 mA per-pin limit and never back-power motors through the board."
+            }
+          ],
+          "hint": "A board that resets or behaves randomly when a motor runs is being overdrawn — power actuators from a separate supply and tie the grounds together.",
+          "related": [
+            "pwm",
+            "common-ground",
+            "arduino-threshold",
+            "labview-linx"
+          ]
+        },
+        {
+          "id": "lmc6484",
+          "type": "spec",
+          "name": "LMC6484 Op-Amp",
+          "title": "What is the LMC6484, and why a rail-to-rail single-supply part",
+          "asset": "LMC6484_Pinout.png",
+          "summary": "A rail-to-rail CMOS quad op-amp.",
+          "keywords": [
+            "lmc6484",
+            "op-amp",
+            "rail-to-rail",
+            "cmos"
+          ],
+          "sections": [
+            {
+              "heading": "Why this part",
+              "body": "The LMC6484 packs four CMOS op-amps with rail-to-rail input and output, running from a single supply — ideal for 5 V Arduino projects where signals live close to ground or the rail."
+            },
+            {
+              "heading": "Using it well",
+              "body": "Add a decoupling capacitor near the supply pins, mind the pinout when wiring all four amplifiers, and remember the output still cannot quite reach the rails under load."
+            }
+          ],
+          "hint": "An amplifier output that cannot reach the value you expect near 0 V or 5 V is losing headroom under load — lower the gain or bias the signal away from the rails.",
+          "related": [
+            "opamp-gain",
+            "strain-gauge"
+          ]
+        },
+        {
+          "id": "arduino-uno-pin-map",
+          "type": "spec",
+          "name": "Arduino Uno pin map",
+          "title": "How does arduino uno pin map support the 3CC3 lab workflow",
+          "asset": "Arduino_Mega_2560_Pinout.png",
+          "summary": "Identify power, ground, analog input, and digital output pins.",
+          "keywords": [
+            "Arduino Uno",
+            "pins",
+            "Lab 1",
+            "Arduino and embedded programming",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Identify power, ground, analog input, and digital output pins."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: power-rails-common-ground."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Identify power, ground, analog input, and digital output pins.",
+          "related": [
+            "analog-input",
+            "digital-output",
+            "power-rails-common-ground"
+          ]
+        },
+        {
+          "id": "matlab-hardware-connection",
+          "type": "spec",
+          "name": "MATLAB hardware connection",
+          "title": "How does matlab hardware connection support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Confirm MATLAB can identify supported hardware before wiring sensors or actuators.",
+          "keywords": [
+            "MATLAB",
+            "hardware setup",
+            "port",
+            "support package",
+            "Arduino and embedded programming",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Confirm MATLAB can identify supported hardware before wiring sensors or actuators."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in course practice. Prerequisites: technical-documentation, safe-bench-practice."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Confirm MATLAB can identify supported hardware before wiring sensors or actuators.",
+          "related": [
+            "analog-input",
+            "digital-output",
+            "technical-documentation",
+            "safe-bench-practice"
+          ]
+        },
+        {
+          "id": "arduino-ide",
+          "type": "spec",
+          "name": "Arduino IDE firmware upload",
+          "title": "How does arduino ide firmware upload support the 3CC3 lab workflow",
+          "asset": "Arduino_Threshold_Sketch.png",
+          "summary": "Compile and upload Arduino code that reads serial commands and actuates hardware.",
+          "keywords": [
+            "Arduino IDE",
+            "Verify",
+            "Upload",
+            "Stepper.h",
+            "firmware",
+            "Lab 6",
+            "Arduino and embedded programming",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Compile and upload Arduino code that reads serial commands and actuates hardware."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 6. Prerequisites: technical-documentation, safe-bench-practice."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Compile and upload Arduino code that reads serial commands and actuates hardware.",
+          "related": [
+            "serial-communication",
+            "command-parsing",
+            "technical-documentation",
+            "safe-bench-practice"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bench-skills",
+      "title": "Bench Skills",
+      "icon": "build",
+      "blurb": "Hands-on procedures at the lab bench.",
+      "nodes": [
+        {
+          "id": "measure-voltage",
+          "type": "skill",
+          "name": "Measuring Voltage",
+          "title": "How do I measure voltage across a node with a multimeter",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Reading a powered node against ground.",
+          "keywords": [
+            "multimeter",
+            "dmm",
+            "voltage",
+            "probe",
+            "dc volts"
+          ],
+          "sections": [
+            {
+              "heading": "Set up the meter",
+              "body": "Select DC volts, plug the black lead into COM and the red lead into the V/Ω jack. Voltage is measured <em>in parallel</em> — across a component or between a node and ground, with the circuit powered."
+            },
+            {
+              "heading": "Take the reading",
+              "body": "Put the black probe on the common ground and the red probe on the node of interest. Start on a range above your expected value (or use autorange) and read once the value settles."
+            }
+          ],
+          "hint": "A wildly wrong or negative voltage usually means the probes are on the wrong nodes or your ground reference is floating — re-confirm the black probe is on the same ground as the circuit.",
+          "related": [
+            "measure-resistance",
+            "common-ground",
+            "voltage-divider"
+          ]
+        },
+        {
+          "id": "measure-resistance",
+          "type": "skill",
+          "name": "Measuring Resistance",
+          "title": "How do I measure resistance safely without damaging the meter",
+          "asset": "DMM_Resistance_Measurement.jpg",
+          "summary": "Reading ohms on an unpowered part.",
+          "keywords": [
+            "resistance",
+            "ohms",
+            "unpowered",
+            "continuity"
+          ],
+          "sections": [
+            {
+              "heading": "Power off first",
+              "body": "Resistance is measured on an <em>unpowered</em> circuit or an isolated component. Measuring a live circuit gives meaningless readings and can damage the meter. Set the dial to Ω."
+            },
+            {
+              "heading": "Isolate the component",
+              "body": "For an accurate value, lift one leg of the component out of the circuit so parallel paths don't skew the reading. Use this to confirm resistor values and identify stepper coil pairs."
+            }
+          ],
+          "hint": "A resistance reading lower than the marked value usually means another path is in parallel — lift one leg of the component out of the circuit and measure again.",
+          "related": [
+            "measure-voltage",
+            "stepper",
+            "ohms-law"
+          ]
+        },
+        {
+          "id": "build-divider",
+          "type": "skill",
+          "name": "Building a Divider",
+          "title": "How do I build a sensor voltage divider on a breadboard",
+          "asset": "Breadboard_Voltage_Divider.jpg",
+          "summary": "Wiring a sensor + resistor to an analog pin.",
+          "keywords": [
+            "breadboard",
+            "divider",
+            "wiring",
+            "a0"
+          ],
+          "sections": [
+            {
+              "heading": "The layout",
+              "body": "Run 5 V to one end, ground to the other, and place the sensor and fixed resistor in series between them. The junction between the two parts is your output — wire it to an analog pin such as A0."
+            },
+            {
+              "heading": "Sanity check",
+              "body": "Before trusting code, measure the junction with a multimeter as you change the sensed quantity. The voltage should move smoothly between roughly 0 V and 5 V."
+            }
+          ],
+          "hint": "If the analog pin reads flat, probe the divider junction directly — no movement there means a wiring break or a fixed resistor that swamps the sensor.",
+          "related": [
+            "voltage-divider",
+            "measure-voltage",
+            "photoresistor"
+          ]
+        },
+        {
+          "id": "wire-bridge",
+          "type": "skill",
+          "name": "Wiring a Bridge",
+          "title": "How do I wire and null a Wheatstone bridge before amplifying",
+          "asset": "Wheatstone_Bridge_Wiring.jpg",
+          "summary": "Balancing a bridge to ~0 V at rest.",
+          "keywords": [
+            "bridge",
+            "null",
+            "offset",
+            "trim",
+            "balance"
+          ],
+          "sections": [
+            {
+              "heading": "Build and excite",
+              "body": "Wire the four arms into the diamond, apply a stable excitation voltage across one diagonal, and take the differential output from the other. With the active element at rest the output should sit near zero."
+            },
+            {
+              "heading": "Null the offset",
+              "body": "Real resistors never match exactly, so trim one arm (or subtract the offset in software) until the resting output reads ~0 V. Only then does the amplified signal represent the change you care about."
+            }
+          ],
+          "hint": "A bridge whose amplified output saturates immediately was never nulled — bring the resting differential to ~0 V before the gain stage, not after.",
+          "related": [
+            "wheatstone",
+            "opamp-gain",
+            "strain-gauge",
+            "measure-voltage"
+          ]
+        },
+        {
+          "id": "calibrate-sensor",
+          "type": "skill",
+          "name": "Calibrating Sensors",
+          "title": "How do I calibrate an analog sensor to a real-world value",
+          "asset": "Sensor_Calibration_Curve.png",
+          "summary": "Mapping raw counts to meaning.",
+          "keywords": [
+            "calibrate",
+            "map",
+            "threshold",
+            "two-point"
+          ],
+          "sections": [
+            {
+              "heading": "Capture two anchors",
+              "body": "Record the raw ADC value at two known conditions — for a moisture probe, fully dry and fully wet; for an LDR, dark and bright. These anchor the range your sensor actually uses."
+            },
+            {
+              "heading": "Map and threshold",
+              "body": "Use <code>map()</code> between the anchors to convert raw counts to a meaningful scale, and pick any control threshold from real measured readings rather than a guessed number."
+            }
+          ],
+          "hint": "A sensor that reads \"correct\" indoors but fails in the real setting was calibrated against the wrong anchors — re-capture the extremes in the actual environment.",
+          "related": [
+            "photoresistor",
+            "thermistor",
+            "soil-moisture",
+            "arduino-threshold"
+          ]
+        },
+        {
+          "id": "common-ground",
+          "type": "skill",
+          "name": "Power & Ground",
+          "title": "How do I set up power rails and a common ground",
+          "asset": "Breadboard_Power_Rails.jpg",
+          "summary": "A shared reference for every part.",
+          "keywords": [
+            "ground",
+            "rails",
+            "common",
+            "supply"
+          ],
+          "sections": [
+            {
+              "heading": "Shared reference",
+              "body": "Every measurement and signal is relative to ground. When a sensor, the Arduino, and an external supply all share a single common ground, voltages mean the same thing everywhere."
+            },
+            {
+              "heading": "Separate supplies",
+              "body": "Motors and servos should draw from their own supply, but that supply's ground must still be tied to the Arduino ground — otherwise signals and readings drift unpredictably."
+            }
+          ],
+          "hint": "Signals that drift once an external supply is added almost always mean the grounds were never tied together — bond every ground to one common rail.",
+          "related": [
+            "servo",
+            "arduino",
+            "measure-voltage"
+          ]
+        },
+        {
+          "id": "multimeter",
+          "type": "spec",
+          "name": "Multimeter setup",
+          "title": "How does multimeter setup support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Select the correct meter mode and lead placement before measuring.",
+          "keywords": [
+            "meter",
+            "DMM",
+            "Lab 1",
+            "Measurement and instrumentation",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Select the correct meter mode and lead placement before measuring."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: dc-circuits."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Select the correct meter mode and lead placement before measuring.",
+          "related": [
+            "measuring-resistance",
+            "measuring-voltage",
+            "dc-circuits"
+          ]
+        },
+        {
+          "id": "measuring-resistance",
+          "type": "skill",
+          "name": "Measuring resistance safely",
+          "title": "How does measuring resistance safely support the 3CC3 lab workflow",
+          "asset": "DMM_Resistance_Measurement.jpg",
+          "summary": "Measure resistance on an unpowered circuit or isolated component.",
+          "keywords": [
+            "ohms",
+            "unpowered",
+            "Lab 1",
+            "Measurement and instrumentation",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Measure resistance on an unpowered circuit or isolated component."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: multimeter."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Measure resistance on an unpowered circuit or isolated component.",
+          "related": [
+            "photoresistor",
+            "safe-bench-practice",
+            "multimeter"
+          ]
+        },
+        {
+          "id": "measuring-voltage",
+          "type": "skill",
+          "name": "Measuring voltage",
+          "title": "How does measuring voltage support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Measure powered circuit voltage between nodes or between a node and reference ground.",
+          "keywords": [
+            "volts",
+            "Vout",
+            "wiper voltage",
+            "SIG+",
+            "SIG-",
+            "V2",
+            "V3",
+            "A0",
+            "V_dry",
+            "V_wet",
+            "Lab 1",
+            "Lab 2",
+            "Lab 4",
+            "Lab 5",
+            "Lab 8",
+            "Measurement and instrumentation",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Measure powered circuit voltage between nodes or between a node and reference ground."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 4, Lab 5, Lab 8. Prerequisites: multimeter, power-rails-common-ground."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Measure powered circuit voltage between nodes or between a node and reference ground.",
+          "related": [
+            "analog-input",
+            "sampled-data",
+            "signal-amplification",
+            "moisture-calibration",
+            "multimeter",
+            "power-rails-common-ground"
+          ]
+        },
+        {
+          "id": "meter-lead-placement",
+          "type": "skill",
+          "name": "Meter lead placement",
+          "title": "How does meter lead placement support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Place meter leads according to the quantity being measured.",
+          "keywords": [
+            "red lead",
+            "black lead",
+            "Lab 1",
+            "Measurement and instrumentation",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Place meter leads according to the quantity being measured."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: multimeter."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Place meter leads according to the quantity being measured.",
+          "related": [
+            "systematic-troubleshooting",
+            "multimeter"
+          ]
+        },
+        {
+          "id": "trainer-board-power",
+          "type": "spec",
+          "name": "Trainer-board power supply",
+          "title": "How does trainer-board power supply support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Use the trainer-board 5 V supply for real hardware verification.",
+          "keywords": [
+            "trainer board",
+            "5 V",
+            "Lab 1",
+            "Measurement and instrumentation",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use the trainer-board 5 V supply for real hardware verification."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: power-rails-common-ground."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use the trainer-board 5 V supply for real hardware verification.",
+          "related": [
+            "safe-bench-practice",
+            "power-rails-common-ground"
+          ]
+        },
+        {
+          "id": "measurement-units",
+          "type": "spec",
+          "name": "Measurement units",
+          "title": "How does measurement units support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Record values with clear units so comparisons are meaningful.",
+          "keywords": [
+            "units",
+            "degrees",
+            "microseconds",
+            "percent moisture",
+            "Lab 1",
+            "Lab 2",
+            "Lab 4",
+            "Lab 5",
+            "Lab 8",
+            "Measurement and instrumentation",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Record values with clear units so comparisons are meaningful."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 4, Lab 5, Lab 8. Prerequisites: resistor-values."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Record values with clear units so comparisons are meaningful.",
+          "related": [
+            "significant-figures",
+            "resistor-values"
+          ]
+        },
+        {
+          "id": "significant-figures",
+          "type": "spec",
+          "name": "Significant figures",
+          "title": "How does significant figures support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Report values with reasonable precision for the instrument and experiment.",
+          "keywords": [
+            "precision",
+            "Lab 1",
+            "Measurement and instrumentation",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Report values with reasonable precision for the instrument and experiment."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: measurement-units."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Report values with reasonable precision for the instrument and experiment.",
+          "related": [
+            "measurement-uncertainty",
+            "measurement-units"
+          ]
+        },
+        {
+          "id": "calculated-measured",
+          "type": "theory",
+          "name": "Calculated versus measured values",
+          "title": "How does calculated versus measured values support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Compare ideal calculations with physical measurements and explain disagreement.",
+          "keywords": [
+            "calculation",
+            "measurement",
+            "Lab 1",
+            "Measurement and instrumentation",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Compare ideal calculations with physical measurements and explain disagreement."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: voltage-divider, measuring-voltage."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Compare ideal calculations with physical measurements and explain disagreement.",
+          "related": [
+            "percent-difference",
+            "measurement-uncertainty",
+            "voltage-divider",
+            "measuring-voltage"
+          ]
+        },
+        {
+          "id": "percent-difference",
+          "type": "skill",
+          "name": "Percent difference",
+          "title": "How does percent difference support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Quantify the difference between a measured and calculated value.",
+          "keywords": [
+            "percent error",
+            "Lab 1",
+            "Measurement and instrumentation",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Quantify the difference between a measured and calculated value."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: calculated-measured."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Quantify the difference between a measured and calculated value.",
+          "related": [
+            "experimental-evidence",
+            "calculated-measured"
+          ]
+        },
+        {
+          "id": "measurement-uncertainty",
+          "type": "theory",
+          "name": "Measurement uncertainty",
+          "title": "How does measurement uncertainty support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Recognize tolerance, sensor variability, and instrument limits in experimental evidence.",
+          "keywords": [
+            "uncertainty",
+            "tolerance",
+            "noise",
+            "offset",
+            "Lab 1",
+            "Lab 2",
+            "Lab 4",
+            "Measurement and instrumentation",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Recognize tolerance, sensor variability, and instrument limits in experimental evidence."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 4. Prerequisites: calculated-measured, significant-figures."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Recognize tolerance, sensor variability, and instrument limits in experimental evidence.",
+          "related": [
+            "source-evaluation",
+            "calculated-measured",
+            "significant-figures"
+          ]
+        },
+        {
+          "id": "sampled-data",
+          "type": "theory",
+          "name": "Sampled data in time",
+          "title": "How does sampled data in time support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Record physical signals as timestamped data so rate, duration, and observed change can be interpreted.",
+          "keywords": [
+            "LabVIEW",
+            "LINX",
+            "timestamp",
+            "sample rate",
+            "time vector",
+            "Lab 2",
+            "Measurement and instrumentation",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Record physical signals as timestamped data so rate, duration, and observed change can be interpreted."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 2. Prerequisites: measuring-voltage, analog-to-digital."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Record physical signals as timestamped data so rate, duration, and observed change can be interpreted.",
+          "related": [
+            "experimental-evidence",
+            "sensor-calibration",
+            "measuring-voltage",
+            "analog-to-digital"
+          ]
+        },
+        {
+          "id": "predict-build-observe",
+          "type": "skill",
+          "name": "Predict, build, observe, explain, verify",
+          "title": "How does predict, build, observe, explain, verify support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Use a repeatable learning cycle for software, simulation, and hardware work.",
+          "keywords": [
+            "learning cycle",
+            "predict build measure explain revise",
+            "Lab 1",
+            "Lab 2",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use a repeatable learning cycle for software, simulation, and hardware work."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2. Use this as a reusable reference when the lab does not give a step-by-step reminder."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use a repeatable learning cycle for software, simulation, and hardware work.",
+          "related": [
+            "experimental-evidence"
+          ]
+        },
+        {
+          "id": "reading-circuit-diagrams",
+          "type": "skill",
+          "name": "Reading circuit diagrams",
+          "title": "How does reading circuit diagrams support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Translate a schematic into components, nodes, and a physical wiring plan.",
+          "keywords": [
+            "schematic",
+            "Lab 1",
+            "Engineering practice",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Translate a schematic into components, nodes, and a physical wiring plan."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: dc-circuits."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Translate a schematic into components, nodes, and a physical wiring plan.",
+          "related": [
+            "wiring-map",
+            "dc-circuits"
+          ]
+        },
+        {
+          "id": "wiring-map",
+          "type": "skill",
+          "name": "Following a wiring map",
+          "title": "How does following a wiring map support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Translate breadboard coordinates into physical connections.",
+          "keywords": [
+            "G8",
+            "J7",
+            "A0",
+            "Lab 1",
+            "Engineering practice",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Translate breadboard coordinates into physical connections."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: breadboard, reading-circuit-diagrams."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Translate breadboard coordinates into physical connections.",
+          "related": [
+            "systematic-troubleshooting",
+            "breadboard",
+            "reading-circuit-diagrams"
+          ]
+        },
+        {
+          "id": "boundary-testing",
+          "type": "skill",
+          "name": "Boundary-condition testing",
+          "title": "How does boundary-condition testing support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Test behavior around a threshold or limit rather than only at obvious cases.",
+          "keywords": [
+            "testing",
+            "Lab 1",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Test behavior around a threshold or limit rather than only at obvious cases."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: threshold-control."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Test behavior around a threshold or limit rather than only at obvious cases.",
+          "related": [
+            "experimental-evidence",
+            "threshold-control"
+          ]
+        },
+        {
+          "id": "systematic-troubleshooting",
+          "type": "skill",
+          "name": "Systematic troubleshooting",
+          "title": "How does systematic troubleshooting support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Use a safe, repeatable sequence to isolate wiring, measurement, and code faults.",
+          "keywords": [
+            "debugging",
+            "Lab 1",
+            "Lab 2",
+            "Lab 4",
+            "Lab 5",
+            "Lab 6",
+            "Lab 7",
+            "Lab 8",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use a safe, repeatable sequence to isolate wiring, measurement, and code faults."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 4, Lab 5, Lab 6, Lab 7, Lab 8. Prerequisites: multimeter, breadboard."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use a safe, repeatable sequence to isolate wiring, measurement, and code faults.",
+          "related": [
+            "led-polarity",
+            "if-else",
+            "power-rails-common-ground",
+            "labview-linx",
+            "servo-pulse-limits",
+            "visa-serial",
+            "mqtt-topics",
+            "moisture-calibration",
+            "multimeter",
+            "breadboard"
+          ]
+        },
+        {
+          "id": "simulation-hardware",
+          "type": "skill",
+          "name": "Comparing simulation and hardware",
+          "title": "How does comparing simulation and hardware support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Use simulation to reason, then verify results with real components and measurements.",
+          "keywords": [
+            "simulation",
+            "hardware",
+            "Lab 1",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use simulation to reason, then verify results with real components and measurements."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: tinkercad."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use simulation to reason, then verify results with real components and measurements.",
+          "related": [
+            "measurement-uncertainty"
+          ]
+        },
+        {
+          "id": "experimental-evidence",
+          "type": "skill",
+          "name": "Experimental evidence",
+          "title": "How does experimental evidence support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Support claims with measurements, observations, calculations, and demonstrations.",
+          "keywords": [
+            "evidence",
+            "Lab 1",
+            "Lab 2",
+            "Lab 4",
+            "Lab 5",
+            "Lab 6",
+            "Lab 7",
+            "Lab 8",
+            "Design Project",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Support claims with measurements, observations, calculations, and demonstrations."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 4, Lab 5, Lab 6, Lab 7, Lab 8, Design Project. Prerequisites: measurement-units."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Support claims with measurements, observations, calculations, and demonstrations.",
+          "related": [
+            "source-evaluation",
+            "dashboard-analytics",
+            "demo-video",
+            "measurement-units"
+          ]
+        },
+        {
+          "id": "safe-bench-practice",
+          "type": "skill",
+          "name": "Safe bench practice",
+          "title": "How does safe bench practice support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Work with power, meters, wiring, water, and moving parts in a controlled and low-risk sequence.",
+          "keywords": [
+            "safety",
+            "water near electronics",
+            "Lab 1",
+            "Lab 2",
+            "Lab 3",
+            "Lab 4",
+            "Lab 5",
+            "Lab 6",
+            "Lab 7",
+            "Lab 8",
+            "Design Project",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Work with power, meters, wiring, water, and moving parts in a controlled and low-risk sequence."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 3, Lab 4, Lab 5, Lab 6, Lab 7, Lab 8, Design Project. Prerequisites: multimeter."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Work with power, meters, wiring, water, and moving parts in a controlled and low-risk sequence.",
+          "related": [
+            "trainer-board-power",
+            "ms15-interface",
+            "labview-linx",
+            "active-buzzer",
+            "signal-amplification",
+            "servo-motor",
+            "external-motor-power",
+            "api-token",
+            "soil-moisture-sensor",
+            "risk-planning",
+            "multimeter"
+          ]
+        },
+        {
+          "id": "smart-system-design",
+          "type": "skill",
+          "name": "Smart-system design",
+          "title": "How does smart-system design support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Combine a real-world purpose, sensors, decision logic, actuators, local HMI, cloud features, and web HMI into one prototype.",
+          "keywords": [
+            "design project",
+            "prototype",
+            "two sensors",
+            "one actuator",
+            "local HMI",
+            "web HMI",
+            "cloud",
+            "Design Project",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Combine a real-world purpose, sensors, decision logic, actuators, local HMI, cloud features, and web HMI into one prototype."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Design Project. Prerequisites: experimental-evidence, actuator-command, cloud-hmi."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Combine a real-world purpose, sensors, decision logic, actuators, local HMI, cloud features, and web HMI into one prototype.",
+          "related": [
+            "project-complexity",
+            "project-proposal",
+            "risk-planning",
+            "experimental-evidence",
+            "actuator-command",
+            "cloud-hmi"
+          ]
+        },
+        {
+          "id": "project-proposal",
+          "type": "skill",
+          "name": "Project proposal",
+          "title": "How does project proposal support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Communicate the smart-system purpose, functionality, components, schematic, and weekly schedule in 2-3 pages.",
+          "keywords": [
+            "abstract",
+            "proposal",
+            "component list",
+            "timeline",
+            "EasyEDA",
+            "Design Project",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Communicate the smart-system purpose, functionality, components, schematic, and weekly schedule in 2-3 pages."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Design Project. Prerequisites: technical-documentation, smart-system-design."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Communicate the smart-system purpose, functionality, components, schematic, and weekly schedule in 2-3 pages.",
+          "related": [
+            "project-schematic",
+            "weekly-progress",
+            "technical-documentation",
+            "smart-system-design"
+          ]
+        },
+        {
+          "id": "project-schematic",
+          "type": "skill",
+          "name": "Project schematic",
+          "title": "How does project schematic support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Show the electrical connections clearly enough for the team and instructor to reason about the build.",
+          "keywords": [
+            "schematic",
+            "wiring map",
+            "connections",
+            "EasyEDA",
+            "Design Project",
+            "Engineering practice",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Show the electrical connections clearly enough for the team and instructor to reason about the build."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Design Project. Prerequisites: reading-circuit-diagrams, project-proposal."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Show the electrical connections clearly enough for the team and instructor to reason about the build.",
+          "related": [
+            "systematic-troubleshooting",
+            "risk-planning",
+            "reading-circuit-diagrams",
+            "project-proposal"
+          ]
+        },
+        {
+          "id": "project-complexity",
+          "type": "skill",
+          "name": "Project complexity planning",
+          "title": "How does project complexity planning support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Balance scope so the project is comparable to about three combined labs without becoming too small or too large.",
+          "keywords": [
+            "complexity",
+            "scope",
+            "approval",
+            "six devices",
+            "Design Project",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Balance scope so the project is comparable to about three combined labs without becoming too small or too large."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Design Project. Prerequisites: smart-system-design."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Balance scope so the project is comparable to about three combined labs without becoming too small or too large.",
+          "related": [
+            "risk-planning",
+            "weekly-progress",
+            "smart-system-design"
+          ]
+        },
+        {
+          "id": "demo-video",
+          "type": "skill",
+          "name": "Demo and video communication",
+          "title": "How does demo and video communication support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Show functionality, describe hardware, describe software, and explain evidence clearly in the final demo and 3-4 minute video.",
+          "keywords": [
+            "demo",
+            "video",
+            "rubric",
+            "functionality",
+            "hardware",
+            "software",
+            "Design Project",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Show functionality, describe hardware, describe software, and explain evidence clearly in the final demo and 3-4 minute video."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Design Project. Prerequisites: experimental-evidence."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Show functionality, describe hardware, describe software, and explain evidence clearly in the final demo and 3-4 minute video.",
+          "related": [
+            "source-evaluation",
+            "experimental-evidence"
+          ]
+        },
+        {
+          "id": "risk-planning",
+          "type": "skill",
+          "name": "Risk planning",
+          "title": "How does risk planning support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Identify technical, schedule, safety, and scope risks before they block the final demonstration.",
+          "keywords": [
+            "risk",
+            "fallback",
+            "troubleshooting",
+            "instructor approval",
+            "Design Project",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Identify technical, schedule, safety, and scope risks before they block the final demonstration."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Design Project. Prerequisites: systematic-troubleshooting, safe-bench-practice."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Identify technical, schedule, safety, and scope risks before they block the final demonstration.",
+          "related": [
+            "project-complexity",
+            "weekly-progress",
+            "systematic-troubleshooting",
+            "safe-bench-practice"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "programming",
+      "title": "Programming & Control",
+      "icon": "terminal",
+      "blurb": "From dataflow logic to live control.",
+      "nodes": [
+        {
+          "id": "dataflow",
+          "type": "theory",
+          "name": "Dataflow Paradigm",
+          "title": "Why does LabVIEW not run top-to-bottom",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Execution by data availability.",
+          "keywords": [
+            "dataflow",
+            "labview",
+            "parallel",
+            "order"
+          ],
+          "sections": [
+            {
+              "heading": "Execution by data, not lines",
+              "body": "In a dataflow language a node executes the moment all its inputs are available — not in textual order. Independent branches run in parallel automatically, which is powerful but surprising if you think sequentially."
+            },
+            {
+              "heading": "Forcing order",
+              "body": "When order matters (open port → read → close), you create artificial data dependencies — error clusters wired in series, or a Sequence structure — so one node cannot start until the previous finishes."
+            }
+          ],
+          "hint": "A LabVIEW VI running its steps in the \"wrong\" order has no implied sequence — chain the error in/out wire through the nodes, or wrap them in a Flat Sequence, to force order.",
+          "related": [
+            "labview-fundamentals"
+          ]
+        },
+        {
+          "id": "labview-fundamentals",
+          "type": "skill",
+          "name": "LabVIEW Loops",
+          "title": "How do I use loops and shift registers in LabVIEW",
+          "asset": "LabVIEW_BlockDiagram.png",
+          "summary": "Repeating logic and remembering state.",
+          "keywords": [
+            "labview",
+            "loop",
+            "shift register",
+            "front panel"
+          ],
+          "sections": [
+            {
+              "heading": "Front panel + block diagram",
+              "body": "Every VI has a front panel (the UI) and a block diagram (the graphical code). You build behaviour by wiring nodes; While and For loops repeat a section of diagram."
+            },
+            {
+              "heading": "Shift registers",
+              "body": "A plain wire inside a loop resets every iteration. A shift register carries a value from one iteration to the next — essential for running totals, filters and state machines."
+            }
+          ],
+          "hint": "A value that resets to its default every loop iteration was wired through a tunnel — right-click the loop border and Replace with Shift Register to persist it.",
+          "related": [
+            "dataflow",
+            "labview-linx",
+            "labview-visa"
+          ]
+        },
+        {
+          "id": "labview-linx",
+          "type": "skill",
+          "name": "LabVIEW LINX",
+          "title": "How do I drive Arduino pins from LabVIEW with LINX",
+          "asset": "LabVIEW_LINX_Palette.png",
+          "summary": "Controlling Arduino from the diagram.",
+          "keywords": [
+            "linx",
+            "hobbyist",
+            "arduino",
+            "session"
+          ],
+          "sections": [
+            {
+              "heading": "What LINX does",
+              "body": "The LINX (Hobbyist) toolkit lets LabVIEW read and write Arduino pins directly — analog read, digital write, PWM — without writing C. Deploy its firmware once, then drive the board from the block diagram."
+            },
+            {
+              "heading": "Session management",
+              "body": "Open the LINX session once before your main loop and close it once after — never inside the loop. Match the baud rate and select the correct COM port."
+            }
+          ],
+          "hint": "LINX that runs slowly or errors repeatedly is opening/closing the session inside the loop — open before the loop, pass the reference through a shift register, close after.",
+          "related": [
+            "labview-fundamentals",
+            "arduino",
+            "thingsboard"
+          ]
+        },
+        {
+          "id": "labview-visa",
+          "type": "skill",
+          "name": "LabVIEW VISA",
+          "title": "How do I read an Arduino serial stream with VISA",
+          "asset": "LabVIEW_VISA_Serial.png",
+          "summary": "Parsing raw serial in LabVIEW.",
+          "keywords": [
+            "visa",
+            "serial",
+            "baud",
+            "termination"
+          ],
+          "sections": [
+            {
+              "heading": "When to use VISA",
+              "body": "When you write your own Arduino sketch that prints over Serial, VISA is how LabVIEW reads that stream. Configure the port (baud, data bits), then read/write bytes and parse them."
+            },
+            {
+              "heading": "Framing the data",
+              "body": "Agree on a termination character (usually newline) on both sides so VISA knows where one message ends, and configure the serial read to stop on that terminator."
+            }
+          ],
+          "hint": "VISA returning garbage, partial lines, or hanging is nearly always a baud-rate or termination-character mismatch — set both ends identical and clear the buffer before reading.",
+          "related": [
+            "labview-fundamentals",
+            "arduino"
+          ]
+        },
+        {
+          "id": "arduino-threshold",
+          "type": "skill",
+          "name": "Threshold Control",
+          "title": "How do I turn a sensor reading into an action on the Arduino",
+          "asset": "Arduino_Threshold_Sketch.png",
+          "summary": "analogRead → if/else → digitalWrite.",
+          "keywords": [
+            "analogread",
+            "digitalwrite",
+            "if",
+            "threshold"
+          ],
+          "sections": [
+            {
+              "heading": "Read, compare, act",
+              "body": "In <code>loop()</code>, read the sensor with <code>analogRead()</code>, compare it to a threshold with an <code>if/else</code>, and command an actuator with <code>digitalWrite()</code>. This is the automatic-lighting pattern at the heart of the labs."
+            },
+            {
+              "heading": "Choosing the threshold",
+              "body": "Set the threshold from calibrated measurements, and test around the boundary — not just obvious cases — so the actuator switches cleanly rather than chattering near the limit."
+            }
+          ],
+          "hint": "An actuator that chatters on and off near the trigger point needs hysteresis — use two thresholds (one to turn on, a separate one to turn off) instead of a single value.",
+          "related": [
+            "calibrate-sensor",
+            "arduino",
+            "ultrasonic"
+          ]
+        },
+        {
+          "id": "labview-interface",
+          "type": "theory",
+          "name": "LabVIEW interface",
+          "title": "How does labview interface support the 3CC3 lab workflow",
+          "asset": "LabVIEW_BlockDiagram.png",
+          "summary": "Recognize the relationship between the front panel and the block diagram.",
+          "keywords": [
+            "LabVIEW",
+            "interface",
+            "Lab 1",
+            "Lab 2",
+            "Lab 5",
+            "Lab 6",
+            "Lab 7",
+            "Lab 8",
+            "LabVIEW and graphical programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Recognize the relationship between the front panel and the block diagram."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 5, Lab 6, Lab 7, Lab 8. Use this as a reusable reference when the lab does not give a step-by-step reminder."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Recognize the relationship between the front panel and the block diagram.",
+          "related": [
+            "front-panel",
+            "block-diagram"
+          ]
+        },
+        {
+          "id": "front-panel",
+          "type": "theory",
+          "name": "Front panel",
+          "title": "How does front panel support the 3CC3 lab workflow",
+          "asset": "LabVIEW_BlockDiagram.png",
+          "summary": "Use the front panel as the user-facing space for controls, indicators, labels, and identity information.",
+          "keywords": [
+            "LabVIEW",
+            "user interface",
+            "Lab 1",
+            "Lab 2",
+            "Lab 4",
+            "Lab 5",
+            "Lab 6",
+            "Lab 7",
+            "Lab 8",
+            "LabVIEW and graphical programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use the front panel as the user-facing space for controls, indicators, labels, and identity information."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 4, Lab 5, Lab 6, Lab 7, Lab 8. Prerequisites: labview-interface."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use the front panel as the user-facing space for controls, indicators, labels, and identity information.",
+          "related": [
+            "controls-indicators",
+            "hmi-controls",
+            "cloud-hmi",
+            "labview-interface"
+          ]
+        },
+        {
+          "id": "block-diagram",
+          "type": "theory",
+          "name": "Block diagram",
+          "title": "How does block diagram support the 3CC3 lab workflow",
+          "asset": "LabVIEW_BlockDiagram.png",
+          "summary": "Use the block diagram for dataflow logic, terminals, functions, and structures.",
+          "keywords": [
+            "LabVIEW",
+            "dataflow",
+            "Lab 1",
+            "Lab 2",
+            "Lab 4",
+            "Lab 5",
+            "Lab 6",
+            "Lab 7",
+            "Lab 8",
+            "LabVIEW and graphical programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use the block diagram for dataflow logic, terminals, functions, and structures."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 4, Lab 5, Lab 6, Lab 7, Lab 8. Prerequisites: labview-interface."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use the block diagram for dataflow logic, terminals, functions, and structures.",
+          "related": [
+            "while-loops",
+            "for-loops",
+            "case-structure",
+            "labview-interface"
+          ]
+        },
+        {
+          "id": "program-elements",
+          "type": "spec",
+          "name": "Program elements",
+          "title": "How does program elements support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Identify the objects that make up a LabVIEW program.",
+          "keywords": [
+            "LabVIEW",
+            "programming",
+            "Lab 1",
+            "Lab 2",
+            "Lab 5",
+            "LabVIEW and graphical programming",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Identify the objects that make up a LabVIEW program."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 5. Prerequisites: labview-interface."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Identify the objects that make up a LabVIEW program.",
+          "related": [
+            "controls-indicators",
+            "vi-subvi",
+            "mathscript-node",
+            "labview-interface"
+          ]
+        },
+        {
+          "id": "controls-indicators",
+          "type": "theory",
+          "name": "Controls and indicators",
+          "title": "How does controls and indicators support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Distinguish values students enter from values the program displays.",
+          "keywords": [
+            "LabVIEW",
+            "input",
+            "output",
+            "Voltage Reading",
+            "Angle",
+            "Speed",
+            "NumberOfWaves",
+            "RPM",
+            "Direction",
+            "Distance",
+            "LED",
+            "Voltage",
+            "percent_moisture",
+            "Low Moisture",
+            "Lab 1",
+            "Lab 2",
+            "Lab 4",
+            "Lab 5",
+            "Lab 6",
+            "Lab 7",
+            "Lab 8",
+            "LabVIEW and graphical programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Distinguish values students enter from values the program displays."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 4, Lab 5, Lab 6, Lab 7, Lab 8. Prerequisites: front-panel."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Distinguish values students enter from values the program displays.",
+          "related": [
+            "voltage-divider-vi",
+            "temperature-conversion",
+            "hmi-controls",
+            "cloud-hmi",
+            "front-panel"
+          ]
+        },
+        {
+          "id": "vi-subvi",
+          "type": "theory",
+          "name": "VI and SubVI",
+          "title": "How does vi and subvi support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Understand how a LabVIEW program can become a reusable subroutine.",
+          "keywords": [
+            "LabVIEW",
+            "reuse",
+            "Lab 1",
+            "Lab 2",
+            "Lab 5",
+            "LabVIEW and graphical programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Understand how a LabVIEW program can become a reusable subroutine."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 5. Prerequisites: labview-interface."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Understand how a LabVIEW program can become a reusable subroutine.",
+          "related": [
+            "voltage-divider-vi",
+            "temperature-conversion",
+            "automatic-wave-subvi",
+            "labview-interface"
+          ]
+        },
+        {
+          "id": "hmi-controls",
+          "type": "skill",
+          "name": "HMI controls",
+          "title": "How does hmi controls support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Use front-panel controls to let a person choose mode and command motion.",
+          "keywords": [
+            "HMI",
+            "Choice",
+            "Manual",
+            "Automatic",
+            "GO",
+            "Speed",
+            "NumberOfWaves",
+            "Dashboard",
+            "LED",
+            "Lab 5",
+            "Lab 7",
+            "LabVIEW and graphical programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use front-panel controls to let a person choose mode and command motion."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 5, Lab 7. Prerequisites: front-panel, controls-indicators."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use front-panel controls to let a person choose mode and command motion.",
+          "related": [
+            "case-structure",
+            "servo-motor",
+            "cloud-hmi",
+            "front-panel",
+            "controls-indicators"
+          ]
+        },
+        {
+          "id": "case-structure",
+          "type": "skill",
+          "name": "Case Structure",
+          "title": "How does case structure support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Select which LabVIEW logic runs based on a mode such as Manual or Automatic.",
+          "keywords": [
+            "Manual",
+            "Automatic",
+            "Default",
+            "Choice",
+            "Lab 5",
+            "LabVIEW and graphical programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Select which LabVIEW logic runs based on a mode such as Manual or Automatic."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 5. Prerequisites: block-diagram, controls-indicators."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Select which LabVIEW logic runs based on a mode such as Manual or Automatic.",
+          "related": [
+            "mathscript-node",
+            "automatic-wave-subvi",
+            "block-diagram",
+            "controls-indicators"
+          ]
+        },
+        {
+          "id": "mathscript-node",
+          "type": "skill",
+          "name": "MathScript Node",
+          "title": "How does mathscript node support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Use script-style equations inside the existing Lab 5 servo activities for angle, pulse-width, and automatic motion logic.",
+          "keywords": [
+            "MathScript",
+            "Angle",
+            "PW",
+            "URV",
+            "LRV",
+            "Lab 5",
+            "LabVIEW and graphical programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use script-style equations inside the existing Lab 5 servo activities for angle, pulse-width, and automatic motion logic."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 5. Prerequisites: program-elements."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the Lab 5 servo system and connect it to angle, pulse-width, or automatic motion logic.",
+          "related": [
+            "pulse-width",
+            "automatic-wave-subvi",
+            "program-elements"
+          ]
+        },
+        {
+          "id": "local-variables",
+          "type": "theory",
+          "name": "Local variables",
+          "title": "How does local variables support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Read previous LabVIEW values so automatic motion can continue from its last state.",
+          "keywords": [
+            "AngleLast",
+            "DirectionLast",
+            "WaveCountLast",
+            "WavingLast",
+            "Distance",
+            "RX Value",
+            "percent_moisture",
+            "moisture_threshold",
+            "Lab 5",
+            "Lab 7",
+            "Lab 8",
+            "LabVIEW and graphical programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Read previous LabVIEW values so automatic motion can continue from its last state."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 5, Lab 7, Lab 8. Prerequisites: block-diagram."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Read previous LabVIEW values so automatic motion can continue from its last state.",
+          "related": [
+            "automatic-wave-subvi",
+            "shift-registers",
+            "mqtt",
+            "block-diagram"
+          ]
+        },
+        {
+          "id": "automatic-wave-subvi",
+          "type": "skill",
+          "name": "Automatic-wave SubVI",
+          "title": "How does automatic-wave subvi support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Generate a reusable waving angle command from GO, Speed, and NumberOfWaves.",
+          "keywords": [
+            "Wave Servo",
+            "waving",
+            "robot arm",
+            "Lab 5",
+            "LabVIEW and graphical programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Generate a reusable waving angle command from GO, Speed, and NumberOfWaves."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 5. Prerequisites: vi-subvi, local-variables, mathscript-node."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Generate a reusable waving angle command from GO, Speed, and NumberOfWaves.",
+          "related": [
+            "servo-motor",
+            "pulse-width",
+            "vi-subvi",
+            "local-variables",
+            "mathscript-node"
+          ]
+        },
+        {
+          "id": "temperature-conversion",
+          "type": "skill",
+          "name": "Temperature conversion VI",
+          "title": "How does temperature conversion vi support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Convert Celsius values into Fahrenheit or Kelvin using LabVIEW arithmetic and reusable SubVIs.",
+          "keywords": [
+            "Celsius",
+            "Fahrenheit",
+            "Kelvin",
+            "SubVI",
+            "Lab 2",
+            "LabVIEW and graphical programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Convert Celsius values into Fahrenheit or Kelvin using LabVIEW arithmetic and reusable SubVIs."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 2. Prerequisites: controls-indicators, vi-subvi."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Convert Celsius values into Fahrenheit or Kelvin using LabVIEW arithmetic and reusable SubVIs.",
+          "related": [
+            "thermistor",
+            "labview-linx",
+            "controls-indicators",
+            "vi-subvi"
+          ]
+        },
+        {
+          "id": "data-types",
+          "type": "theory",
+          "name": "Data types",
+          "title": "How does data types support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Recognize that wires carry specific kinds of information such as numeric, Boolean, or string values.",
+          "keywords": [
+            "LabVIEW",
+            "wires",
+            "Lab 1",
+            "LabVIEW and graphical programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Recognize that wires carry specific kinds of information such as numeric, Boolean, or string values."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: program-elements."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Recognize that wires carry specific kinds of information such as numeric, Boolean, or string values.",
+          "related": [
+            "arrays",
+            "clusters",
+            "program-elements"
+          ]
+        },
+        {
+          "id": "arrays",
+          "type": "theory",
+          "name": "Arrays",
+          "title": "How does arrays support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Store repeated values of the same type, such as a set of voltage measurements.",
+          "keywords": [
+            "LabVIEW",
+            "data organization",
+            "Lab 1",
+            "LabVIEW and graphical programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Store repeated values of the same type, such as a set of voltage measurements."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: data-types."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Store repeated values of the same type, such as a set of voltage measurements.",
+          "related": [
+            "measurement-units",
+            "data-types"
+          ]
+        },
+        {
+          "id": "clusters",
+          "type": "theory",
+          "name": "Clusters",
+          "title": "How does clusters support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Group related values, potentially of different types, into a single structured item.",
+          "keywords": [
+            "LabVIEW",
+            "data organization",
+            "Lab 1",
+            "LabVIEW and graphical programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Group related values, potentially of different types, into a single structured item."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: data-types."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Group related values, potentially of different types, into a single structured item.",
+          "related": [
+            "technical-documentation",
+            "data-types"
+          ]
+        },
+        {
+          "id": "while-loops",
+          "type": "skill",
+          "name": "While loops",
+          "title": "How does while loops support the 3CC3 lab workflow",
+          "asset": "LabVIEW_BlockDiagram.png",
+          "summary": "Repeat logic until a condition such as a Stop button is met.",
+          "keywords": [
+            "LabVIEW",
+            "program flow",
+            "Lab 1",
+            "Lab 2",
+            "Lab 4",
+            "Lab 5",
+            "Lab 6",
+            "Lab 7",
+            "Lab 8",
+            "LabVIEW and graphical programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Repeat logic until a condition such as a Stop button is met."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 4, Lab 5, Lab 6, Lab 7, Lab 8. Prerequisites: block-diagram."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Repeat logic until a condition such as a Stop button is met.",
+          "related": [
+            "shift-registers",
+            "block-diagram"
+          ]
+        },
+        {
+          "id": "for-loops",
+          "type": "skill",
+          "name": "For loops",
+          "title": "How does for loops support the 3CC3 lab workflow",
+          "asset": "LabVIEW_BlockDiagram.png",
+          "summary": "Repeat logic a known number of times.",
+          "keywords": [
+            "LabVIEW",
+            "program flow",
+            "Lab 1",
+            "LabVIEW and graphical programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Repeat logic a known number of times."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: block-diagram."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Repeat logic a known number of times.",
+          "related": [
+            "arrays",
+            "block-diagram"
+          ]
+        },
+        {
+          "id": "shift-registers",
+          "type": "skill",
+          "name": "Shift registers",
+          "title": "How does shift registers support the 3CC3 lab workflow",
+          "asset": "LabVIEW_BlockDiagram.png",
+          "summary": "Carry a value from one loop iteration to the next.",
+          "keywords": [
+            "LabVIEW",
+            "memory",
+            "Lab 1",
+            "Lab 3",
+            "LabVIEW and graphical programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Carry a value from one loop iteration to the next."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 3. Prerequisites: while-loops."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Carry a value from one loop iteration to the next.",
+          "related": [
+            "sensor-calibration",
+            "event-counting",
+            "while-loops"
+          ]
+        },
+        {
+          "id": "voltage-divider-vi",
+          "type": "skill",
+          "name": "Voltage-divider VI",
+          "title": "How does voltage-divider vi support the 3CC3 lab workflow",
+          "asset": "Voltage_Divider_Schematic.png",
+          "summary": "Implement the voltage-divider relationship as an interactive LabVIEW calculation.",
+          "keywords": [
+            "LabVIEW",
+            "voltage divider",
+            "Lab 1",
+            "LabVIEW and graphical programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Implement the voltage-divider relationship as an interactive LabVIEW calculation."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: controls-indicators, while-loops, voltage-divider."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Implement the voltage-divider relationship as an interactive LabVIEW calculation.",
+          "related": [
+            "calculated-measured",
+            "controls-indicators",
+            "while-loops",
+            "voltage-divider"
+          ]
+        },
+        {
+          "id": "analog-input",
+          "type": "theory",
+          "name": "Analog input",
+          "title": "How does analog input support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Read a changing voltage with an analog input such as A0.",
+          "keywords": [
+            "A0",
+            "LabVIEW",
+            "LINX",
+            "V3",
+            "SIG",
+            "Lab 1",
+            "Lab 2",
+            "Lab 4",
+            "Lab 5",
+            "Lab 8",
+            "Arduino and embedded programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Read a changing voltage with an analog input such as A0."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 4, Lab 5, Lab 8. Prerequisites: voltage-divider, analog-sensor-signals."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Read a changing voltage with an analog input such as A0.",
+          "related": [
+            "analog-to-digital",
+            "labview-linx",
+            "signal-amplification",
+            "potentiometer",
+            "soil-moisture-sensor",
+            "voltage-divider",
+            "analog-sensor-signals"
+          ]
+        },
+        {
+          "id": "digital-output",
+          "type": "theory",
+          "name": "Digital output",
+          "title": "How does digital output support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Command an output pin as LOW or HIGH or as a timed control signal.",
+          "keywords": [
+            "D7",
+            "pin 7",
+            "LED",
+            "D3",
+            "servo signal",
+            "D8",
+            "D9",
+            "D10",
+            "D11",
+            "D12",
+            "Lab 1",
+            "Lab 3",
+            "Lab 5",
+            "Lab 6",
+            "Lab 7",
+            "Arduino and embedded programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Command an output pin as LOW or HIGH or as a timed control signal."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 3, Lab 5, Lab 6, Lab 7. Prerequisites: led-current-limiting."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Command an output pin as LOW or HIGH or as a timed control signal.",
+          "related": [
+            "digital-write",
+            "pwm-output",
+            "active-buzzer",
+            "servo-motor",
+            "motor-driver",
+            "remote-control",
+            "led-current-limiting"
+          ]
+        },
+        {
+          "id": "digital-input",
+          "type": "theory",
+          "name": "Digital input",
+          "title": "How does digital input support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Read a defined HIGH or LOW state from a switch circuit.",
+          "keywords": [
+            "D2",
+            "HIGH",
+            "LOW",
+            "switch",
+            "Lab 3",
+            "Arduino and embedded programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Read a defined HIGH or LOW state from a switch circuit."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 3. Prerequisites: pull-down-resistor."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Read a defined HIGH or LOW state from a switch circuit.",
+          "related": [
+            "tilt-switch",
+            "event-counting",
+            "pull-down-resistor"
+          ]
+        },
+        {
+          "id": "analog-to-digital",
+          "type": "theory",
+          "name": "Analog-to-digital conversion",
+          "title": "How does analog-to-digital conversion support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Convert a voltage range into a numeric reading.",
+          "keywords": [
+            "ADC",
+            "0 to 1023",
+            "voltage to number",
+            "Lab 1",
+            "Lab 2",
+            "Lab 4",
+            "Lab 5",
+            "Arduino and embedded programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Convert a voltage range into a numeric reading."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 2, Lab 4, Lab 5. Prerequisites: analog-input."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Convert a voltage range into a numeric reading.",
+          "related": [
+            "threshold-selection",
+            "sampled-data",
+            "analog-input"
+          ]
+        },
+        {
+          "id": "op-amp-gain",
+          "type": "skill",
+          "name": "Op-amp gain",
+          "title": "How does op-amp gain support the 3CC3 lab workflow",
+          "asset": "OpAmp_Gain_Configs.png",
+          "summary": "Use resistor ratios and feedback to set first-stage and second-stage signal gain.",
+          "keywords": [
+            "LMC6484",
+            "gain",
+            "R3 R1",
+            "R6 R5",
+            "saturation",
+            "Lab 4",
+            "Arduino and embedded programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use resistor ratios and feedback to set first-stage and second-stage signal gain."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 4. Prerequisites: resistor-values, signal-amplification."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use resistor ratios and feedback to set first-stage and second-stage signal gain.",
+          "related": [
+            "analog-input",
+            "resistor-values",
+            "signal-amplification"
+          ]
+        },
+        {
+          "id": "serial-communication",
+          "type": "theory",
+          "name": "Serial communication",
+          "title": "How does serial communication support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Exchange text commands between a computer program and Arduino over a COM port.",
+          "keywords": [
+            "serial",
+            "COM port",
+            "9600 baud",
+            "Serial Monitor",
+            "Lab 6",
+            "Arduino and embedded programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Exchange text commands between a computer program and Arduino over a COM port."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 6. Prerequisites: arduino-ide."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Exchange text commands between a computer program and Arduino over a COM port.",
+          "related": [
+            "visa-serial",
+            "command-parsing",
+            "arduino-ide"
+          ]
+        },
+        {
+          "id": "visa-serial",
+          "type": "spec",
+          "name": "VISA Serial in LabVIEW",
+          "title": "How does visa serial in labview support the 3CC3 lab workflow",
+          "asset": "LabVIEW_VISA_Serial.png",
+          "summary": "Configure, write to, and close a serial port from LabVIEW.",
+          "keywords": [
+            "VISA",
+            "Configure Port",
+            "Write",
+            "Close",
+            "Sent Msg",
+            "Lab 6",
+            "Arduino and embedded programming",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Configure, write to, and close a serial port from LabVIEW."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 6. Prerequisites: serial-communication, labview-interface."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Configure, write to, and close a serial port from LabVIEW.",
+          "related": [
+            "command-parsing",
+            "actuator-command",
+            "serial-communication",
+            "labview-interface"
+          ]
+        },
+        {
+          "id": "command-parsing",
+          "type": "skill",
+          "name": "Command parsing",
+          "title": "How does command parsing support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Split a delimited command string into speed, distance, and direction fields.",
+          "keywords": [
+            "comma",
+            "delimiter",
+            "substring",
+            "indexOf",
+            "RPM",
+            "Lab 6",
+            "Arduino and embedded programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Split a delimited command string into speed, distance, and direction fields."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 6. Prerequisites: serial-communication, arduino-variables."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Split a delimited command string into speed, distance, and direction fields.",
+          "related": [
+            "stepper-motor",
+            "serial-communication",
+            "arduino-variables"
+          ]
+        },
+        {
+          "id": "native-labview-calibration",
+          "type": "skill",
+          "name": "Native LabVIEW moisture calibration",
+          "title": "How does native LabVIEW moisture calibration support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Implement the dry/wet calibration equation, clamp the result, and compare it with a threshold.",
+          "keywords": [
+            "native arithmetic",
+            "comparison functions",
+            "Boolean logic",
+            "V_dry",
+            "V_wet",
+            "LED",
+            "Lab 8",
+            "Arduino and embedded programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Implement the dry/wet calibration equation, clamp the result, and compare it with a threshold."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 8. Prerequisites: moisture-calibration."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Implement the dry/wet calibration equation, clamp the result, and compare it with a threshold.",
+          "related": [
+            "percent-moisture",
+            "threshold-control",
+            "moisture-calibration"
+          ]
+        },
+        {
+          "id": "arduino-variables",
+          "type": "skill",
+          "name": "Arduino variables",
+          "title": "How does arduino variables support the 3CC3 lab workflow",
+          "asset": "Arduino_Threshold_Sketch.png",
+          "summary": "Store pin numbers, sensor readings, and thresholds in named values.",
+          "keywords": [
+            "int",
+            "variables",
+            "Lab 1",
+            "Arduino and embedded programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Store pin numbers, sensor readings, and thresholds in named values."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: arduino-code-flow."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Store pin numbers, sensor readings, and thresholds in named values.",
+          "related": [
+            "threshold-control"
+          ]
+        },
+        {
+          "id": "setup-function",
+          "type": "spec",
+          "name": "setup()",
+          "title": "How does setup() support the 3CC3 lab workflow",
+          "asset": "Arduino_Threshold_Sketch.png",
+          "summary": "Run configuration code once when the Arduino starts.",
+          "keywords": [
+            "setup",
+            "Lab 1",
+            "Arduino and embedded programming",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Run configuration code once when the Arduino starts."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: arduino-code-flow."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Run configuration code once when the Arduino starts.",
+          "related": [
+            "pin-mode"
+          ]
+        },
+        {
+          "id": "loop-function",
+          "type": "spec",
+          "name": "loop()",
+          "title": "How does loop() support the 3CC3 lab workflow",
+          "asset": "Arduino_Threshold_Sketch.png",
+          "summary": "Repeat sensing and decision logic continuously.",
+          "keywords": [
+            "loop",
+            "Lab 1",
+            "Arduino and embedded programming",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Repeat sensing and decision logic continuously."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: arduino-code-flow."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Repeat sensing and decision logic continuously.",
+          "related": [
+            "analog-read",
+            "if-else"
+          ]
+        },
+        {
+          "id": "pin-mode",
+          "type": "spec",
+          "name": "pinMode()",
+          "title": "How does pinmode() support the 3CC3 lab workflow",
+          "asset": "Arduino_Threshold_Sketch.png",
+          "summary": "Configure a digital pin as an input or output.",
+          "keywords": [
+            "pinMode",
+            "Lab 1",
+            "Arduino and embedded programming",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Configure a digital pin as an input or output."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: setup-function."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Configure a digital pin as an input or output.",
+          "related": [
+            "digital-output",
+            "setup-function"
+          ]
+        },
+        {
+          "id": "analog-read",
+          "type": "spec",
+          "name": "analogRead()",
+          "title": "How does analogread() support the 3CC3 lab workflow",
+          "asset": "Arduino_Threshold_Sketch.png",
+          "summary": "Read the analog sensor value from A0.",
+          "keywords": [
+            "analogRead",
+            "Lab 1",
+            "Arduino and embedded programming",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Read the analog sensor value from A0."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: loop-function, analog-input."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Read the analog sensor value from A0.",
+          "related": [
+            "threshold-selection",
+            "loop-function",
+            "analog-input"
+          ]
+        },
+        {
+          "id": "digital-write",
+          "type": "spec",
+          "name": "digitalWrite()",
+          "title": "How does digitalwrite() support the 3CC3 lab workflow",
+          "asset": "Arduino_Threshold_Sketch.png",
+          "summary": "Command the LED output as HIGH or LOW.",
+          "keywords": [
+            "digitalWrite",
+            "Lab 1",
+            "Arduino and embedded programming",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Command the LED output as HIGH or LOW."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: digital-output."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Command the LED output as HIGH or LOW.",
+          "related": [
+            "threshold-control",
+            "digital-output"
+          ]
+        },
+        {
+          "id": "if-else",
+          "type": "spec",
+          "name": "if/else",
+          "title": "How does if/else support the 3CC3 lab workflow",
+          "asset": "Arduino_Threshold_Sketch.png",
+          "summary": "Choose one of two actions based on a Boolean condition.",
+          "keywords": [
+            "if",
+            "else",
+            "Lab 1",
+            "Arduino and embedded programming",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Choose one of two actions based on a Boolean condition."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1. Prerequisites: loop-function."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Choose one of two actions based on a Boolean condition.",
+          "related": [
+            "threshold-control",
+            "loop-function"
+          ]
+        },
+        {
+          "id": "threshold-control",
+          "type": "skill",
+          "name": "Threshold-based control",
+          "title": "How does threshold-based control support the 3CC3 lab workflow",
+          "asset": "Arduino_Threshold_Sketch.png",
+          "summary": "Turn a sensor reading into a decision and an actuator action.",
+          "keywords": [
+            "automatic lighting",
+            "distance less than 5 cm",
+            "moisture less than threshold",
+            "Lab 1",
+            "Lab 7",
+            "Lab 8",
+            "Arduino and embedded programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Turn a sensor reading into a decision and an actuator action."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 1, Lab 7, Lab 8. Prerequisites: threshold-selection, if-else."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Turn a sensor reading into a decision and an actuator action.",
+          "related": [
+            "boundary-testing",
+            "remote-control",
+            "shared-attributes",
+            "threshold-selection",
+            "if-else"
+          ]
+        },
+        {
+          "id": "event-counting",
+          "type": "skill",
+          "name": "Event counting with shift registers",
+          "title": "How does event counting with shift registers support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Count a transition once by comparing current and previous digital states.",
+          "keywords": [
+            "state",
+            "event",
+            "transition",
+            "Not Equal",
+            "Boolean To 1 0",
+            "Lab 3",
+            "Arduino and embedded programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Count a transition once by comparing current and previous digital states."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 3. Prerequisites: shift-registers, digital-input."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Count a transition once by comparing current and previous digital states.",
+          "related": [
+            "systematic-troubleshooting",
+            "shift-registers",
+            "digital-input"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "iot",
+      "title": "IoT & Cloud",
+      "icon": "cloud",
+      "blurb": "Publishing sensor data to the cloud.",
+      "nodes": [
+        {
+          "id": "mqtt",
+          "type": "theory",
+          "name": "MQTT Protocol",
+          "title": "What is MQTT and how does publish/subscribe work",
+          "asset": "MQTT_PubSub_Topology.png",
+          "summary": "Broker-based lightweight messaging.",
+          "keywords": [
+            "mqtt",
+            "publish",
+            "subscribe",
+            "broker",
+            "topic"
+          ],
+          "sections": [
+            {
+              "heading": "Publish / subscribe",
+              "body": "Devices do not talk directly. A publisher sends a message to a named topic on a central broker; any client subscribed to that topic receives it. This decouples your Arduino from the dashboard and scales to many devices."
+            },
+            {
+              "heading": "Topics and QoS",
+              "body": "Topics are hierarchical strings (<code>esi/3cc3/temp</code>). Quality-of-Service levels trade delivery guarantees for overhead, and an auth token usually gates who may publish to a topic."
+            }
+          ],
+          "hint": "Data that never reaches the cloud is usually a topic, token, or broker-address typo — check the exact (case-sensitive) topic string first, then the credentials, then the broker host/port.",
+          "related": [
+            "thingsboard"
+          ]
+        },
+        {
+          "id": "thingsboard",
+          "type": "skill",
+          "name": "ThingsBoard Cloud",
+          "title": "How do I exchange LabVIEW data with ThingsBoard Cloud",
+          "asset": "MQTT_PubSub_Topology.png",
+          "summary": "Publish JSON telemetry, receive persistent shared attributes, and build a device dashboard.",
+          "keywords": [
+            "ThingsBoard",
+            "dashboard",
+            "device access token",
+            "telemetry",
+            "shared attribute"
+          ],
+          "sections": [
+            {
+              "heading": "One cloud device per physical project",
+              "body": "ThingsBoard stores measurements as telemetry and persistent cloud-to-device settings as shared attributes. Build gauges, time-series charts, indicators, and controls around the same device entity."
+            },
+            {
+              "heading": "MQTT connection and topics",
+              "body": "Connect to <code>mqtt.thingsboard.cloud</code> on port 1883 with the device access token as the username and a blank password. Publish JSON to <code>v1/devices/me/telemetry</code> and exchange desired-state values through the ThingsBoard attribute topics."
+            }
+          ],
+          "hint": "An empty widget means a token, label, or rate-limit problem — verify the token is the device token (not the account token), the variable label matches exactly, and you are under the free-tier limit.",
+          "related": [
+            "mqtt",
+            "labview-linx",
+            "cloud-dashboard",
+            "shared-attributes"
+          ]
+        },
+        {
+          "id": "technical-documentation",
+          "type": "spec",
+          "name": "Technical documentation use",
+          "title": "How does technical documentation use support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Use course notes and references to find exact procedures and constraints.",
+          "keywords": [
+            "documentation",
+            "Labs 1-8",
+            "Design Project",
+            "Engineering practice",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use course notes and references to find exact procedures and constraints."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Labs 1-8, Design Project. Use this as a reusable reference when the lab does not give a step-by-step reminder."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use course notes and references to find exact procedures and constraints.",
+          "related": [
+            "source-evaluation",
+            "project-proposal"
+          ]
+        },
+        {
+          "id": "source-evaluation",
+          "type": "skill",
+          "name": "Source evaluation",
+          "title": "How does source evaluation support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Judge whether a source is appropriate, authoritative, and applicable to the current problem.",
+          "keywords": [
+            "datasheets",
+            "manufacturer",
+            "Labs 7-8",
+            "Design Project",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Judge whether a source is appropriate, authoritative, and applicable to the current problem."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Labs 7-8, Design Project. Prerequisites: technical-documentation."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Judge whether a source is appropriate, authoritative, and applicable to the current problem.",
+          "related": [
+            "safe-bench-practice",
+            "technical-documentation"
+          ]
+        },
+        {
+          "id": "weekly-progress",
+          "type": "skill",
+          "name": "Weekly progress tracking",
+          "title": "How does weekly progress tracking support the 3CC3 lab workflow",
+          "asset": "DMM_Voltage_Measurement.jpg",
+          "summary": "Use weekly goals and instructor feedback to keep hardware, software, cloud, and HMI integration moving.",
+          "keywords": [
+            "attendance",
+            "progress",
+            "week 1",
+            "week 2",
+            "week 3",
+            "Design Project",
+            "Engineering practice",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use weekly goals and instructor feedback to keep hardware, software, cloud, and HMI integration moving."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Design Project. Prerequisites: project-proposal."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use weekly goals and instructor feedback to keep hardware, software, cloud, and HMI integration moving.",
+          "related": [
+            "risk-planning",
+            "demo-video",
+            "project-proposal"
+          ]
+        },
+        {
+          "id": "mqtt-topics",
+          "type": "spec",
+          "name": "ThingsBoard MQTT topic structure",
+          "title": "How do the ThingsBoard telemetry and attribute topics route lab data",
+          "asset": "MQTT_PubSub_Topology.png",
+          "summary": "Use exact ThingsBoard topic paths to publish telemetry and exchange shared attributes.",
+          "keywords": [
+            "v1/devices/me/telemetry",
+            "v1/devices/me/attributes",
+            "v1/devices/me/attributes/response/+",
+            "v1/devices/me/attributes/request/1",
+            "topic",
+            "Lab 7",
+            "Lab 8",
+            "Arduino and embedded programming",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use exact topic paths to route sensor readings and cloud commands."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 7 and Lab 8. Prerequisites: MQTT and ThingsBoard Cloud. Topic strings are case-sensitive and have no leading slash."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use exact topic paths to route sensor readings and cloud commands.",
+          "related": [
+            "api-token",
+            "systematic-troubleshooting",
+            "mqtt",
+            "thingsboard"
+          ]
+        },
+        {
+          "id": "api-token",
+          "type": "skill",
+          "name": "ThingsBoard device access-token handling",
+          "title": "How do I use a ThingsBoard device credential without exposing it",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Use a private cloud credential without exposing it in public files or screenshots.",
+          "keywords": [
+            "token",
+            "credentials",
+            "MQTT username",
+            "security",
+            "Lab 7",
+            "Lab 8",
+            "Arduino and embedded programming",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use a private cloud credential without exposing it in public files or screenshots."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 7, Lab 8. Prerequisites: source-evaluation."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use a private cloud credential without exposing it in public files or screenshots.",
+          "related": [
+            "thingsboard",
+            "safe-bench-practice",
+            "source-evaluation"
+          ]
+        },
+        {
+          "id": "cloud-dashboard",
+          "type": "spec",
+          "name": "Cloud dashboard widgets",
+          "title": "How does cloud dashboard widgets support the 3CC3 lab workflow",
+          "asset": "MQTT_PubSub_Topology.png",
+          "summary": "Build ThingsBoard widgets that visualize telemetry and write persistent shared attributes.",
+          "keywords": [
+            "dashboard",
+            "widget",
+            "gauge",
+            "switch",
+            "tank",
+            "slider",
+            "line chart",
+            "metric",
+            "Lab 7",
+            "Lab 8",
+            "Arduino and embedded programming",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Bind widgets to the physical device through an entity alias. Use telemetry widgets for measured and actual-state values, and control widgets that write shared attributes for desired state."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 7 and Lab 8. Prerequisites: ThingsBoard Cloud and MQTT."
+            }
+          ],
+          "hint": "If a widget is empty, confirm the dashboard entity alias points to the correct device and that the expected key exists under Latest Telemetry or Shared Attributes.",
+          "related": [
+            "cloud-hmi",
+            "remote-control",
+            "dashboard-analytics",
+            "thingsboard",
+            "mqtt"
+          ]
+        },
+        {
+          "id": "cloud-hmi",
+          "type": "theory",
+          "name": "Cloud-based HMI",
+          "title": "How does cloud-based hmi support the 3CC3 lab workflow",
+          "asset": "MQTT_PubSub_Topology.png",
+          "summary": "Use a web interface to monitor local sensor data and command local settings or actuators.",
+          "keywords": [
+            "web HMI",
+            "dashboard",
+            "monitoring",
+            "control",
+            "threshold",
+            "Lab 7",
+            "Lab 8",
+            "Arduino and embedded programming",
+            "Concept"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use a web interface to monitor local sensor data and command local settings or actuators."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 7, Lab 8. Prerequisites: hmi-controls, cloud-dashboard."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use a web interface to monitor local sensor data and command local settings or actuators.",
+          "related": [
+            "remote-control",
+            "ultrasonic-sensor",
+            "soil-moisture-sensor",
+            "hmi-controls",
+            "cloud-dashboard"
+          ]
+        },
+        {
+          "id": "shared-attributes",
+          "type": "spec",
+          "name": "ThingsBoard shared attributes",
+          "title": "How do shared attributes preserve cloud-to-device desired state",
+          "asset": "MQTT_PubSub_Topology.png",
+          "summary": "Store desired state in the cloud and request the current value after startup or reconnect.",
+          "keywords": [
+            "shared attribute",
+            "desired state",
+            "led_switch",
+            "moisture_threshold",
+            "v1/devices/me/attributes/response/+",
+            "Lab 7",
+            "Lab 8",
+            "Arduino and embedded programming",
+            "Tool"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use <code>led_switch</code> and <code>moisture_threshold</code> as persistent shared attributes. Subscribe for changes and issue a startup request so LabVIEW recovers the current desired value after reconnecting."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 7 and Lab 8. Prerequisites: ThingsBoard Cloud, MQTT, and a device dashboard."
+            }
+          ],
+          "hint": "On startup, subscribe before publishing the shared-attribute request; parse both live updates and response envelopes before applying validated values.",
+          "related": [
+            "email-alerts",
+            "threshold-control",
+            "thingsboard",
+            "cloud-dashboard"
+          ]
+        },
+        {
+          "id": "email-alerts",
+          "type": "skill",
+          "name": "Optional ThingsBoard alarm history",
+          "title": "How can ThingsBoard retain an optional history of local alarm telemetry",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Optionally display or retain alarm history while keeping the primary decision local in LabVIEW.",
+          "keywords": [
+            "alarm history",
+            "event history",
+            "low_moisture_alarm",
+            "optional cloud view",
+            "Lab 8",
+            "Arduino and embedded programming",
+            "Practice"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Publish <code>low_moisture_alarm</code> as telemetry and optionally chart or retain its history in ThingsBoard. LabVIEW remains the source of the alarm decision."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 8. Prerequisites: ThingsBoard shared attributes and local LabVIEW threshold logic."
+            }
+          ],
+          "hint": "Keep the core low-moisture decision in LabVIEW; cloud history is optional evidence, not a dependency for safe local behavior.",
+          "related": [
+            "source-evaluation",
+            "shared-attributes"
+          ]
+        },
+        {
+          "id": "dashboard-analytics",
+          "type": "spec",
+          "name": "Dashboard analytics widgets",
+          "title": "How does dashboard analytics widgets support the 3CC3 lab workflow",
+          "asset": "MQTT_PubSub_Topology.png",
+          "summary": "Display current and historical ThingsBoard telemetry without moving local control decisions to the cloud.",
+          "keywords": [
+            "metric",
+            "minimum",
+            "maximum",
+            "average",
+            "Today",
+            "Lab 8",
+            "Arduino and embedded programming",
+            "Reference"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Use latest-value, gauge, time-series, and state-indicator widgets to inspect raw voltage, moisture percentage, and local alarm telemetry. Optional history can support reflection without replacing LabVIEW logic."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 8. Prerequisites: cloud-dashboard, percent-moisture."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Summarize cloud data using minimum, maximum, and average metric widgets.",
+          "related": [
+            "experimental-evidence",
+            "cloud-dashboard",
+            "percent-moisture"
+          ]
+        },
+        {
+          "id": "remote-control",
+          "type": "skill",
+          "name": "Remote actuator control",
+          "title": "How does remote actuator control support the 3CC3 lab workflow",
+          "asset": "Dataflow_Execution_Model.png",
+          "summary": "Trace how a cloud switch value becomes a local digital output command.",
+          "keywords": [
+            "switch variable",
+            "RX Value",
+            "Digital Write",
+            "LED",
+            "Lab 7",
+            "Arduino and embedded programming",
+            "Skill"
+          ],
+          "sections": [
+            {
+              "heading": "Core idea",
+              "body": "Trace how a cloud switch value becomes a local digital output command."
+            },
+            {
+              "heading": "Where it is used",
+              "body": "Used in Lab 7. Prerequisites: digital-output, mqtt."
+            }
+          ],
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Trace how a cloud switch value becomes a local digital output command.",
+          "related": [
+            "actuator-command",
+            "threshold-control",
+            "digital-output",
+            "mqtt"
+          ]
+        }
+      ]
+    }
+  ]
+}

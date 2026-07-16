@@ -1,0 +1,1709 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SMRTTECH 3CC3 Lab 2: Temperature Sensing with LabVIEW and Arduino.">
+    <title>Lab 2 | Temperature Sensing with LabVIEW and Arduino</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mac-maroon: #7A003C;
+            --mac-gold: #FDBF57;
+            --mac-grey: #495965;
+            --mac-maroon-20: #E4CCDA;
+            --mac-maroon-40: #CA99B1;
+            --mac-maroon-80: #953360;
+            --mac-gold-20: #FFF2DD;
+            --mac-gold-60: #FED999;
+            --mac-grey-20: #DBDEE0;
+            --mac-grey-40: #B6BDC1;
+            --mac-grey-80: #6D7A82;
+            --lab-background: #F7F8FA;
+            --lab-surface: #FFFFFF;
+            --lab-text: #2D3338;
+            --success: #287A4B;
+            --warning: #9A5C00;
+            --danger: #B42318;
+            --content: 1180px;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--lab-background);
+            color: var(--lab-text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        a { color: inherit; }
+        button, input, select, textarea { font: inherit; }
+        code, .font-mono { font-family: 'Roboto Mono', Consolas, monospace; }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--mac-maroon) 0%, var(--mac-maroon-80) 62%, var(--mac-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--mac-maroon) 0%, var(--mac-maroon-80) 65%, var(--mac-gold) 100%);
+        }
+
+        .stage-bar {
+            position: fixed;
+            inset: 0 0 auto 0;
+            z-index: 40;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(73, 89, 101, 0.12);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .stage-bar-inner {
+            max-width: var(--content);
+            margin: 0 auto;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            overflow-x: auto;
+        }
+
+        .stage-label {
+            flex: 0 0 auto;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--mac-grey-80);
+            margin-right: 0.3rem;
+        }
+
+        .stage-btn {
+            flex: 0 0 auto;
+            min-height: 38px;
+            padding: 0.55rem 0.95rem;
+            border-radius: 9px;
+            border: 1px solid transparent;
+            font-size: 0.83rem;
+            font-weight: 700;
+            color: var(--mac-grey);
+            background: transparent;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .stage-btn:hover { background: var(--mac-grey-20); }
+        .stage-btn:focus-visible,
+        .utility-button:focus-visible,
+        .primary-action:focus-visible,
+        details summary:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 3px solid var(--mac-gold);
+            outline-offset: 3px;
+        }
+
+        .stage-btn.active {
+            color: white;
+            background: var(--mac-maroon);
+            box-shadow: 0 5px 13px rgba(122, 0, 60, 0.28);
+        }
+
+        .stage-btn.completed:not(.active)::after {
+            content: "âœ“";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            margin-left: 6px;
+            border-radius: 50%;
+            color: white;
+            background: var(--success);
+            font-size: 0.68rem;
+            font-weight: 700;
+        }
+
+        .stage-btn.page-current {
+            color: white;
+            background: var(--mac-maroon);
+            box-shadow: 0 5px 13px rgba(122, 0, 60, 0.28);
+        }
+
+        .lab-stage-label {
+            margin-left: 0.65rem;
+            padding-left: 0.85rem;
+            border-left: 1px solid rgba(73, 89, 101, 0.18);
+        }
+
+        .auto-score-chip {
+            flex: 0 0 auto;
+            margin-left: auto;
+            padding: 0.45rem 0.7rem;
+            border-radius: 999px;
+            border: 1px solid var(--mac-gold-60);
+            background: var(--mac-gold-20);
+            color: #5B3900;
+            font-size: 0.78rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .portal-shell {
+            width: min(calc(100% - 2rem), var(--content));
+            margin: 0 auto;
+        }
+
+        .page-header { padding: 0 0 2.2rem; }
+
+        .brand-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1.4rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(73, 89, 101, 0.14);
+        }
+
+        .brand-row img {
+            width: 124px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .brand-divider {
+            width: 1px;
+            height: 64px;
+            background: rgba(73, 89, 101, 0.18);
+        }
+
+        .eyebrow {
+            margin: 0 0 0.55rem;
+            color: var(--mac-maroon);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        h1, h2, h3 { line-height: 1.15; margin-top: 0; }
+        h1 {
+            margin: 0 0 0.7rem;
+            font-size: clamp(2.1rem, 4.7vw, 4.35rem);
+            letter-spacing: 0;
+        }
+        h2 { font-size: clamp(1.45rem, 2.8vw, 2.25rem); }
+        h3 { font-size: 1.15rem; }
+        p { margin-top: 0; }
+
+        .lead {
+            max-width: 870px;
+            color: var(--mac-grey);
+            font-size: 1.08rem;
+        }
+
+        .central-question {
+            margin: 1.4rem 0 0;
+            padding: 1.25rem;
+            border-radius: 14px;
+            background: #fff7e6;
+            border: 1px solid rgba(154, 92, 0, 0.22);
+            box-shadow: inset 4px 0 0 var(--mac-gold);
+        }
+
+        .central-question strong {
+            display: block;
+            color: var(--mac-maroon);
+            margin-bottom: 0.35rem;
+        }
+
+        .card {
+            background: var(--lab-surface);
+            border: 1px solid rgba(73, 89, 101, 0.10);
+            border-radius: 16px;
+            box-shadow: 0 10px 18px -8px rgba(0, 0, 0, 0.16), 0 4px 8px -4px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-card { padding: 1.75rem; margin-bottom: 2rem; }
+        .border-maroon { border-left: 4px solid var(--mac-maroon); }
+        .border-gold { border-left: 4px solid var(--mac-gold); }
+        .border-success { border-left: 4px solid var(--success); }
+        .border-warning { border-left: 4px solid var(--mac-gold); }
+
+        .stage-panel { display: block; padding-bottom: 2rem; }
+        .js-enabled .stage-panel { display: none; }
+        .js-enabled.stage-0 .stage-panel.stage-0,
+        .js-enabled.stage-1 .stage-panel.stage-1,
+        .js-enabled.stage-2 .stage-panel.stage-2,
+        .js-enabled.stage-3 .stage-panel.stage-3,
+        .js-enabled.stage-4 .stage-panel.stage-4,
+        .js-enabled.stage-5 .stage-panel.stage-5,
+        .js-enabled.stage-6 .stage-panel.stage-6,
+        .js-enabled.stage-7 .stage-panel.stage-7,
+        .js-enabled.stage-8 .stage-panel.stage-8 { display: block; }
+
+        .grid { display: grid; gap: 1rem; }
+        .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+        .mini-card {
+            border: 1px solid rgba(73, 89, 101, 0.13);
+            border-radius: 12px;
+            padding: 1rem;
+            background: #fff;
+        }
+
+        .briefing-card {
+            background: #F8FAFC;
+            border-radius: 12px;
+            padding: 18px;
+            border-left: 4px solid var(--mac-maroon);
+        }
+
+        .warning-card {
+            background: var(--mac-gold-20);
+            border: 1px solid var(--mac-gold-60);
+            border-left: 5px solid var(--mac-gold);
+            color: #5B3900;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .danger-card {
+            background: #FFF3F2;
+            border: 1px solid #FECACA;
+            border-left: 5px solid var(--danger);
+            color: #7A271A;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .success-card {
+            background: #EFFAF3;
+            border: 1px solid #B7E4C7;
+            border-left: 5px solid var(--success);
+            color: #174D2D;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            min-height: 28px;
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            background: var(--mac-maroon-20);
+            color: var(--mac-maroon);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .tag.gold { background: var(--mac-gold-20); color: #704400; }
+        .tag.success { background: #e7f5ee; color: var(--success); }
+        .tag.warning { background: #fff4df; color: var(--warning); }
+
+        .chip-row { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 1rem 0; }
+        .chip-row.compact { margin: 0; }
+        .mt-block { margin-top: 1rem; }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.45rem 0.7rem;
+            border-radius: 999px;
+            background: var(--mac-grey-20);
+            color: var(--mac-grey);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .signal-chain {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(105px, 1fr));
+            gap: 0.7rem;
+            align-items: stretch;
+            margin-top: 1rem;
+        }
+
+        .signal-step {
+            position: relative;
+            min-height: 92px;
+            padding: 0.85rem;
+            border-radius: 12px;
+            background: #fff;
+            border: 1px solid rgba(122, 0, 60, 0.16);
+            font-weight: 700;
+            color: var(--mac-maroon);
+        }
+
+        .signal-step span {
+            display: block;
+            margin-top: 0.3rem;
+            color: var(--mac-grey);
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+
+        .signal-step:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: -0.55rem;
+            width: 0.45rem;
+            height: 0.45rem;
+            border-top: 3px solid var(--mac-gold);
+            border-right: 3px solid var(--mac-gold);
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        .warning-box {
+            padding: 1rem;
+            border-radius: 12px;
+            background: #fff3f1;
+            border: 1px solid rgba(180, 35, 24, 0.25);
+            box-shadow: inset 4px 0 0 var(--danger);
+        }
+
+        .warning-box strong { color: var(--danger); }
+
+        .callout {
+            padding: 1rem;
+            border-radius: 12px;
+            background: #f8f9fb;
+            border: 1px solid rgba(73, 89, 101, 0.14);
+        }
+
+        .completion-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            min-height: 44px;
+            padding: 0.75rem;
+            border-radius: 10px;
+            border: 1px solid rgba(73, 89, 101, 0.14);
+            background: #fff;
+        }
+
+        .completion-box input { margin-top: 0.25rem; min-width: 18px; min-height: 18px; }
+        .response-field { display: grid; gap: 0.35rem; margin-bottom: 0.85rem; }
+        .response-field span { font-weight: 700; }
+        .response-input,
+        .response-field textarea,
+        .response-field input,
+        .response-field select,
+        table input,
+        table select,
+        table textarea {
+            width: 100%;
+            border: 1px solid rgba(73, 89, 101, 0.24);
+            border-radius: 9px;
+            padding: 0.65rem 0.75rem;
+            background: #fff;
+            color: var(--lab-text);
+        }
+
+        textarea { min-height: 92px; resize: vertical; }
+
+        details {
+            border: 1px solid rgba(73, 89, 101, 0.14);
+            border-radius: 12px;
+            background: #fff;
+            margin: 0.75rem 0;
+        }
+
+        details summary {
+            cursor: pointer;
+            padding: 0.9rem 1rem;
+            font-weight: 800;
+            color: var(--mac-maroon);
+        }
+
+        details > div { padding: 0 1rem 1rem; }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(73, 89, 101, 0.14);
+            background: #fff;
+        }
+
+        table { width: 100%; border-collapse: collapse; min-width: 680px; }
+        th, td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(73, 89, 101, 0.12);
+            text-align: left;
+            vertical-align: top;
+        }
+        th { background: #f3f4f6; color: var(--mac-grey); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; }
+
+        .diagram-card {
+            padding: 1rem;
+            border-radius: 14px;
+            background: #fff;
+            border: 1px solid rgba(73, 89, 101, 0.14);
+        }
+
+        .diagram-card img,
+        .diagram-card svg { max-width: 100%; height: auto; display: block; }
+        figcaption { color: var(--mac-grey); font-size: 0.92rem; margin-top: 0.6rem; }
+
+        .logic-flow {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            align-items: center;
+        }
+
+        .logic-flow span {
+            padding: 0.6rem 0.75rem;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid rgba(122, 0, 60, 0.15);
+            font-weight: 700;
+        }
+
+        .logic-flow b { color: var(--mac-gold); }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .utility-inner {
+            max-width: var(--content);
+            margin: 0 auto;
+            padding: 0.7rem 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .utility-button,
+        .primary-action {
+            min-height: 40px;
+            border-radius: 9px;
+            border: 1px solid rgba(73, 89, 101, 0.18);
+            padding: 0.55rem 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            background: #fff;
+            color: var(--mac-grey);
+            text-decoration: none;
+        }
+
+        .primary-action {
+            border-color: var(--mac-maroon);
+            background: var(--mac-maroon);
+            color: #fff;
+        }
+
+        .stage-status { color: var(--mac-grey); font-size: 0.9rem; font-weight: 700; }
+
+        .order-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .order-item {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.6rem;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid rgba(73, 89, 101, 0.14);
+        }
+
+        .formula-box {
+            padding: 1rem;
+            border-radius: 12px;
+            background: #282c34;
+            color: #fff;
+            font-family: 'Roboto Mono', Consolas, monospace;
+            overflow-x: auto;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            height: 100vh;
+            width: min(500px, calc(100vw - 48px));
+            background: white;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.22);
+            z-index: 60;
+            transition: transform 0.38s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #hardwareSidebar {
+            left: 0;
+            transform: translateX(-100%);
+        }
+
+        #hardwareSidebar.active { transform: translateX(0); }
+
+        #softwareSidebar {
+            right: 0;
+            transform: translateX(100%);
+        }
+
+        #softwareSidebar.active { transform: translateX(0); }
+
+        .sidebar-handle {
+            position: absolute;
+            top: 50%;
+            width: 34px;
+            height: 62px;
+            border: 0;
+            background: var(--mac-maroon);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            z-index: 65;
+        }
+
+        .sidebar-handle:hover { background: var(--mac-maroon-80); }
+
+        #handle-hw {
+            right: -34px;
+            border-radius: 0 9px 9px 0;
+            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.16);
+        }
+
+        #handle-sw {
+            left: -34px;
+            border-radius: 9px 0 0 9px;
+            box-shadow: -4px 0 12px rgba(0, 0, 0, 0.16);
+        }
+
+        .handle-icon {
+            transition: transform 0.4s ease;
+            stroke-width: 3px;
+        }
+
+        #hardwareSidebar.active #handle-hw .handle-icon,
+        #softwareSidebar.active #handle-sw .handle-icon {
+            transform: rotate(180deg);
+        }
+
+        .stage-footer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .nav-button {
+            min-height: 42px;
+            padding: 0.72rem 1rem;
+            border-radius: 9px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-button.secondary {
+            background: white;
+            color: var(--mac-grey);
+            border: 1px solid var(--mac-grey-40);
+        }
+
+        .nav-button.secondary:hover { background: var(--mac-grey-20); }
+
+        .nav-button.primary {
+            background: var(--mac-maroon);
+            color: white;
+            border: 1px solid var(--mac-maroon);
+        }
+
+        .nav-button.primary:hover { background: var(--mac-maroon-80); }
+
+        .stage-message {
+            display: none;
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .stage-message.show { display: block; }
+        .stage-message.success {
+            background: #EFFAF3;
+            border: 1px solid #B7E4C7;
+            color: #174D2D;
+        }
+
+        .stage-summary-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.42rem 0.7rem;
+            border-radius: 999px;
+            background: var(--mac-gold-20);
+            color: #5B3900;
+            border: 1px solid rgba(253, 191, 87, 0.35);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .knowledge-skill-list {
+            display: grid;
+            gap: 0.55rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .knowledge-skill-list a {
+            display: block;
+            padding: 0.7rem 0.8rem;
+            border-radius: 10px;
+            border: 1px solid #DDE3E8;
+            background: white;
+            color: var(--lab-text);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .knowledge-skill-list a:hover {
+            border-color: var(--mac-maroon);
+            background: var(--mac-maroon-20);
+        }
+
+        .optional-card {
+            border-left: 5px solid var(--mac-gold);
+        }
+
+        @media (max-width: 900px) {
+            .grid.two, .grid.three, .grid.four, .compare-grid, .order-grid { grid-template-columns: 1fr; }
+            .signal-chain { grid-template-columns: 1fr; }
+            .signal-step:not(:last-child)::after {
+                right: auto;
+                left: 1.2rem;
+                top: auto;
+                bottom: -0.55rem;
+                transform: rotate(135deg);
+            }
+            .brand-divider { display: none; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.001ms !important;
+                animation-duration: 0.001ms !important;
+            }
+        }
+
+        @media print {
+            .stage-bar { display: none !important; }
+            .stage-panel { display: block !important; break-inside: avoid; }
+            body { background: #fff; }
+            .card { box-shadow: none; }
+            a::after { content: " (" attr(href) ")"; font-size: 0.8em; }
+        }
+        /* Completion indicator: use a CSS escape so the glyph remains valid in every file encoding. */
+        .stage-btn.completed::after { content: "\2713"; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 6px; border: 1px solid #23834d; border-radius: 50%; color: #126b3a; background: #e3f5e9; font-size: 0.84rem; font-weight: 800; line-height: 1; }
+    </style>
+    <link rel="icon" type="image/png" href="../../assets/McMaster-logo.png">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+</head>
+<body class="pb-24 pt-24 stage-0">
+    <nav class="stage-bar" aria-label="Lab progress">
+        <div class="stage-bar-inner">
+            <span class="stage-label">Student Space</span>
+            <a class="stage-btn" href="../../index.html">Home</a>
+            <span class="stage-btn page-current" aria-current="page">Lab 2</span>
+            <span class="stage-label lab-stage-label">Lab Progress</span>
+            <button class="stage-btn active" id="btn-stage-0" type="button" data-stage="0">Prepare</button>
+            <button class="stage-btn" id="btn-stage-1" type="button" data-stage="1">Communicate</button>
+            <button class="stage-btn" id="btn-stage-2" type="button" data-stage="2">Convert</button>
+            <button class="stage-btn" id="btn-stage-3" type="button" data-stage="3">Modularize</button>
+            <button class="stage-btn" id="btn-stage-4" type="button" data-stage="4">Sense</button>
+            <button class="stage-btn" id="btn-stage-5" type="button" data-stage="5">Display</button>
+            <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">Extend</button>
+            <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Troubleshoot</button>
+            <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Reflect</button>
+            <div class="auto-score-chip" aria-live="polite">
+                Progress <strong data-progress-status>0/9</strong>
+            </div>
+        </div>
+    </nav>
+
+    <aside id="hardwareSidebar" class="sidebar" aria-label="Lab tools and access reference">
+        <button id="handle-hw" class="sidebar-handle" type="button" data-sidebar-toggle="hardwareSidebar" title="Open lab tools reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            <span class="sr-only">Open lab tools reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Tools & Access</h3>
+            <p class="text-sm text-white/75 mt-1">LabVIEW, LINX, Arduino Mega, thermistor circuit</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Access Checklist</h4>
+                <ul class="compact-list text-sm text-gray-600 list-disc ml-5">
+                    <li>LabVIEW is installed and opens normally.</li>
+                    <li>NI LabVIEW LINX Toolkit is installed.</li>
+                    <li>Arduino firmware loading/testing document from A2L has been followed.</li>
+                    <li>Arduino Mega appears on the expected serial port.</li>
+                    <li>Required course files from A2L are downloaded.</li>
+                </ul>
+            </div>
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Hardware Values</h4>
+                <dl class="grid grid-cols-2 gap-y-3 text-sm">
+                    <dt class="text-gray-500">Fixed resistor</dt>
+                    <dd class="font-semibold text-right">10 k&Omega;</dd>
+                    <dt class="text-gray-500">Analog input</dt>
+                    <dd class="font-semibold text-right">A0</dd>
+                    <dt class="text-gray-500">Supply</dt>
+                    <dd class="font-semibold text-right">Arduino 5 V</dd>
+                    <dt class="text-gray-500">Reference</dt>
+                    <dd class="font-semibold text-right">GND</dd>
+                    <dt class="text-gray-500">Main file</dt>
+                    <dd class="font-semibold text-right">Thermometer.vi</dd>
+                </dl>
+            </div>
+            <div class="warning-card text-sm">
+                <h4 class="font-bold uppercase mb-2">Power Rule</h4>
+                <p>Disconnect USB or power before changing wiring. Confirm the divider before running the VI.</p>
+            </div>
+        </div>
+    </aside>
+
+    <aside id="softwareSidebar" class="sidebar" aria-label="Formula and concept reference">
+        <button id="handle-sw" class="sidebar-handle" type="button" data-sidebar-toggle="softwareSidebar" title="Open formula and concept reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            <span class="sr-only">Open formula and concept reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Formula & Concepts</h3>
+            <p class="text-sm text-white/75 mt-1">Temperature conversion, divider logic, LINX dataflow</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Lab 2 Knowledge Skills</h4>
+                <ul class="knowledge-skill-list text-sm">
+                    <li><a href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW front panel and block diagram</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=vi-subvi">VI and SubVI</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=voltage-divider">Voltage divider</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=analog-input">Analog input and ADC</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=experimental-evidence">Measurement evidence</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Troubleshooting sequence</a></li>
+                </ul>
+            </div>
+            <div class="formula-card">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Temperature Conversions</h4>
+                <p class="font-mono text-lg text-center">F = 1.8C + 32</p>
+                <p class="font-mono text-lg text-center mt-2">K = C + 273.15</p>
+                <p class="text-sm text-gray-600 mt-3">Use the course-provided thermistor conversion VI or instructor-provided thermistor parameters for voltage-to-Celsius conversion.</p>
+            </div>
+            <div class="card p-5">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Worksheet Tools</h4>
+                <div class="grid gap-2">
+                    <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
+                    <button class="utility-button" type="button" data-print>Print worksheet</button>
+                    <button class="utility-button" type="button" data-reset>Reset Lab 2 local data</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <header class="page-header max-w-6xl mx-auto px-6 lg:px-8 mb-10">
+        <div class="flex flex-col md:flex-row md:items-center gap-7 border-b border-gray-200 pb-8">
+            <img src="../../assets/McMaster-logo.png" alt="McMaster University logo" class="h-20 w-auto object-contain">
+            <div class="hidden md:block h-16 w-px bg-gray-200" aria-hidden="true"></div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#7A003C] mb-2">SMRTTECH 3CC3 &middot; Cloud Computing and Internet of Things</p>
+                <h1 class="lab-page-title text-4xl lg:text-5xl font-extrabold tracking-tight mb-2">
+                    <span class="lab-title-prefix">Lab 2:</span> <span class="lab-title-gradient">Temperature Sensing with LabVIEW and Arduino</span>
+                </h1>
+                <p class="text-[#495965] text-lg lg:text-xl font-light max-w-4xl">
+                    A guided interactive companion for Lab 2: build a Celsius-to-Fahrenheit VI, convert it into a SubVI, read a thermistor divider through Arduino A0, and display live temperature in LabVIEW.
+                </p>
+            </div>
+        </div>
+        <div class="flex flex-wrap gap-2 mt-5">
+            <span class="stage-summary-chip">Software: LabVIEW + LINX</span>
+            <span class="stage-summary-chip">Hardware: Arduino Mega + thermistor</span>
+            <span class="stage-summary-chip">Core concept: resistance to voltage</span>
+            <span class="stage-summary-chip">Deliverables: VIs, evidence, Kelvin extension</span>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 lg:px-8">
+        <noscript>
+            <section class="section-card card border-warning">
+                <h2>JavaScript is disabled</h2>
+                <p>This lab remains readable, and all laboratory links and instructions are available. Interactive progress saving, ordering checks, and response export require JavaScript.</p>
+            </section>
+        </noscript>
+
+        <section class="stage-panel stage-0" id="prepare" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Scenario</p>
+                <h2>Build the local sensing layer of an IoT system</h2>
+                <div class="briefing-card mt-block">
+                    <h3 class="text-lg font-bold mb-2">Central question</h3>
+                    <p class="mb-0">How does a change in physical temperature become a live digital temperature display in LabVIEW?</p>
+                </div>
+                <p>You are building the first sensing node for an Internet of Things temperature-monitoring system. Before data can be sent to the cloud, the local system must correctly sense temperature, convert a physical change into voltage, acquire that voltage using Arduino, and display a meaningful temperature value in LabVIEW.</p>
+                <p>This lab focuses on the local sensing layer, not yet the cloud layer.</p>
+                <div class="signal-chain" aria-label="Conceptual signal chain">
+                    <div class="signal-step">Temperature change<span>Physical condition changes.</span></div>
+                    <div class="signal-step">Thermistor resistance<span>The sensor resistance changes.</span></div>
+                    <div class="signal-step">Divider voltage<span>A voltage appears at the junction.</span></div>
+                    <div class="signal-step">Arduino A0<span>Analog input reads voltage.</span></div>
+                    <div class="signal-step">LabVIEW LINX<span>Voltage data enters LabVIEW.</span></div>
+                    <div class="signal-step">Conversion<span>A model infers temperature.</span></div>
+                    <div class="signal-step">Display<span>Celsius, Fahrenheit, or Kelvin appears.</span></div>
+                </div>
+                <p class="callout mt-block">LabVIEW does not directly measure temperature. Arduino reads a voltage, and LabVIEW uses the course-provided thermistor conversion VI or instructor-provided sensor parameters to infer temperature.</p>
+            </article>
+
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Overview</p>
+                <h2>Time, tools, and prerequisites</h2>
+                <div class="grid four">
+                    <div class="mini-card"><span class="tag gold">Pre-lab</span><p>30-45 minutes</p></div>
+                    <div class="mini-card"><span class="tag gold">Lab time</span><p>2.5-3 hours</p></div>
+                    <div class="mini-card"><span class="tag gold">Post-lab</span><p>30-45 minutes</p></div>
+                    <div class="mini-card"><span class="tag success">Safety level</span><p>Low-voltage electronics. Wiring still must be checked before operation.</p></div>
+                </div>
+                <div class="grid two">
+                    <div class="mini-card">
+                        <h3>Software</h3>
+                        <p>LabVIEW, NI LabVIEW LINX Toolkit, Arduino firmware loaded for LINX, and the required A2L course files.</p>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Hardware</h3>
+                        <p>Arduino Mega, thermistor, 10 k&Omega; resistor, breadboard, jumper wires, and USB cable.</p>
+                    </div>
+                </div>
+                <p class="callout">Prerequisite: basic LabVIEW environment familiarity or an instructor demonstration.</p>
+            </article>
+
+            <article class="section-card card border-success">
+                <p class="eyebrow">Learning Outcomes</p>
+                <h2>By the end of this lab, you should be able to...</h2>
+                <div class="learning-outcome-grid">
+                    <div class="learning-outcome-card"><strong>Sensor model</strong><span>Explain how a thermistor changes resistance with temperature.</span></div>
+                    <div class="learning-outcome-card"><strong>Voltage divider</strong><span>Explain why the circuit converts resistance change into measurable voltage.</span></div>
+                    <div class="learning-outcome-card"><strong>Arduino role</strong><span>Identify how Arduino acquires analog sensor data from A0.</span></div>
+                    <div class="learning-outcome-card"><strong>LabVIEW LINX</strong><span>Identify how LabVIEW communicates with Arduino.</span></div>
+                    <div class="learning-outcome-card"><strong>VI building</strong><span>Build controls, indicators, arithmetic functions, and unit conversion logic.</span></div>
+                    <div class="learning-outcome-card"><strong>SubVI reuse</strong><span>Convert a VI into a reusable SubVI with an icon and connector pane.</span></div>
+                    <div class="learning-outcome-card"><strong>Live display</strong><span>Read voltage, convert temperature, and display Celsius, Fahrenheit, and Kelvin.</span></div>
+                    <div class="learning-outcome-card"><strong>Troubleshooting</strong><span>Diagnose hardware, firmware, wiring, and LabVIEW block-diagram faults.</span></div>
+                </div>
+            </article>
+
+            <article class="section-card card border-warning">
+                <p class="eyebrow">Safety And Setup</p>
+                <h2>Pre-power checklist</h2>
+                <div class="warning-box">
+                    <strong>STOP - Check the circuit before connecting Arduino to USB or running the VI.</strong>
+                    <p>This checklist supports safe work, but it does not replace instructor approval when approval is required.</p>
+                </div>
+                <div class="grid two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-low-voltage"><span>Only low-voltage Arduino connections are used.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-power-off"><span>USB or power is disconnected before wiring changes.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-5v-gnd"><span>5 V and GND locations are verified before connecting the sensor circuit.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-no-short"><span>5 V is not shorted to GND.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-breadboard"><span>No jumper wires are forced into damaged breadboard holes.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-metal-tools"><span>Metal tools are kept away from powered breadboard rails.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-board-port"><span>Arduino board type and serial port are confirmed before running the VI.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-linx"><span>LINX firmware is loaded before starting the sensor VI.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-stop"><span>The VI will be stopped using the Stop button unless instructed otherwise.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-hot-board"><span>I will ask for help if the board becomes hot, disconnects repeatedly, or gives unstable readings.</span></label>
+                </div>
+            </article>
+
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Pre-Lab</p>
+                <h2>Activity A: Software readiness</h2>
+                <div class="grid two">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-labview"><span>LabVIEW is installed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-linx"><span>NI LabVIEW LINX Toolkit is installed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-firmware-doc"><span>The Arduino firmware loading/testing document from A2L has been followed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-port"><span>Arduino Mega appears on the expected serial port.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-usb"><span>A working USB data cable is available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-files"><span>Required files from A2L are downloaded.</span></label>
+                </div>
+
+                <h3>Activity B: Build the sensing chain</h3>
+                <p>Drag the events into order, or use the numbered selects if you prefer keyboard entry.</p>
+                <div class="order-grid" data-order-activity data-dnd-order>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-temperature" aria-label="Order for temperature changes"></select><span>Temperature changes</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-resistance" aria-label="Order for thermistor resistance changes"></select><span>Thermistor resistance changes</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-divider" aria-label="Order for voltage divider output changes"></select><span>Voltage divider output changes</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-a0" aria-label="Order for Arduino analog input reads voltage"></select><span>Arduino analog input reads voltage</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-linx" aria-label="Order for LabVIEW receives voltage through LINX"></select><span>LabVIEW receives voltage through LINX</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-convert" aria-label="Order for LabVIEW converts voltage to temperature"></select><span>LabVIEW converts voltage to temperature</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-display" aria-label="Order for temperature appears on the front panel"></select><span>Temperature appears on the front panel</span></label>
+                </div>
+                <div class="chip-row">
+                    <button class="utility-button" type="button" data-check-order>Check order</button>
+                    <span class="stage-status" data-order-feedback aria-live="polite"></span>
+                </div>
+
+                <h3>Activity C: Predict voltage-divider behavior</h3>
+                <label class="response-field"><span>If the thermistor resistance changes, why does Arduino A0 see a changing voltage instead of directly seeing resistance?</span><textarea class="persist-text" data-key="pre-divider-prediction"></textarea></label>
+                <details>
+                    <summary>Hint after you have made a prediction</summary>
+                    <div><p>A voltage divider uses two resistances between 5 V and GND. Arduino A0 measures the voltage at the junction. If one resistance changes, the junction voltage changes.</p></div>
+                </details>
+
+                <h3>Activity D: Temperature-unit conversion</h3>
+                <p>Predict the Fahrenheit values, then check them using <code>F = 1.8C + 32</code>. Kelvin is <code>K = C + 273.15</code>.</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Celsius input</th><th>Your predicted Fahrenheit</th><th>Check result</th></tr></thead>
+                        <tbody>
+                            <tr><td>0 &deg;C</td><td><label class="sr-only" for="pred-f-0">Predicted Fahrenheit for 0 Celsius</label><input id="pred-f-0" type="number" class="persist-text f-pred" data-celsius="0" data-key="pred-f-0"></td><td data-f-result="0"></td></tr>
+                            <tr><td>25 &deg;C</td><td><label class="sr-only" for="pred-f-25">Predicted Fahrenheit for 25 Celsius</label><input id="pred-f-25" type="number" class="persist-text f-pred" data-celsius="25" data-key="pred-f-25"></td><td data-f-result="25"></td></tr>
+                            <tr><td>100 &deg;C</td><td><label class="sr-only" for="pred-f-100">Predicted Fahrenheit for 100 Celsius</label><input id="pred-f-100" type="number" class="persist-text f-pred" data-celsius="100" data-key="pred-f-100"></td><td data-f-result="100"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-1" id="communicate" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Checkpoint 1</p>
+                <h2>Can LabVIEW communicate with Arduino?</h2>
+                <p>Use the LabVIEW Arduino firmware loading and testing instructions from A2L. Do not begin sensor troubleshooting until basic communication is proven.</p>
+                <div class="grid two">
+                    <label class="response-field"><span>Arduino board type</span><input class="persist-text" data-key="comm-board" type="text"></label>
+                    <label class="response-field"><span>Serial port used</span><input class="persist-text" data-key="comm-port" type="text"></label>
+                    <label class="response-field"><span>LINX firmware loaded?</span><select class="persist-text" data-key="comm-firmware"><option value="">Choose...</option><option>Yes</option><option>No</option><option>Not sure</option></select></label>
+                    <label class="response-field"><span>One successful communication indicator</span><input class="persist-text" data-key="comm-evidence" type="text" data-stage-required></label>
+                    <label class="response-field"><span>One possible cause if communication fails</span><input class="persist-text" data-key="comm-fail-cause" type="text"></label>
+                </div>
+                <div class="grid two">
+                    <div class="mini-card">
+                        <h3>Think it through</h3>
+                        <ul>
+                            <li>What evidence proves that LabVIEW is communicating with Arduino?</li>
+                            <li>Does a detected serial port prove the firmware is correct?</li>
+                            <li>What is the difference between detecting a board and reading a sensor?</li>
+                            <li>What should you check before blaming the thermistor circuit?</li>
+                            <li>If communication fails, is the problem hardware, firmware, software, or configuration?</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Communication hints</h3>
+                        <ul>
+                            <li>Wrong COM port</li>
+                            <li>LINX firmware not loaded</li>
+                            <li>USB cable is power-only</li>
+                            <li>Wrong board selected</li>
+                            <li>Arduino already in use by another program</li>
+                            <li>LabVIEW LINX Toolkit missing</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-2" id="convert" tabindex="-1">
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Checkpoint 2</p>
+                <h2>Build a basic temperature-conversion VI</h2>
+                <p>Create a LabVIEW VI that converts degrees Celsius to degrees Fahrenheit. Save it as <code>Convert C to F.vi</code>.</p>
+                <details open>
+                    <summary>How to build it: Front Panel</summary>
+                    <div>
+                        <ol>
+                            <li>Open LabVIEW and create a blank VI.</li>
+                            <li>Add a numeric control labelled <code>deg C</code>.</li>
+                            <li>Add a numeric indicator labelled <code>deg F</code>.</li>
+                        </ol>
+                    </div>
+                </details>
+                <details>
+                    <summary>How to build it: Block Diagram</summary>
+                    <div>
+                        <ol>
+                            <li>Use Multiply, Add, numeric constant <code>1.8</code>, and numeric constant <code>32.0</code>.</li>
+                            <li>Wire the Celsius control through <code>F = 1.8C + 32</code>.</li>
+                            <li>Run the VI with several values before trusting it.</li>
+                        </ol>
+                    </div>
+                </details>
+                <div class="diagram-card">
+                    <div class="logic-flow" aria-label="Celsius to Fahrenheit block logic">
+                        <span>deg C</span><b aria-hidden="true">-&gt;</b><span>multiply by 1.8</span><b aria-hidden="true">-&gt;</b><span>add 32</span><b aria-hidden="true">-&gt;</b><span>deg F</span>
+                    </div>
+                </div>
+                <div class="grid two">
+                    <div class="mini-card">
+                        <h3>Think it through</h3>
+                        <ul>
+                            <li>Which object is the input?</li>
+                            <li>Which object is the output?</li>
+                            <li>Where is the equation represented in the block diagram?</li>
+                            <li>What happens if a wire is missing?</li>
+                            <li>How does LabVIEW dataflow differ from line-by-line text programming?</li>
+                            <li>Why should you test 0 &deg;C and 100 &deg;C before trusting the VI?</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Self-check table</h3>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>Celsius input</th><th>Expected Fahrenheit</th><th>Measured VI output</th><th>Match?</th></tr></thead>
+                                <tbody>
+                                    <tr><td>0</td><td>32</td><td><label class="sr-only" for="vi-0">Measured output for 0 Celsius</label><input id="vi-0" class="persist-text" data-key="vi-out-0" type="number"></td><td><label class="sr-only" for="vi-match-0">Output matches for 0 Celsius</label><input id="vi-match-0" class="persist-check" data-key="vi-match-0" type="checkbox"></td></tr>
+                                    <tr><td>25</td><td>77</td><td><label class="sr-only" for="vi-25">Measured output for 25 Celsius</label><input id="vi-25" class="persist-text" data-key="vi-out-25" type="number"></td><td><label class="sr-only" for="vi-match-25">Output matches for 25 Celsius</label><input id="vi-match-25" class="persist-check" data-key="vi-match-25" type="checkbox"></td></tr>
+                                    <tr><td>100</td><td>212</td><td><label class="sr-only" for="vi-100">Measured output for 100 Celsius</label><input id="vi-100" class="persist-text" data-key="vi-out-100" type="number"></td><td><label class="sr-only" for="vi-match-100">Output matches for 100 Celsius</label><input id="vi-match-100" class="persist-check" data-key="vi-match-100" type="checkbox"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-3" id="modularize" tabindex="-1">
+            <article class="section-card card border-success">
+                <p class="eyebrow">Checkpoint 3</p>
+                <h2>Turn your conversion into a reusable SubVI</h2>
+                <p>Reopen <code>Convert C to F.vi</code> and convert it into a SubVI. A SubVI is a reusable block that hides internal details while exposing defined inputs and outputs.</p>
+                <details open>
+                    <summary>Step-by-step SubVI procedure</summary>
+                    <div>
+                        <ol>
+                            <li>Save a backup copy of the working Celsius-to-Fahrenheit VI.</li>
+                            <li>Open the VI front panel and confirm the control is named <code>deg C</code> and the indicator is named <code>deg F</code>.</li>
+                            <li>Open the icon editor and create a simple, readable icon that communicates C to F conversion.</li>
+                            <li>Open the connector pane and choose a two-terminal pattern.</li>
+                            <li>Assign the left terminal to <code>deg C</code> and the right terminal to <code>deg F</code>.</li>
+                            <li>Turn on Context Help and hover over the SubVI icon to confirm the terminals are labelled correctly.</li>
+                            <li>Save the SubVI, then place it in a new test VI and verify 0, 25, and 100 degrees Celsius.</li>
+                        </ol>
+                    </div>
+                </details>
+                <div class="grid two">
+                    <div class="mini-card">
+                        <h3>Core actions</h3>
+                        <ol>
+                            <li>Edit the VI icon and make it represent C to F.</li>
+                            <li>Choose a connector pane pattern with two terminals.</li>
+                            <li>Assign the left terminal to <code>deg C</code>.</li>
+                            <li>Assign the right terminal to <code>deg F</code>.</li>
+                            <li>Use Context Help to verify the terminals.</li>
+                            <li>Save the VI.</li>
+                        </ol>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Regular VI versus SubVI</h3>
+                        <div class="compare-grid">
+                            <div class="callout"><strong>Regular VI</strong><ul><li>Built and run directly</li><li>Front panel visible to the user</li><li>Contains full block diagram</li></ul></div>
+                            <div class="callout"><strong>SubVI</strong><ul><li>Used as a block inside another VI</li><li>Has defined input and output terminals</li><li>Encourages modular design and reuse</li></ul></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mini-card">
+                    <h3>Think it through</h3>
+                    <ul>
+                        <li>What problem does a SubVI solve?</li>
+                        <li>What information must be visible outside the SubVI?</li>
+                        <li>What information can be hidden inside the SubVI?</li>
+                        <li>Why does the connector pane matter?</li>
+                        <li>What would happen if <code>deg C</code> and <code>deg F</code> were assigned to the wrong terminals?</li>
+                        <li>Why is a meaningful icon more than decoration?</li>
+                    </ul>
+                </div>
+                <label class="response-field"><span>Explain why your SubVI icon and terminal choices are clear.</span><textarea class="persist-text" data-key="subvi-explain" data-stage-required></textarea></label>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-4" id="sense" tabindex="-1">
+            <article class="section-card card border-warning">
+                <p class="eyebrow">Checkpoint 4</p>
+                <h2>Convert temperature change into voltage change</h2>
+                <p>Build the thermistor voltage-divider circuit using the thermistor, 10 k&Omega; resistor, Arduino Mega, breadboard, jumper wires, 5 V, GND, and A0.</p>
+                <div class="grid two">
+                    <div class="mini-card">
+                        <h3>Skill map references</h3>
+                        <ul>
+                            <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=voltage-divider">Voltage divider</a></li>
+                            <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=analog-input">Arduino analog input</a></li>
+                            <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=measure-voltage">Measuring voltage</a></li>
+                            <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Systematic troubleshooting</a></li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Build focus</h3>
+                        <p>Use the instructor-provided schematic and bench hardware to identify the thermistor, fixed resistor, 5 V, GND, and the divider junction that feeds Arduino A0.</p>
+                        <p class="callout">Sketch your own wiring map before powering. The goal is to understand the signal path rather than copy a picture.</p>
+                    </div>
+                </div>
+                <div class="warning-box">
+                    <strong>Confirm placement before power.</strong>
+                    Confirm the exact thermistor and resistor placement with your instructor or the course-provided schematic before powering the Arduino. Reversing the thermistor and fixed resistor may reverse the temperature-voltage relationship.
+                </div>
+                <div class="grid two mt-block">
+                    <div class="mini-card">
+                        <h3>Think it through</h3>
+                        <ul>
+                            <li>Why is the 10 k&Omega; resistor needed?</li>
+                            <li>What does Arduino A0 actually measure?</li>
+                            <li>Does A0 measure resistance directly?</li>
+                            <li>How does a resistance change become a voltage change?</li>
+                            <li>What would happen if the sensor wire to A0 were disconnected?</li>
+                            <li>What would happen if 5 V and GND were accidentally shorted?</li>
+                            <li>Why might touching the thermistor change the reading slowly rather than instantly?</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Required evidence</h3>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="sense-circuit-checked"><span>Circuit checked before USB connection.</span></label>
+                        <label class="response-field"><span>Arduino pin used</span><input class="persist-text" data-key="sense-pin" value="A0"></label>
+                        <label class="response-field"><span>Fixed resistor value</span><input class="persist-text" data-key="sense-resistor" value="10 kOhm"></label>
+                        <label class="response-field"><span>Brief explanation of voltage-divider purpose</span><textarea class="persist-text" data-key="sense-divider-purpose"></textarea></label>
+                        <label class="response-field"><span>Predicted direction of voltage change when the thermistor warms</span><textarea class="persist-text" data-key="sense-direction"></textarea></label>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-5" id="display" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Checkpoint 5</p>
+                <h2>Read the sensor through LabVIEW LINX</h2>
+                <p>Create a main VI that opens a LINX connection, reads Arduino analog channel 0, sends the voltage to the course-provided thermistor conversion VI, reuses your C-to-F SubVI, lets the user select Celsius or Fahrenheit, displays the result on a thermometer indicator, repeats inside a while loop, stops with a Stop button, and closes LINX after the loop ends.</p>
+                <div class="diagram-card">
+                    <div class="logic-flow" aria-label="LabVIEW thermometer conceptual block diagram">
+                        <span>Arduino A0 voltage</span><b>-&gt;</b><span>LINX Analog Read</span><b>-&gt;</b><span>Thermistor voltage-to-Celsius VI</span><b>-&gt;</b><span>C-to-F SubVI</span><b>-&gt;</b><span>Select scale</span><b>-&gt;</b><span>Thermometer display</span>
+                    </div>
+                </div>
+                <div class="grid three mt-block">
+                    <details open><summary>A. Front Panel</summary><div><p>Add temperature scale switch, thermometer indicator, serial port control or constant, and Stop button.</p></div></details>
+                    <details><summary>B. Block Diagram</summary><div><p>Organize dataflow left to right: open, read, convert, select, display, close.</p></div></details>
+                    <details><summary>C. LINX Connection</summary><div><p>Use LINX Open with the Arduino serial port. Keep it outside the while loop.</p></div></details>
+                    <details><summary>D. Analog Read</summary><div><p>Use LINX Analog Read with Analog Channel constant set to <code>0</code>.</p></div></details>
+                    <details><summary>E. Temperature Conversion</summary><div><p>Use the course-provided thermistor conversion VI or instructor-provided sensor parameters.</p></div></details>
+                    <details><summary>F. Unit Selection</summary><div><p>Use your C-to-F SubVI and a Select function controlled by the Temp Scale switch.</p></div></details>
+                    <details><summary>G. While Loop</summary><div><p>Place repeated measurement and display code inside the loop so data updates live.</p></div></details>
+                    <details><summary>H. Safe Stop And Close</summary><div><p>Wire the Stop button to the loop condition and place LINX Close after the loop.</p></div></details>
+                    <details><summary>I. Run And Observe</summary><div><p>Run the VI, touch or warm the thermistor, observe response, then stop with the Stop button.</p></div></details>
+                </div>
+                <div class="grid two">
+                    <div class="mini-card">
+                        <h3>Required LabVIEW elements</h3>
+                        <ul>
+                            <li>LINX Open and LINX Close</li>
+                            <li>LINX Analog Read</li>
+                            <li><code>lab_3_thermistor_sensor</code> VI or course-provided equivalent</li>
+                            <li><code>Convert C to F</code> VI</li>
+                            <li>Select function and Temp Scale switch</li>
+                            <li>Thermometer indicator</li>
+                            <li>While Loop and Stop button</li>
+                            <li>Analog Channel constant set to 0</li>
+                            <li>Serial Port constant or control set to the Arduino serial port</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Think it through</h3>
+                        <ul>
+                            <li>What value leaves the LINX Analog Read block?</li>
+                            <li>Why is the thermistor-conversion VI needed?</li>
+                            <li>Why reuse the C-to-F SubVI instead of rebuilding the equation?</li>
+                            <li>What does the Select function decide?</li>
+                            <li>Why must the while loop surround repeated measurement code?</li>
+                            <li>Why should LINX Open stay outside the loop?</li>
+                            <li>Why should LINX Close occur after the loop?</li>
+                            <li>What information is lost if the VI only displays the latest value and stores no data?</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <article class="section-card card border-success">
+                <p class="eyebrow">Checkpoint 6</p>
+                <h2>Test the temperature response</h2>
+                <p>Run the VI. Put a finger on the temperature sensor and notice whether the temperature increases. Stop the VI using the Stop button, not Abort. Save the file as <code>Thermometer.vi</code>.</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Evidence item</th><th>Student record</th></tr></thead>
+                        <tbody>
+                            <tr><td>Initial temperature</td><td><label class="sr-only" for="obs-initial">Initial temperature</label><input id="obs-initial" class="persist-text" data-key="obs-initial" type="text" data-stage-required></td></tr>
+                            <tr><td>Temperature after warming sensor</td><td><label class="sr-only" for="obs-warm">Temperature after warming</label><input id="obs-warm" class="persist-text" data-key="obs-warm" type="text"></td></tr>
+                            <tr><td>Approximate time for noticeable change</td><td><label class="sr-only" for="obs-time">Approximate time</label><input id="obs-time" class="persist-text" data-key="obs-time" type="text"></td></tr>
+                            <tr><td>Returns toward room temperature?</td><td><label class="sr-only" for="obs-return">Returns toward room temperature</label><select id="obs-return" class="persist-text" data-key="obs-return"><option value="">Choose...</option><option>Yes</option><option>No</option><option>Partly</option></select></td></tr>
+                            <tr><td>Celsius and Fahrenheit displays consistent?</td><td><label class="sr-only" for="obs-consistent">Displays consistent</label><select id="obs-consistent" class="persist-text" data-key="obs-consistent"><option value="">Choose...</option><option>Yes</option><option>No</option><option>Not tested</option></select></td></tr>
+                            <tr><td>One possible reason for noise or slow response</td><td><label class="sr-only" for="obs-noise">Noise or slow response reason</label><textarea id="obs-noise" class="persist-text" data-key="obs-noise"></textarea></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h3>Think it through</h3>
+                <ul>
+                    <li>Why does the reading not jump instantly?</li>
+                    <li>Is the thermistor measuring air temperature, finger temperature, or something in between?</li>
+                    <li>How could you test whether the sensor is responding consistently?</li>
+                    <li>How could the circuit be correct but the displayed temperature still be wrong?</li>
+                    <li>What assumptions are hidden inside the thermistor-conversion VI?</li>
+                    <li>What evidence would make you trust the system as an IoT temperature node?</li>
+                </ul>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-6" id="extend" tabindex="-1">
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Checkpoint 7</p>
+                <h2>Add a Kelvin display</h2>
+                <p>Add an additional thermometer or numeric indicator showing Kelvin. Use <code>K = C + 273.15</code>.</p>
+                <div class="compare-grid">
+                    <div class="mini-card">
+                        <h3>Option A: Create a C-to-K SubVI</h3>
+                        <p>Use this when the conversion will be reused or when hiding details improves the main diagram.</p>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Option B: Add direct block logic</h3>
+                        <p>Use this when the conversion is simple and keeping it visible helps classmates or the instructor review it.</p>
+                    </div>
+                </div>
+                <div class="grid two">
+                    <label class="response-field"><span>Which option did you choose?</span><select class="persist-text" data-key="kelvin-option"><option value="">Choose...</option><option>Option A: SubVI</option><option>Option B: Direct logic</option></select></label>
+                    <label class="response-field"><span>How did you test that Kelvin is correct?</span><textarea class="persist-text" data-key="kelvin-test"></textarea></label>
+                    <label class="response-field evidence-upload"><span>Front panel screenshot</span><input class="persist-file" data-key="kelvin-front-panel" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="kelvin-front-panel">No file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>Block diagram screenshot</span><input class="persist-file" data-key="kelvin-block-diagram" type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="kelvin-block-diagram">No file selected.</small></label>
+                </div>
+                <div class="mini-card">
+                    <h3>Think it through</h3>
+                    <ul>
+                        <li>When is a SubVI worth creating?</li>
+                        <li>When is direct block-diagram logic sufficient?</li>
+                        <li>What are the benefits of modularity?</li>
+                        <li>What are the costs of too many small SubVIs?</li>
+                        <li>Should Kelvin depend on Celsius or Fahrenheit?</li>
+                    </ul>
+                </div>
+            </article>
+
+            <article class="section-card card border-success">
+                <p class="eyebrow">Optional Extensions</p>
+                <h2>Try these after required evidence is complete</h2>
+                <div class="grid two">
+                    <div class="mini-card optional-card">Log temperature data to a file.</div>
+                    <div class="mini-card optional-card">Plot temperature versus time.</div>
+                    <div class="mini-card optional-card">Add a moving average filter.</div>
+                    <div class="mini-card optional-card">Add a high-temperature warning indicator.</div>
+                    <div class="mini-card optional-card">Add a simulated cloud-upload placeholder.</div>
+                    <div class="mini-card optional-card">Compare Celsius, Fahrenheit, and Kelvin displays.</div>
+                    <div class="mini-card optional-card">Estimate sensor settling time.</div>
+                    <div class="mini-card optional-card">Compare finger warming with ambient recovery.</div>
+                    <div class="mini-card optional-card">Add a second sensor input.</div>
+                    <div class="mini-card optional-card">Explain how this sensing node could later publish data to a cloud dashboard.</div>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-7" id="troubleshoot" tabindex="-1">
+            <article class="section-card card border-warning">
+                <p class="eyebrow">Troubleshooting Challenge</p>
+                <h2>Use evidence before changing the system</h2>
+                <div class="warning-box">
+                    <strong>Before changing the circuit or block diagram, write one hypothesis and one measurement or inspection that could support or reject it.</strong>
+                </div>
+                <div class="table-wrap mt-block">
+                    <table>
+                        <thead><tr><th>Observation</th><th>Possible cause</th><th>Test</th><th>Expected evidence</th><th>Actual evidence</th><th>Decision</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><textarea class="persist-text" data-key="trouble-observation"></textarea></td>
+                                <td><textarea class="persist-text" data-key="trouble-cause"></textarea></td>
+                                <td><textarea class="persist-text" data-key="trouble-test"></textarea></td>
+                                <td><textarea class="persist-text" data-key="trouble-expected"></textarea></td>
+                                <td><textarea class="persist-text" data-key="trouble-actual"></textarea></td>
+                                <td><textarea class="persist-text" data-key="trouble-decision" data-stage-required></textarea></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid three mt-block">
+                    <div class="mini-card">
+                        <h3>Hardware faults</h3>
+                        <ul>
+                            <li>5 V and GND reversed</li>
+                            <li>Missing GND connection</li>
+                            <li>A0 connected to the wrong divider point</li>
+                            <li>Thermistor not seated properly</li>
+                            <li>10 k&Omega; resistor in the wrong row</li>
+                            <li>Loose jumper wire</li>
+                            <li>USB cable is power-only</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Software and configuration faults</h3>
+                        <ul>
+                            <li>LINX firmware not loaded</li>
+                            <li>Wrong serial port or board</li>
+                            <li>Analog channel constant not set to 0</li>
+                            <li>LINX Open placed inside the while loop</li>
+                            <li>LINX Close missing</li>
+                            <li>Stop button not wired</li>
+                            <li>Select function or SubVI terminals reversed</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Data interpretation faults</h3>
+                        <ul>
+                            <li>Assuming Arduino reads temperature directly</li>
+                            <li>Assuming A0 reads resistance directly</li>
+                            <li>Assuming Fahrenheit and Celsius have the same numeric value</li>
+                            <li>Ignoring sensor settling time</li>
+                            <li>Treating noise as proof the circuit is wrong without testing</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="briefing-card mt-block"><h3>Troubleshooting discussion</h3><p>Use your observation, possible cause, proposed test, actual evidence, and next action. Do not change multiple wires or code blocks at once.</p></div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-8" id="reflect" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Deliverables</p>
+                <h2>Submission checklist</h2>
+                <div class="grid two">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-cf-vi"><span>Completed <code>Convert C to F.vi</code>.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-subvi"><span>Completed C-to-F SubVI with icon and connector pane.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-thermometer"><span>Completed <code>Thermometer.vi</code>.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-comm"><span>Evidence of successful Arduino-LabVIEW communication.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-divider"><span>Explanation of the thermistor voltage-divider circuit.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-block"><span>Explanation of the main <code>Thermometer.vi</code> block diagram.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-while"><span>Response to what happens if the while loop is not used.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-kelvin"><span>Kelvin extension implementation and explanation.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-reflections"><span>Answers to all reflection questions.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-name"><span>Student name and number included as required by course procedure.</span></label>
+                </div>
+            </article>
+
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Assessment Guide</p>
+                <h2>Suggested weighting</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Category</th><th>Weight</th><th>Assessment type</th></tr></thead>
+                        <tbody>
+                            <tr><td>Pre-lab readiness and predictions</td><td>10%</td><td>Structured evidence</td></tr>
+                            <tr><td>Arduino-LabVIEW communication evidence</td><td>10%</td><td>Structured evidence</td></tr>
+                            <tr><td>Celsius-to-Fahrenheit VI</td><td>10%</td><td>Structured and instructor assessed</td></tr>
+                            <tr><td>SubVI creation and explanation</td><td>15%</td><td>Instructor assessed</td></tr>
+                            <tr><td>Thermistor circuit explanation</td><td>15%</td><td>Instructor assessed</td></tr>
+                            <tr><td>Thermometer VI implementation</td><td>20%</td><td>Structured and instructor assessed</td></tr>
+                            <tr><td>Kelvin extension</td><td>10%</td><td>Structured evidence</td></tr>
+                            <tr><td>Troubleshooting and reflection</td><td>10%</td><td>Instructor assessed</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="callout">This page does not grade automatically. It helps collect checkable evidence such as file names, screenshots, test values, explanations, and checklist completion.</p>
+            </article>
+
+            <article class="section-card card border-success">
+                <p class="eyebrow">Reflection</p>
+                <h2>Final questions</h2>
+                <label class="response-field"><span>1. LabVIEW displayed a temperature value. What physical quantity did Arduino actually measure?</span><textarea class="persist-text" data-key="reflect-1"></textarea></label>
+                <label class="response-field"><span>2. Why is the 10 k&Omega; resistor necessary in the thermistor circuit?</span><textarea class="persist-text" data-key="reflect-2"></textarea></label>
+                <label class="response-field"><span>3. What would happen if the while loop were removed from the VI?</span><textarea class="persist-text" data-key="reflect-3"></textarea></label>
+                <label class="response-field"><span>4. Why should the Stop button be used instead of the Abort button?</span><textarea class="persist-text" data-key="reflect-4"></textarea></label>
+                <label class="response-field"><span>5. What is the benefit of using a SubVI for Celsius-to-Fahrenheit conversion?</span><textarea class="persist-text" data-key="reflect-5"></textarea></label>
+                <label class="response-field"><span>6. If the temperature reading is unstable, list two possible hardware causes and two possible software or configuration causes.</span><textarea class="persist-text" data-key="reflect-6"></textarea></label>
+                <label class="response-field"><span>7. Does this lab create a complete IoT system? If not, which IoT layer has been completed and what still needs to be added?</span><textarea class="persist-text" data-key="reflect-7"></textarea></label>
+                <label class="response-field"><span>8. What did you initially believe about sensor measurement that this lab changed or clarified?</span><textarea class="persist-text" data-key="reflect-8"></textarea></label>
+            </article>
+
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Glossary</p>
+                <h2>Key terms</h2>
+                <div class="grid three">
+                    <details><summary>Thermistor</summary><div>A resistor whose resistance changes with temperature.</div></details>
+                    <details><summary>Resistance</summary><div>Opposition to electric current, measured in ohms.</div></details>
+                    <details><summary>Voltage divider</summary><div>Two resistive elements that create a measurable junction voltage.</div></details>
+                    <details><summary>Analog voltage</summary><div>A continuously varying voltage value.</div></details>
+                    <details><summary>Arduino analog input</summary><div>A microcontroller input that measures voltage and converts it to a number.</div></details>
+                    <details><summary>A0</summary><div>Analog input channel 0 on the Arduino.</div></details>
+                    <details><summary>ADC</summary><div>Analog-to-digital converter.</div></details>
+                    <details><summary>LabVIEW</summary><div>A graphical programming environment.</div></details>
+                    <details><summary>VI</summary><div>Virtual Instrument, a LabVIEW program.</div></details>
+                    <details><summary>Front Panel</summary><div>The user-facing controls and indicators of a VI.</div></details>
+                    <details><summary>Block Diagram</summary><div>The graphical program logic of a VI.</div></details>
+                    <details><summary>Control</summary><div>A LabVIEW input object.</div></details>
+                    <details><summary>Indicator</summary><div>A LabVIEW output display object.</div></details>
+                    <details><summary>SubVI</summary><div>A reusable VI used as a block inside another VI.</div></details>
+                    <details><summary>Connector pane</summary><div>The terminal mapping that defines SubVI inputs and outputs.</div></details>
+                    <details><summary>LINX</summary><div>LabVIEW toolkit for communicating with supported hardware such as Arduino.</div></details>
+                    <details><summary>Serial port</summary><div>The communication port used by the computer to talk to Arduino.</div></details>
+                    <details><summary>While loop</summary><div>A repeated LabVIEW structure that continues until a stop condition is met.</div></details>
+                    <details><summary>Stop button</summary><div>A controlled way to end a running VI.</div></details>
+                    <details><summary>Abort button</summary><div>An emergency stop that can interrupt cleanup logic and should not be the normal stop method.</div></details>
+                    <details><summary>Celsius</summary><div>A temperature scale based on water freezing at 0 and boiling at 100 under standard conditions.</div></details>
+                    <details><summary>Fahrenheit</summary><div>A temperature scale where <code>F = 1.8C + 32</code>.</div></details>
+                    <details><summary>Kelvin</summary><div>An absolute temperature scale where <code>K = C + 273.15</code>.</div></details>
+                    <details><summary>Calibration</summary><div>Relating measured signals to meaningful physical values.</div></details>
+                    <details><summary>Sensor noise</summary><div>Small variation in readings caused by circuit, environment, or measurement limits.</div></details>
+                    <details><summary>Settling time</summary><div>The time required for a sensor reading to approach a new stable value.</div></details>
+                    <details><summary>IoT sensing node</summary><div>A local device that senses a physical condition and can later send data to a network or cloud system.</div></details>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        (() => {
+            const STORAGE_PREFIX = 'smrttech-lab2-temperature';
+            const STAGE_COUNT = 9;
+            const ORDER_KEYS = ['chain-temperature', 'chain-resistance', 'chain-divider', 'chain-a0', 'chain-linx', 'chain-convert', 'chain-display'];
+            const CORRECT_ORDER = ['1', '2', '3', '4', '5', '6', '7'];
+
+            document.body.classList.add('js-enabled');
+
+            function storageKey(key) {
+                return `${STORAGE_PREFIX}:${key}`;
+            }
+
+            function setStage(stage) {
+                const safeStage = Math.max(0, Math.min(STAGE_COUNT - 1, Number(stage) || 0));
+                document.body.className = document.body.className
+                    .split(' ')
+                    .filter(name => !/^stage-\d+$/.test(name))
+                    .join(' ');
+                document.body.classList.add('js-enabled', `stage-${safeStage}`);
+                document.querySelectorAll('[data-stage]').forEach(button => {
+                    const active = Number(button.dataset.stage) === safeStage;
+                    button.classList.toggle('active', active);
+                    button.setAttribute('aria-current', active ? 'step' : 'false');
+                });
+                localStorage.setItem(storageKey('current-stage'), String(safeStage));
+                updateProgress();
+                const panel = document.querySelector(`.stage-panel.stage-${safeStage}`);
+                if (panel) panel.focus({ preventScroll: true });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function updateProgress() {
+                let complete = 0;
+                document.querySelectorAll('[data-stage]').forEach(button => {
+                    const stage = button.dataset.stage;
+                    const isComplete = localStorage.getItem(storageKey(`stage-${stage}-complete`)) === 'true';
+                    button.classList.toggle('completed', isComplete);
+                    if (isComplete) complete += 1;
+                });
+                document.querySelectorAll('[data-progress-status]').forEach(status => {
+                    status.textContent = `${complete}/${STAGE_COUNT}`;
+                    status.setAttribute('title', `${complete} of ${STAGE_COUNT} phases marked complete.`);
+                });
+            }
+
+            function showStageMessage(stage, message) {
+                const panel = document.querySelector(`.stage-panel.stage-${stage}`);
+                if (!panel) return;
+                let messageBox = panel.querySelector('.stage-message');
+                if (!messageBox) {
+                    messageBox = document.createElement('div');
+                    messageBox.className = 'stage-message';
+                    messageBox.setAttribute('role', 'status');
+                    messageBox.setAttribute('aria-live', 'polite');
+                    const footer = panel.querySelector('.stage-footer');
+                    if (footer) footer.before(messageBox);
+                    else panel.appendChild(messageBox);
+                }
+                messageBox.textContent = message;
+                messageBox.className = 'stage-message show success';
+            }
+
+            function markStageComplete(stage) {
+                localStorage.setItem(storageKey(`stage-${stage}-complete`), 'true');
+                updateProgress();
+                showStageMessage(stage, 'Stage complete. Your progress has been saved in this browser.');
+            }
+
+            function buildStageFooters() {
+                const stageNames = ['Prepare', 'Communicate', 'Convert', 'Modularize', 'Sense', 'Display', 'Extend', 'Troubleshoot', 'Reflect'];
+                document.querySelectorAll('.stage-panel').forEach((panel, index) => {
+                    if (panel.querySelector('.stage-footer')) return;
+                    const footer = document.createElement('div');
+                    footer.className = 'stage-footer';
+
+                    const previous = document.createElement('button');
+                    previous.type = 'button';
+                    previous.className = 'nav-button secondary';
+                    previous.textContent = index === 0 ? 'Back to portal' : `Back: ${stageNames[index - 1]}`;
+                    previous.addEventListener('click', () => {
+                        if (index === 0) window.location.href = '../../index.html';
+                        else setStage(index - 1);
+                    });
+
+                    const controls = document.createElement('div');
+                    controls.className = 'chip-row compact';
+
+                    const next = document.createElement('button');
+                    next.type = 'button';
+                    next.className = 'nav-button primary';
+                    next.textContent = index === STAGE_COUNT - 1 ? 'Finish Lab 2' : `Next: ${stageNames[index + 1]}`;
+                    next.addEventListener('click', () => {
+                        markStageComplete(index);
+                        if (index < STAGE_COUNT - 1) setStage(index + 1);
+                    });
+
+                    controls.append(next);
+                    footer.append(previous, controls);
+                    panel.appendChild(footer);
+                });
+            }
+
+            function setupSidebars() {
+                document.querySelectorAll('[data-sidebar-toggle]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const selected = document.getElementById(button.dataset.sidebarToggle);
+                        if (!selected) return;
+                        const wasOpen = selected.classList.contains('active');
+                        document.querySelectorAll('.sidebar').forEach(sidebar => sidebar.classList.remove('active'));
+                        if (!wasOpen) selected.classList.add('active');
+                    });
+                });
+            }
+
+            function setupOrderOptions() {
+                document.querySelectorAll('.order-select').forEach(select => {
+                    if (select.options.length) return;
+                    const blank = document.createElement('option');
+                    blank.value = '';
+                    blank.textContent = 'Order';
+                    select.appendChild(blank);
+                    for (let i = 1; i <= 7; i += 1) {
+                        const option = document.createElement('option');
+                        option.value = String(i);
+                        option.textContent = String(i);
+                        select.appendChild(option);
+                    }
+                });
+            }
+
+            function restoreInputs() {
+                document.querySelectorAll('.persist-check').forEach(input => {
+                    input.checked = localStorage.getItem(storageKey(input.dataset.key)) === 'true';
+                    input.addEventListener('change', () => localStorage.setItem(storageKey(input.dataset.key), String(input.checked)));
+                });
+                document.querySelectorAll('.persist-text').forEach(input => {
+                    const saved = localStorage.getItem(storageKey(input.dataset.key));
+                    if (saved !== null) input.value = saved;
+                    input.addEventListener('input', () => localStorage.setItem(storageKey(input.dataset.key), input.value));
+                    input.addEventListener('change', () => localStorage.setItem(storageKey(input.dataset.key), input.value));
+                });
+            }
+
+            function checkOrder() {
+                const values = ORDER_KEYS.map(key => document.querySelector(`[data-key="${key}"]`)?.value || '');
+                const feedback = document.querySelector('[data-order-feedback]');
+                if (!feedback) return;
+                if (values.some(value => value === '')) {
+                    feedback.textContent = 'Choose an order for every event.';
+                    return;
+                }
+                const unique = new Set(values);
+                if (unique.size !== values.length) {
+                    feedback.textContent = 'Each order number should be used once.';
+                    return;
+                }
+                const correct = values.every((value, index) => value === CORRECT_ORDER[index]);
+                feedback.textContent = correct ? 'Correct signal chain.' : 'Not yet. Trace what changes physically before LabVIEW receives data.';
+            }
+
+            function updateFahrenheitChecks() {
+                document.querySelectorAll('.f-pred').forEach(input => {
+                    const celsius = Number(input.dataset.celsius);
+                    const expected = 1.8 * celsius + 32;
+                    const target = document.querySelector(`[data-f-result="${input.dataset.celsius}"]`);
+                    if (!target) return;
+                    if (input.value === '') {
+                        target.textContent = '';
+                        return;
+                    }
+                    const value = Number(input.value);
+                    target.textContent = Math.abs(value - expected) < 0.01 ? 'Matches formula.' : `Formula gives ${expected}.`;
+                });
+            }
+
+            function exportResponses() {
+                return window.LabCompletionExport?.download();
+            }
+
+            function resetLocalData() {
+                if (!confirm('Reset only Lab 2 local progress and responses on this browser?')) return;
+                window.LabCompletionExport?.clearStoredData();
+                Object.keys(localStorage)
+                    .filter(key => key.startsWith(`${STORAGE_PREFIX}:`))
+                    .forEach(key => localStorage.removeItem(key));
+                location.reload();
+            }
+
+            buildStageFooters();
+            setupSidebars();
+            document.querySelectorAll('[data-stage]').forEach(button => {
+                button.addEventListener('click', () => setStage(button.dataset.stage));
+            });
+            setupOrderOptions();
+            restoreInputs();
+            updateFahrenheitChecks();
+            document.querySelectorAll('.f-pred').forEach(input => input.addEventListener('input', updateFahrenheitChecks));
+            document.querySelector('[data-check-order]')?.addEventListener('click', checkOrder);
+            // Completion-file export is provided by assets/js/lab-export.js.
+            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+            document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
+
+            setStage(localStorage.getItem(storageKey('current-stage')) || 0);
+        })();
+    </script>
+    <script src="../../assets/js/lab-shared.js"></script>
+    <script src="../../assets/js/lab-export.js"></script>
+</body>
+</html>

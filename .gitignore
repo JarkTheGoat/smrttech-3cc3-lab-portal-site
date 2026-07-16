@@ -1,0 +1,4 @@
+# Local ThingsBoard credentials must never be committed.
+thingsboard-config.json
+**/thingsboard-config.json
+

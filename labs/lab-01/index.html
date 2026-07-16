@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 1 | Introduction to LabVIEW, Tinkercad, Arduino, and Sensors</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Typography -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Syntax Highlighting -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
+    <style>
+        :root {
+            --mac-maroon: #7A003C;
+            --mac-gold: #FDBF57;
+            --mac-grey: #495965;
+
+            --mac-maroon-20: #E4CCDA;
+            --mac-maroon-40: #CA99B1;
+            --mac-maroon-60: #AF6689;
+            --mac-maroon-80: #953360;
+
+            --mac-gold-20: #FFF2DD;
+            --mac-gold-40: #FEE5BC;
+            --mac-gold-60: #FED999;
+            --mac-gold-80: #FECC78;
+
+            --mac-grey-20: #DBDEE0;
+            --mac-grey-40: #B6BDC1;
+            --mac-grey-60: #929BA3;
+            --mac-grey-80: #6D7A82;
+
+            --lab-background: #F7F8FA;
+            --lab-surface: #FFFFFF;
+            --lab-text: #2D3338;
+            --lab-code: #282C34;
+            --success: #287A4B;
+            --warning: #9A5C00;
+            --danger: #B42318;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--lab-background);
+            color: var(--lab-text);
+            overflow-x: hidden;
+        }
+
+        code,
+        pre,
+        .font-mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .gradient-text {
+            background: linear-gradient(
+                135deg,
+                var(--mac-maroon) 0%,
+                var(--mac-maroon-80) 62%,
+                var(--mac-gold) 100%
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(
+                135deg,
+                var(--mac-maroon) 0%,
+                var(--mac-maroon-80) 65%,
+                var(--mac-gold) 100%
+            );
+        }
+
+        .card {
+            background: var(--lab-surface);
+            border-radius: 16px;
+            border: 1px solid rgba(73, 89, 101, 0.10);
+            box-shadow:
+                0 10px 18px -8px rgba(0, 0, 0, 0.16),
+                0 4px 8px -4px rgba(0, 0, 0, 0.08);
+        }
+
+        .stage-panel {
+            display: none;
+        }
+
+        body.stage-0 .stage-panel.stage-0,
+        body.stage-1 .stage-panel.stage-1,
+        body.stage-2 .stage-panel.stage-2,
+        body.stage-3 .stage-panel.stage-3,
+        body.stage-4 .stage-panel.stage-4,
+        body.stage-5 .stage-panel.stage-5 {
+            display: block;
+        }
+
+        /* -------------------- STAGE NAVIGATION -------------------- */
+        .stage-bar {
+            position: fixed;
+            inset: 0 0 auto 0;
+            z-index: 40;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(73, 89, 101, 0.12);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .stage-bar-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            overflow-x: auto;
+        }
+
+        .stage-label {
+            flex: 0 0 auto;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--mac-grey-80);
+            margin-right: 0.3rem;
+        }
+
+        .stage-btn {
+            flex: 0 0 auto;
+            position: relative;
+            padding: 0.55rem 0.95rem;
+            border-radius: 9px;
+            border: 1px solid transparent;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: var(--mac-grey);
+            background: transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .stage-btn:hover {
+            background: var(--mac-grey-20);
+        }
+
+        .stage-btn.active {
+            color: white;
+            background: var(--mac-maroon);
+            box-shadow: 0 5px 13px rgba(122, 0, 60, 0.28);
+        }
+
+        .stage-btn.completed:not(.active)::after {
+            content: "✓";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            margin-left: 6px;
+            border-radius: 50%;
+            color: white;
+            background: var(--success);
+            font-size: 0.68rem;
+            font-weight: 700;
+        }
+
+        /* -------------------- SIDEBARS -------------------- */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            height: 100vh;
+            width: min(500px, calc(100vw - 48px));
+            background: white;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.22);
+            z-index: 60;
+            transition: transform 0.38s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #hardwareSidebar {
+            left: 0;
+            transform: translateX(-100%);
+        }
+
+        #hardwareSidebar.active {
+            transform: translateX(0);
+        }
+
+        #softwareSidebar {
+            right: 0;
+            transform: translateX(100%);
+        }
+
+        #softwareSidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-handle {
+            position: absolute;
+            top: 50%;
+            width: 34px;
+            height: 62px;
+            background: var(--mac-maroon);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            z-index: 65;
+        }
+
+        .sidebar-handle:hover {
+            background: var(--mac-maroon-80);
+        }
+
+        #handle-hw {
+            right: -34px;
+            border-radius: 0 9px 9px 0;
+            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.16);
+        }
+
+        #handle-sw {
+            left: -34px;
+            border-radius: 9px 0 0 9px;
+            box-shadow: -4px 0 12px rgba(0, 0, 0, 0.16);
+        }
+
+        .handle-icon {
+            transition: transform 0.4s ease;
+            stroke-width: 3px;
+        }
+
+        #hardwareSidebar.active #handle-hw .handle-icon,
+        #softwareSidebar.active #handle-sw .handle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* -------------------- COMPONENTS -------------------- */
+        .time-badge {
+            flex: 0 0 auto;
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--mac-grey);
+            background: var(--mac-grey-20);
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .briefing-card {
+            background: #F8FAFC;
+            border-radius: 12px;
+            padding: 18px;
+            border-left: 4px solid var(--mac-maroon);
+        }
+
+        .warning-card {
+            background: var(--mac-gold-20);
+            border: 1px solid var(--mac-gold-60);
+            border-left: 5px solid var(--mac-gold);
+            color: #5B3900;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .danger-card {
+            background: #FFF3F2;
+            border: 1px solid #FECACA;
+            border-left: 5px solid var(--danger);
+            color: #7A271A;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .success-card {
+            background: #EFFAF3;
+            border: 1px solid #B7E4C7;
+            border-left: 5px solid var(--success);
+            color: #174D2D;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .code-header {
+            background: #EEF1F4;
+            padding: 8px 14px;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid #DCE2E8;
+            overflow-x: auto;
+        }
+
+        .code-tab {
+            flex: 0 0 auto;
+            padding: 7px 13px;
+            border-radius: 7px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--mac-grey);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .code-tab:hover {
+            background: rgba(255, 255, 255, 0.65);
+        }
+
+        .code-tab.active {
+            background: white;
+            color: var(--mac-maroon);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        pre {
+            margin: 0;
+        }
+
+        pre code.hljs {
+            padding: 24px !important;
+            font-size: 0.96rem;
+            line-height: 1.65;
+        }
+
+        .flow-node {
+            min-width: 145px;
+            background: white;
+            border: 2px solid var(--lab-text);
+            color: var(--lab-text);
+            font-weight: 600;
+            font-size: 0.82rem;
+            padding: 10px 14px;
+            border-radius: 9px;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            flex: 1;
+            min-width: 36px;
+            height: 2px;
+            background: #CBD5E1;
+            position: relative;
+            margin: 0 8px;
+        }
+
+        .flow-arrow::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: -4px;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 7px solid #CBD5E1;
+        }
+
+        .checkpoint-marker {
+            position: absolute;
+            left: -17px;
+            top: 0;
+            display: flex;
+            width: 32px;
+            height: 32px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            color: white;
+            background: var(--mac-maroon);
+            font-size: 0.84rem;
+            font-weight: 700;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.18);
+            border: 4px solid white;
+        }
+
+        .stage-footer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .nav-button {
+            padding: 0.72rem 1rem;
+            border-radius: 9px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .nav-button.secondary {
+            background: white;
+            color: var(--mac-grey);
+            border: 1px solid var(--mac-grey-40);
+        }
+
+        .nav-button.secondary:hover {
+            background: var(--mac-grey-20);
+        }
+
+        .nav-button.primary {
+            background: var(--mac-maroon);
+            color: white;
+            border: 1px solid var(--mac-maroon);
+        }
+
+        .nav-button.primary:hover {
+            background: var(--mac-maroon-80);
+        }
+
+        .completion-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            padding: 0.9rem 1rem;
+            border-radius: 10px;
+            border: 1px solid #DDE3E8;
+            background: white;
+        }
+
+        .completion-box input {
+            margin-top: 0.2rem;
+            accent-color: var(--mac-maroon);
+            width: 18px;
+            height: 18px;
+        }
+
+        .metric-table input,
+        .response-input {
+            width: 100%;
+            padding: 0.55rem 0.65rem;
+            border: 1px solid #CBD5E1;
+            border-radius: 7px;
+            background: white;
+            font-size: 0.9rem;
+        }
+
+        .metric-table input:focus,
+        .response-input:focus {
+            outline: 3px solid var(--mac-maroon-20);
+            border-color: var(--mac-maroon);
+        }
+
+        .stage-summary-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.42rem 0.7rem;
+            border-radius: 999px;
+            background: var(--mac-gold-20);
+            color: #5B3900;
+            border: 1px solid var(--mac-gold-60);
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        /* -------------------- AUTO-GRADED KNOWLEDGE CHECKS -------------------- */
+        .auto-score-chip {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            margin-left: auto;
+            padding: 0.5rem 0.75rem;
+            border-radius: 999px;
+            background: var(--mac-gold-20);
+            border: 1px solid var(--mac-gold-60);
+            color: #5B3900;
+            font-size: 0.78rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .quiz-stack {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .quiz-card {
+            min-width: 0;
+            border: 1px solid #DDE3E8;
+            border-left: 5px solid var(--mac-grey-60);
+            border-radius: 12px;
+            background: white;
+            padding: 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .quiz-card.correct {
+            border-left-color: var(--success);
+            box-shadow: 0 0 0 2px rgba(40, 122, 75, 0.08);
+        }
+
+        .quiz-card.incorrect {
+            border-left-color: var(--danger);
+            box-shadow: 0 0 0 2px rgba(180, 35, 24, 0.06);
+        }
+
+        .quiz-title {
+            display: block;
+            width: 100%;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--lab-text);
+            margin-bottom: 0.75rem;
+        }
+
+        .quiz-points {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 0.4rem;
+            padding: 0.18rem 0.45rem;
+            border-radius: 999px;
+            background: var(--mac-maroon-20);
+            color: var(--mac-maroon);
+            font-size: 0.68rem;
+            font-weight: 700;
+            vertical-align: middle;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.65rem;
+            width: 100%;
+            padding: 0.72rem 0.8rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 9px;
+            background: #FAFBFC;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .quiz-option + .quiz-option {
+            margin-top: 0.55rem;
+        }
+
+        .quiz-option:hover {
+            background: var(--mac-maroon-20);
+            border-color: var(--mac-maroon-40);
+        }
+
+        .quiz-option input {
+            flex: 0 0 auto;
+            margin-top: 0.18rem;
+            accent-color: var(--mac-maroon);
+            width: 17px;
+            height: 17px;
+        }
+
+        .quiz-option:has(input:disabled) {
+            cursor: default;
+            opacity: 0.82;
+        }
+
+        .quiz-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 0.9rem;
+        }
+
+        .quiz-check-button {
+            padding: 0.6rem 0.85rem;
+            border-radius: 8px;
+            border: 1px solid var(--mac-maroon);
+            background: var(--mac-maroon);
+            color: white;
+            font-size: 0.82rem;
+            font-weight: 700;
+            transition: background 0.2s ease;
+        }
+
+        .quiz-check-button:hover:not(:disabled) {
+            background: var(--mac-maroon-80);
+        }
+
+        .quiz-check-button:disabled {
+            border-color: var(--success);
+            background: var(--success);
+            cursor: default;
+        }
+
+        .attempt-count {
+            font-size: 0.78rem;
+            color: var(--mac-grey-80);
+        }
+
+        .quiz-feedback {
+            display: none;
+            margin-top: 0.85rem;
+            padding: 0.75rem 0.85rem;
+            border-radius: 9px;
+            font-size: 0.85rem;
+            line-height: 1.55;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.correct {
+            background: #EFFAF3;
+            border: 1px solid #B7E4C7;
+            color: #174D2D;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #FFF3F2;
+            border: 1px solid #FECACA;
+            color: #7A271A;
+        }
+
+        .stage-message {
+            display: none;
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .stage-message.show {
+            display: block;
+        }
+
+        .stage-message.error {
+            background: #FFF3F2;
+            border: 1px solid #FECACA;
+            color: #7A271A;
+        }
+
+        .stage-message.success {
+            background: #EFFAF3;
+            border: 1px solid #B7E4C7;
+            color: #174D2D;
+        }
+
+        .grading-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.8rem;
+        }
+
+        .grading-breakdown > div {
+            padding: 0.9rem 1rem;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid #E2E8F0;
+        }
+
+        .rubric-list {
+            display: grid;
+            gap: 0.55rem;
+            margin-top: 0.9rem;
+            font-size: 0.83rem;
+            color: #4B5563;
+        }
+
+        .rubric-list li {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            padding-bottom: 0.45rem;
+            border-bottom: 1px solid #EEF1F4;
+        }
+
+        .word-count {
+            margin-top: 0.45rem;
+            text-align: right;
+            font-size: 0.76rem;
+            color: var(--mac-grey-80);
+        }
+
+        @media (max-width: 900px) {
+            .auto-score-chip {
+                margin-left: 0;
+            }
+
+            .grading-breakdown {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-arrow {
+                width: 2px;
+                height: 28px;
+                min-width: 2px;
+                margin: 6px 0;
+            }
+
+            .flow-arrow::after {
+                right: -4px;
+                top: auto;
+                bottom: -1px;
+                transform: rotate(90deg);
+            }
+        }
+
+
+        .figure-frame {
+            overflow: hidden;
+            border-radius: 14px;
+            border: 1px solid rgba(73, 89, 101, 0.14);
+            background: #f8fafc;
+        }
+
+        .figure-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .compact-list li + li {
+            margin-top: 0.45rem;
+        }
+
+        .formula-card {
+            border-radius: 14px;
+            border: 1px solid rgba(122, 0, 60, 0.16);
+            background: linear-gradient(135deg, #fff, #fff7ea);
+            padding: 1rem;
+        }
+
+        .pin-map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .pin-map-item {
+            border-radius: 12px;
+            border: 1px solid rgba(73, 89, 101, 0.12);
+            background: white;
+            padding: 0.85rem;
+        }
+
+        .pin-map-item strong {
+            color: var(--mac-maroon);
+            display: block;
+            font-size: 1.15rem;
+        }
+
+        .lab-table input {
+            width: 100%;
+            min-width: 82px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            padding: 0.45rem 0.55rem;
+            font-size: 0.9rem;
+            outline: none;
+            background: white;
+        }
+
+        .lab-table input:focus {
+            border-color: var(--mac-maroon);
+            box-shadow: 0 0 0 3px rgba(122, 0, 60, 0.12);
+        }
+
+        .measurement-caption {
+            color: #6b7280;
+            font-size: 0.78rem;
+            margin-top: 0.45rem;
+        }
+
+        .mini-flow {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mini-flow span {
+            border: 1px solid rgba(73, 89, 101, 0.16);
+            border-radius: 999px;
+            background: white;
+            padding: 0.45rem 0.8rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--mac-grey);
+        }
+
+        .stage-btn.page-current {
+            color: white;
+            background: var(--mac-maroon);
+            box-shadow: 0 5px 13px rgba(122, 0, 60, 0.28);
+        }
+
+        .lab-stage-label {
+            margin-left: 0.65rem;
+            padding-left: 0.85rem;
+            border-left: 1px solid rgba(73, 89, 101, 0.18);
+        }
+
+        .concept-link {
+            color: var(--mac-maroon);
+            font-weight: 700;
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 3px;
+        }
+
+        .knowledge-skill-list {
+            display: grid;
+            gap: 0.55rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .knowledge-skill-list a {
+            display: block;
+            padding: 0.7rem 0.8rem;
+            border-radius: 10px;
+            border: 1px solid #DDE3E8;
+            background: white;
+            color: var(--lab-text);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .knowledge-skill-list a:hover {
+            border-color: var(--mac-maroon);
+            background: var(--mac-maroon-20);
+        }
+
+        /* Completion indicator: use a CSS escape so the glyph remains valid in every file encoding. */
+        .stage-btn.completed::after {
+            content: "\2713";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            margin-left: 6px;
+            border: 1px solid #23834d;
+            border-radius: 50%;
+            color: #126b3a;
+            background: #e3f5e9;
+            font-size: 0.84rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+    </style>
+    <link rel="icon" type="image/png" href="../../assets/McMaster-logo.png">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+</head>
+
+
+<body class="pb-24 pt-24 stage-0">
+
+    <nav class="stage-bar" aria-label="Lab progress">
+        <div class="stage-bar-inner">
+            <span class="stage-label">Student Space</span>
+            <a class="stage-btn" href="../../index.html">Home</a>
+            <span class="stage-btn page-current" aria-current="page">Lab 1</span>
+            <span class="stage-label lab-stage-label">Lab Progress</span>
+
+            <button class="stage-btn active" id="btn-stage-0" onclick="setStage(0)">
+                Overview
+            </button>
+            <button class="stage-btn" id="btn-stage-1" onclick="setStage(1)">
+                LabVIEW
+            </button>
+            <button class="stage-btn" id="btn-stage-2" onclick="setStage(2)">
+                PR Resistance
+            </button>
+            <button class="stage-btn" id="btn-stage-3" onclick="setStage(3)">
+                Voltage Divider
+            </button>
+            <button class="stage-btn" id="btn-stage-4" onclick="setStage(4)">
+                Arduino
+            </button>
+            <button class="stage-btn" id="btn-stage-5" onclick="setStage(5)">
+                Hardware & Submit
+            </button>
+
+            <div class="auto-score-chip" aria-live="polite" title="Auto-graded knowledge-check score">
+                Auto Score <strong id="autoScoreValue">0/10</strong>
+            </div>
+        </div>
+    </nav>
+
+    <aside id="hardwareSidebar" class="sidebar" aria-label="Lab tools and access reference">
+        <div id="handle-hw" class="sidebar-handle" onclick="toggleSidebar('hardwareSidebar')"
+            title="Open lab tools reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </div>
+
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Tools & Access</h3>
+            <p class="text-sm text-white/75 mt-1">LinkedIn Learning, LabVIEW, Tinkercad, Arduino</p>
+        </div>
+
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Access Checklist</h4>
+                <ul class="compact-list text-sm text-gray-600 list-disc ml-5">
+                    <li>Use LinkedIn Learning through McMaster UTS and sign in with McMaster credentials.</li>
+                    <li>Watch sections 1, 2, 3, and 4 of the Learning LabVIEW course.</li>
+                    <li>Install LabVIEW using the Avenue to Learn installation guide.</li>
+                    <li>Join the Tinkercad class and use your McMaster ID as your nickname.</li>
+                </ul>
+            </div>
+
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Lab 2 Hardware Values</h4>
+                <dl class="grid grid-cols-2 gap-y-3 text-sm">
+                    <dt class="text-gray-500">Divider resistor</dt>
+                    <dd class="font-semibold text-right">4.7 k&Omega;</dd>
+                    <dt class="text-gray-500">LED resistor</dt>
+                    <dd class="font-semibold text-right">220 &Omega;</dd>
+                    <dt class="text-gray-500">Analog input</dt>
+                    <dd class="font-semibold text-right">A0</dd>
+                    <dt class="text-gray-500">LED output</dt>
+                    <dd class="font-semibold text-right">D7</dd>
+                    <dt class="text-gray-500">Low-light limit</dt>
+                    <dd class="font-semibold text-right">400</dd>
+                </dl>
+            </div>
+
+            <div class="warning-card text-sm">
+                <h4 class="font-bold uppercase mb-2">Real-Bench Measurements</h4>
+                <p>For the real photoresistor exercise, use the trainer board 5 V supply instead of the Arduino 5 V terminals.</p>
+            </div>
+        </div>
+    </aside>
+
+    <aside id="softwareSidebar" class="sidebar" aria-label="Formula and code reference">
+        <div id="handle-sw" class="sidebar-handle" onclick="toggleSidebar('softwareSidebar')"
+            title="Open formula and code reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5l7 7-7 7"></path>
+            </svg>
+        </div>
+
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Formula & Code</h3>
+            <p class="text-sm text-white/75 mt-1">Knowledge DB skill map, voltage divider, and automatic lighting reference</p>
+        </div>
+
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Lab 1 Knowledge Skills</h4>
+                <ul class="knowledge-skill-list text-sm">
+                    <li><a href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW front panel and block diagram</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=controls-indicators">Controls and indicators</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=while-loops">Loops and shift registers</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=voltage-divider">Voltage divider</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=photoresistor">Photoresistor</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=multimeter">Multimeter modes</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=threshold-control">Arduino code flow</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Troubleshooting sequence</a></li>
+                </ul>
+            </div>
+
+            <div class="formula-card">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Voltage Divider</h4>
+                <p class="font-mono text-lg text-center">Vout = Vin * R2 / (R1 + R2)</p>
+                <p class="text-sm text-gray-600 mt-3">Use this to calculate the theoretical sensor voltage after measuring the photoresistor resistance.</p>
+            </div>
+
+            <div class="card overflow-hidden">
+                <div class="px-4 py-3 bg-gray-100 border-b font-bold text-sm">Arduino Sketch</div>
+                <pre><code class="language-cpp">// Declare the analog sensor pin, LED pin, reading variable, and threshold.
+
+void setup()
+{
+  // Configure the LED pin as an output.
+}
+
+void loop()
+{
+  // Read the photoresistor divider voltage from A0.
+  // If the reading is below the low-light threshold, turn the LED on.
+  // Otherwise, turn the LED off.
+}</code></pre>
+            </div>
+
+            <div class="card p-5">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Pin Map</h4>
+                <div class="pin-map">
+                    <div class="pin-map-item"><strong>A0</strong><span class="text-sm text-gray-600">Voltage divider output from J7</span></div>
+                    <div class="pin-map-item"><strong>D7</strong><span class="text-sm text-gray-600">LED output through J20</span></div>
+                    <div class="pin-map-item"><strong>GND</strong><span class="text-sm text-gray-600">Common ground at J14</span></div>
+                    <div class="pin-map-item"><strong>5 V</strong><span class="text-sm text-gray-600">Positive rail for divider</span></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <header class="max-w-6xl mx-auto px-6 lg:px-8 mb-10">
+        <div class="flex flex-col md:flex-row md:items-center gap-7 border-b border-gray-200 pb-8">
+            <img src="../../assets/McMaster-logo.png"
+                alt="McMaster University logo"
+                class="h-20 w-auto object-contain"
+                onerror="this.style.display='none'">
+
+            <div class="hidden md:block h-16 w-px bg-gray-200"></div>
+
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#7A003C] mb-2">
+                    SMRTTECH 3CC3 &middot; Cloud Computing and Internet of Things
+                </p>
+                <h1 class="lab-page-title text-4xl lg:text-5xl font-extrabold tracking-tight mb-2">
+                    <span class="lab-title-prefix">Lab 1:</span> <span class="lab-title-gradient">Introduction to LabVIEW, Tinkercad, Arduino, and Sensors</span>
+                </h1>
+                <p class="text-[#495965] text-lg lg:text-xl font-light max-w-4xl">
+                    A guided interactive companion for the Lab 1 sequence:
+                    build a LabVIEW voltage-divider VI, simulate a photoresistor circuit,
+                    program an automatic lighting system, and verify the real sensor circuit.
+                </p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mt-5">
+            <span class="stage-summary-chip">Software: LabVIEW + Tinkercad</span>
+            <span class="stage-summary-chip">Hardware: Arduino + photoresistor</span>
+            <span class="stage-summary-chip">Core concept: voltage divider</span>
+            <span class="stage-summary-chip">Deliverables: VI, quiz, tables, demos</span>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 lg:px-8">
+
+        <section class="stage-panel stage-0 space-y-8">
+            <div class="card p-7 border-l-4 border-[#7A003C]">
+                <div class="flex flex-col lg:flex-row lg:justify-between gap-6">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-[0.16em] text-[#7A003C] mb-2">
+                            Before the lab sequence
+                        </p>
+                        <h2 class="text-3xl font-bold mb-3">Readiness and Combined Objectives</h2>
+                        <p class="text-gray-600 leading-relaxed max-w-3xl">
+                            Laboratory 1 introduces the LabVIEW graphical programming environment.
+                            Later sections apply the same voltage-divider idea to a photoresistor,
+                            Arduino analog input, LED digital output, and real-bench measurement.
+                        </p>
+                    </div>
+
+                    <div class="rounded-xl bg-[#FFF2DD] border border-[#FED999] px-5 py-4 h-fit">
+                        <p class="text-xs font-bold uppercase tracking-widest text-[#7A003C]">Final Evidence</p>
+                        <p class="text-sm text-[#5B3900] mt-2">
+                            Submit the LabVIEW VI and quiz; show Tables 1-4 and demonstrate Exercises 4 and 5.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-card">
+                <h3 class="text-lg font-bold mb-3">How to Use This Interactive Page</h3>
+                <div class="grading-breakdown">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-[#287A4B]">Auto checks</p>
+                        <p class="text-2xl font-bold mt-1">10 points</p>
+                        <p class="text-sm mt-1">Ten concept checks with hints and retry support.</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-[#7A003C]">Lab record</p>
+                        <p class="text-2xl font-bold mt-1">Tables 1-4</p>
+                        <p class="text-sm mt-1">Measurement fields save locally in this browser.</p>
+                    </div>
+                </div>
+                <p class="text-sm mt-4">
+                    The page preserves the staged format of the original template: complete each
+                    checklist, table, and auto-graded question before advancing.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div class="card p-7">
+                    <h3 class="text-xl font-bold mb-4">Learning Outcomes</h3>
+                    <ol class="list-decimal ml-5 space-y-3 text-gray-600">
+                        <li>Recognize LabVIEW fundamentals: controls, indicators, VIs, SubVIs, data types, arrays, clusters, loops, and shift registers.</li>
+                        <li>Create a LabVIEW VI that calculates voltage-divider output.</li>
+                        <li>Measure how photoresistor resistance changes as light level changes.</li>
+                        <li>Use a voltage divider to convert resistance variation into voltage variation.</li>
+                        <li>Wire a sensor to Arduino A0 and an LED to digital pin 7.</li>
+                        <li>Program an automatic lighting system using a threshold decision.</li>
+                    </ol>
+                </div>
+
+                <div class="card p-7">
+                    <h3 class="text-xl font-bold mb-4">Required Before Starting</h3>
+                    <div class="space-y-3">
+                        <label class="completion-box">
+                            <input type="checkbox" class="persist-check" data-key="setup-linkedin">
+                            <span>LinkedIn Learning opens through McMaster credentials.</span>
+                        </label>
+                        <label class="completion-box">
+                            <input type="checkbox" class="persist-check" data-key="setup-labview">
+                            <span>LabVIEW is installed using the Avenue to Learn guide.</span>
+                        </label>
+                        <label class="completion-box">
+                            <input type="checkbox" class="persist-check" data-key="setup-tinkercad">
+                            <span>Tinkercad class access is ready, using your McMaster ID nickname.</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-7">
+                <h3 class="text-xl font-bold mb-4">Concept Flow</h3>
+                <div class="flex flex-col lg:flex-row items-center justify-center gap-2">
+                    <div class="flow-node border-[#7A003C] text-[#7A003C]">
+                        LABVIEW VI<br>
+                        <span class="text-[11px] font-normal text-gray-500">Calculate Vout</span>
+                    </div>
+                    <div class="flow-arrow"></div>
+                    <div class="flow-node">
+                        PHOTORESISTOR<br>
+                        <span class="text-[11px] font-normal text-gray-500">Resistance changes</span>
+                    </div>
+                    <div class="flow-arrow"></div>
+                    <div class="flow-node border-[#FDBF57] text-[#7A003C]">
+                        VOLTAGE DIVIDER<br>
+                        <span class="text-[11px] font-normal text-gray-500">Voltage changes</span>
+                    </div>
+                    <div class="flow-arrow"></div>
+                    <div class="flow-node">
+                        ARDUINO ANALOG INPUT<br>
+                        <span class="text-[11px] font-normal text-gray-500">Read analog level</span>
+                    </div>
+                    <div class="flow-arrow"></div>
+                    <div class="flow-node border-[#495965]">
+                        LED<br>
+                        <span class="text-[11px] font-normal text-gray-500">React to low light level</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-7">
+                <h3 class="text-lg font-bold mb-2">Auto-Graded Readiness Check</h3>
+                <p class="text-sm text-gray-600 mb-4">Answer both questions correctly before moving into the activities.</p>
+                <div class="quiz-stack">
+                    <fieldset class="quiz-card auto-question" data-question-id="ready-labview-access">
+                        <legend class="quiz-title">
+                            Which pair of requirements is needed for Laboratory 1?
+                            <span class="quiz-points">1 point</span>
+                        </legend>
+                        <label class="quiz-option"><input type="radio" name="ready-labview-access" value="a"><span>A Tinkercad class link and a trainer board.</span></label>
+                        <label class="quiz-option"><input type="radio" name="ready-labview-access" value="b"><span>LinkedIn Learning access and LabVIEW installed on the machine.</span></label>
+                        <label class="quiz-option"><input type="radio" name="ready-labview-access" value="c"><span>An Arduino sketch and a 220 ohm resistor.</span></label>
+                        <label class="quiz-option"><input type="radio" name="ready-labview-access" value="d"><span>A multimeter set to voltage and a real photoresistor.</span></label>
+                        <div class="quiz-actions">
+                            <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
+                            <span class="attempt-count" data-attempts-for="ready-labview-access"></span>
+                        </div>
+                        <div class="quiz-feedback" data-feedback-for="ready-labview-access" role="status" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-card auto-question" data-question-id="ready-tinkercad-nickname">
+                        <legend class="quiz-title">
+                            What nickname should be used when joining the Tinkercad class?
+                            <span class="quiz-points">1 point</span>
+                        </legend>
+                        <label class="quiz-option"><input type="radio" name="ready-tinkercad-nickname" value="a"><span>Your full email address including @mcmaster.ca.</span></label>
+                        <label class="quiz-option"><input type="radio" name="ready-tinkercad-nickname" value="b"><span>A random nickname selected by Tinkercad.</span></label>
+                        <label class="quiz-option"><input type="radio" name="ready-tinkercad-nickname" value="c"><span>Your McMaster ID, which is the email address without @mcmaster.ca.</span></label>
+                        <label class="quiz-option"><input type="radio" name="ready-tinkercad-nickname" value="d"><span>Your lab partner's name.</span></label>
+                        <div class="quiz-actions">
+                            <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
+                            <span class="attempt-count" data-attempts-for="ready-tinkercad-nickname"></span>
+                        </div>
+                        <div class="quiz-feedback" data-feedback-for="ready-tinkercad-nickname" role="status" aria-live="polite"></div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="stage-footer">
+                <span></span>
+                <button class="nav-button primary" onclick="completeAndGo(0, 1)">Mark Readiness Complete and Continue</button>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-1">
+            <div class="relative pl-8 border-l-2 border-gray-200">
+                <span class="checkpoint-marker">1</span>
+
+                <div class="card p-7">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-widest text-[#7A003C] mb-1">Laboratory 1</p>
+                            <h2 class="text-3xl font-bold">Introduction to LabVIEW</h2>
+                        </div>
+                        <span class="time-badge">Learning LabVIEW sections 1-4</span>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <div class="code-header">
+                            <button class="code-tab active" data-tabs="labview" data-target="labview-course" onclick="switchTab(this)">Course Videos</button>
+                            <button class="code-tab" data-tabs="labview" data-target="labview-divider" onclick="switchTab(this)">Voltage Divider VI</button>
+                            <button class="code-tab" data-tabs="labview" data-target="labview-build" onclick="switchTab(this)">Build Checklist</button>
+                            <button class="code-tab" data-tabs="labview" data-target="labview-submit" onclick="switchTab(this)">Submission</button>
+                        </div>
+
+                        <div id="labview-course" class="tab-content active p-6">
+                            <div class="grid lg:grid-cols-2 gap-5">
+                                <div class="briefing-card">
+                                    <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Watch and Focus</h4>
+                                    <p class="text-gray-600 leading-relaxed">
+                                        Go to the Learning LabVIEW course on LinkedIn Learning and watch sections 1, 2, 3, and 4.
+                                        Use the videos to identify the difference between controls, indicators, the front panel,
+                                        and the block diagram.
+                                    </p>
+                                </div>
+                                <div class="card p-5 bg-gray-50">
+                                    <h4 class="font-bold mb-3">Key LabVIEW Terms</h4>
+                                    <ul class="compact-list text-gray-600 list-disc ml-5">
+                                        <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=vi-subvi">VI and SubVI</a></li>
+                                        <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=controls-indicators">Controls and indicators</a></li>
+                                        <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=data-types">Data types, arrays, and clusters</a></li>
+                                        <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=while-loops">While loops, for loops, and shift registers</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="labview-divider" class="tab-content p-6">
+                            <div class="grid lg:grid-cols-2 gap-5">
+                                <div>
+                                    <div class="formula-card mb-4">
+                                        <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-2">Voltage Divider Equation</h4>
+                                        <p class="font-mono text-xl text-center">Vout = Vin * R2 / (R1 + R2)</p>
+                                    </div>
+                                    <div class="grid md:grid-cols-3 gap-3">
+                                        <label class="block">
+                                            <span class="font-semibold text-sm">Vin</span>
+                                            <input type="number" step="0.01" class="response-input persist-text mt-2 divider-input" data-key="lab1-vin" placeholder="12">
+                                        </label>
+                                        <label class="block">
+                                            <span class="font-semibold text-sm">R1</span>
+                                            <input type="number" step="0.01" class="response-input persist-text mt-2 divider-input" data-key="lab1-r1" placeholder="1">
+                                        </label>
+                                        <label class="block">
+                                            <span class="font-semibold text-sm">R2</span>
+                                            <input type="number" step="0.01" class="response-input persist-text mt-2 divider-input" data-key="lab1-r2" placeholder="5">
+                                        </label>
+                                    </div>
+                                    <div class="success-card mt-4">
+                                        Calculated Vout: <strong id="lab1Vout">Enter values</strong>
+                                    </div>
+                                </div>
+                                <div class="figure-frame">
+                                    <img src="../../assets/lab1-voltage-divider.png" alt="Voltage divider circuit from Laboratory 1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="labview-build" class="tab-content p-6">
+                            <div class="grid lg:grid-cols-2 gap-5">
+                                <div class="figure-frame">
+                                    <img src="../../assets/lab1-front-panel.png" alt="Example LabVIEW front panel for voltage divider VI">
+                                </div>
+                                <div class="card p-5">
+                                    <h4 class="font-bold mb-3">Your VI Must Include</h4>
+                                    <div class="space-y-3">
+                                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="lab1-watch-sections"><span>Sections 1, 2, 3, and 4 of Learning LabVIEW are complete.</span></label>
+                                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="lab1-while-loop"><span>The block diagram uses a while loop.</span></label>
+                                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="lab1-front-panel"><span>The front panel has controls for Vin, R1, R2 and an indicator for Vout.</span></label>
+                                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="lab1-name-id"><span>The front panel includes your student name and ID.</span></label>
+                                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="lab1-decoration"><span>Decorations add lines, boxes, and labels for a clear front panel.</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="labview-submit" class="tab-content p-6">
+                            <div class="grid lg:grid-cols-2 gap-5">
+                                <div class="success-card">
+                                    <h4 class="font-bold mb-2">Submission</h4>
+                                    <ol class="list-decimal ml-5 space-y-2 text-sm">
+                                        <li>Submit your VI program file.</li>
+                                        <li>Complete the Lab 1 quiz on Avenue to Learn.</li>
+                                    </ol>
+                                </div>
+                                <div class="warning-card">
+                                    Your submitted VI front panel must contain your student name and ID.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-stack mt-6">
+                        <fieldset class="quiz-card auto-question" data-question-id="labview-divider-equation">
+                            <legend class="quiz-title">Which formula should the VI implement?<span class="quiz-points">1 point</span></legend>
+                            <label class="quiz-option"><input type="radio" name="labview-divider-equation" value="a"><span>Vout = Vin * R1 / (R1 + R2)</span></label>
+                            <label class="quiz-option"><input type="radio" name="labview-divider-equation" value="b"><span>Vout = Vin * R2 / (R1 + R2)</span></label>
+                            <label class="quiz-option"><input type="radio" name="labview-divider-equation" value="c"><span>Vout = R1 + R2 / Vin</span></label>
+                            <label class="quiz-option"><input type="radio" name="labview-divider-equation" value="d"><span>Vout = Vin / (R1 * R2)</span></label>
+                            <div class="quiz-actions">
+                                <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
+                                <span class="attempt-count" data-attempts-for="labview-divider-equation"></span>
+                            </div>
+                            <div class="quiz-feedback" data-feedback-for="labview-divider-equation" role="status" aria-live="polite"></div>
+                        </fieldset>
+
+                        <fieldset class="quiz-card auto-question" data-question-id="labview-front-panel-id">
+                            <legend class="quiz-title">What information must appear on the VI front panel?<span class="quiz-points">1 point</span></legend>
+                            <label class="quiz-option"><input type="radio" name="labview-front-panel-id" value="a"><span>The instructor's office hours.</span></label>
+                            <label class="quiz-option"><input type="radio" name="labview-front-panel-id" value="b"><span>Your student name and ID.</span></label>
+                            <label class="quiz-option"><input type="radio" name="labview-front-panel-id" value="c"><span>The Tinkercad class code.</span></label>
+                            <label class="quiz-option"><input type="radio" name="labview-front-panel-id" value="d"><span>The Arduino serial monitor output.</span></label>
+                            <div class="quiz-actions">
+                                <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
+                                <span class="attempt-count" data-attempts-for="labview-front-panel-id"></span>
+                            </div>
+                            <div class="quiz-feedback" data-feedback-for="labview-front-panel-id" role="status" aria-live="polite"></div>
+                        </fieldset>
+                    </div>
+
+                    <div class="stage-footer">
+                        <button class="nav-button secondary" onclick="setStage(0)">Back to Overview</button>
+                        <button class="nav-button primary" onclick="completeAndGo(1, 2)">Complete LabVIEW Checkpoint</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-2">
+            <div class="relative pl-8 border-l-2 border-gray-200">
+                <span class="checkpoint-marker">2</span>
+
+                <div class="card p-7">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-widest text-[#7A003C] mb-1">Lab 1 - Part 2</p>
+                            <h2 class="text-3xl font-bold">Measure Photoresistor Resistance</h2>
+                        </div>
+                        <span class="time-badge">Tinkercad simulation</span>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-6">
+                        <div class="card p-5">
+                            <h4 class="font-bold mb-3">Build Steps</h4>
+                            <ol class="list-decimal ml-5 space-y-2 text-gray-600">
+                                <li>In Tinkercad, select New, then Circuit.</li>
+                                <li>Find a photoresistor in the component list.</li>
+                                <li>Place it so its two legs are in separate breadboard rows.</li>
+                                <li>Add a multimeter and connect the meter leads across the two photoresistor legs.</li>
+                                <li>Set the <a class="concept-link" href="../../knowledge/skill-tree.html?topic=multimeter">multimeter mode</a> to Resistance.</li>
+                                <li>Record measurements at 0%, 25%, 50%, 75%, and 100% light.</li>
+                            </ol>
+                        </div>
+                        <div class="figure-frame">
+                            <img src="../../assets/lab2-photoresistor-resistance.png" alt="Tinkercad photoresistor with multimeter resistance setup">
+                        </div>
+                    </div>
+
+                    <div class="card p-5 mt-6">
+                        <h3 class="text-xl font-bold mb-4">Table 1 - Photoresistor Resistance</h3>
+                        <div class="overflow-x-auto">
+                            <table class="metric-table lab-table w-full text-sm border-collapse">
+                                <thead><tr class="bg-gray-100"><th class="p-3 text-left border">Light</th><th class="p-3 border">0%</th><th class="p-3 border">25%</th><th class="p-3 border">50%</th><th class="p-3 border">75%</th><th class="p-3 border">100%</th></tr></thead>
+                                <tbody><tr><td class="p-3 border font-semibold">PR resistance</td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t1-r-0"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t1-r-25"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t1-r-50"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t1-r-75"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t1-r-100"></td></tr></tbody>
+                            </table>
+                        </div>
+                        <p class="measurement-caption">Record photoresistor resistance in ohms so the checkpoint validation can check for likely measurement-entry errors.</p>
+                    </div>
+
+                    <div class="quiz-stack mt-6">
+                        <fieldset class="quiz-card auto-question" data-question-id="pr-meter-mode">
+                            <legend class="quiz-title">Which multimeter mode is used in Exercise 1?<span class="quiz-points">1 point</span></legend>
+                            <label class="quiz-option"><input type="radio" name="pr-meter-mode" value="a"><span>Voltage</span></label>
+                            <label class="quiz-option"><input type="radio" name="pr-meter-mode" value="b"><span>Current</span></label>
+                            <label class="quiz-option"><input type="radio" name="pr-meter-mode" value="c"><span>Resistance</span></label>
+                            <label class="quiz-option"><input type="radio" name="pr-meter-mode" value="d"><span>Continuity only</span></label>
+                            <div class="quiz-actions">
+                                <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
+                                <span class="attempt-count" data-attempts-for="pr-meter-mode"></span>
+                            </div>
+                            <div class="quiz-feedback" data-feedback-for="pr-meter-mode" role="status" aria-live="polite"></div>
+                        </fieldset>
+
+                        <fieldset class="quiz-card auto-question" data-question-id="pr-light-levels">
+                            <legend class="quiz-title">Which light levels are recorded in Table 1?<span class="quiz-points">1 point</span></legend>
+                            <label class="quiz-option"><input type="radio" name="pr-light-levels" value="a"><span>Dark, normal, flashlight only.</span></label>
+                            <label class="quiz-option"><input type="radio" name="pr-light-levels" value="b"><span>0%, 25%, 50%, 75%, and 100% light.</span></label>
+                            <label class="quiz-option"><input type="radio" name="pr-light-levels" value="c"><span>10%, 20%, 30%, 40%, and 50% light.</span></label>
+                            <label class="quiz-option"><input type="radio" name="pr-light-levels" value="d"><span>Only no light and full light.</span></label>
+                            <div class="quiz-actions">
+                                <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
+                                <span class="attempt-count" data-attempts-for="pr-light-levels"></span>
+                            </div>
+                            <div class="quiz-feedback" data-feedback-for="pr-light-levels" role="status" aria-live="polite"></div>
+                        </fieldset>
+                    </div>
+
+                    <div class="stage-footer">
+                        <button class="nav-button secondary" onclick="setStage(1)">Back to LabVIEW</button>
+                        <button class="nav-button primary" onclick="completeAndGo(2, 3)">Complete Resistance Checkpoint</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-3">
+            <div class="relative pl-8 border-l-2 border-gray-200">
+                <span class="checkpoint-marker">3</span>
+
+                <div class="card p-7">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-widest text-[#7A003C] mb-1">Lab 1 - Part 3</p>
+                            <h2 class="text-3xl font-bold">Simulate the Voltage Divider</h2>
+                        </div>
+                        <span class="time-badge">4.7 k&Omega; resistor</span>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <div class="code-header">
+                            <button class="code-tab active" data-tabs="divider" data-target="divider-purpose" onclick="switchTab(this)">Purpose</button>
+                            <button class="code-tab" data-tabs="divider" data-target="divider-build" onclick="switchTab(this)">Build</button>
+                            <button class="code-tab" data-tabs="divider" data-target="divider-table" onclick="switchTab(this)">Table 2</button>
+                        </div>
+
+                        <div id="divider-purpose" class="tab-content active p-6">
+                            <div class="grid lg:grid-cols-2 gap-5">
+                                <div class="briefing-card">
+                                    <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3"><a class="concept-link" href="../../knowledge/skill-tree.html?topic=voltage-divider">Why the Divider Matters</a></h4>
+                                    <p class="text-gray-600 leading-relaxed">
+                                        The <a class="concept-link" href="../../knowledge/skill-tree.html?topic=photoresistor">photoresistor</a> changes resistance with light. The <a class="concept-link" href="../../knowledge/skill-tree.html?topic=analog-input">Arduino analog input</a> reads voltage,
+                                        so the divider converts resistance variation into a measurable sensor voltage.
+                                    </p>
+                                </div>
+                                <div class="formula-card">
+                                    <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-2">Divider Rule</h4>
+                                    <p class="font-mono text-xl text-center">Vout = Vin * R2 / (R1 + R2)</p>
+                                    <p class="text-sm text-gray-600 mt-3">In Lab 2, the fixed resistor is 4.7 k&Omega; and the photoresistor changes with light.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="divider-build" class="tab-content p-6">
+                            <div class="grid lg:grid-cols-2 gap-5">
+                                <div class="card p-5">
+                                    <h4 class="font-bold mb-3">Circuit Steps</h4>
+                                    <ol class="list-decimal ml-5 space-y-2 text-gray-600">
+                                        <li>Add the fixed resistor so it shares one row with the photoresistor junction.</li>
+                                        <li>Set the resistor value to 4.7 k&Omega;.</li>
+                                        <li>Connect one end of the divider to 5 V and the other end to GND.</li>
+                                        <li>Connect Arduino 5 V and GND to the same power rails used by the divider.</li>
+                                        <li>Measure the divider junction voltage relative to ground.</li>
+                                        <li>Set the multimeter mode to Voltage.</li>
+                                    </ol>
+                                </div>
+                                <div class="figure-frame">
+                                    <img src="../../assets/lab2-voltage-divider.png" alt="Tinkercad Arduino voltage divider circuit">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="divider-table" class="tab-content p-6">
+                            <h3 class="text-xl font-bold mb-4">Table 2 - Divider Voltage</h3>
+                            <div class="overflow-x-auto">
+                                <table class="metric-table lab-table w-full text-sm border-collapse">
+                                    <thead><tr class="bg-gray-100"><th class="p-3 text-left border">Light</th><th class="p-3 border">0%</th><th class="p-3 border">25%</th><th class="p-3 border">50%</th><th class="p-3 border">75%</th><th class="p-3 border">100%</th></tr></thead>
+                                    <tbody><tr><td class="p-3 border font-semibold">Voltage</td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t2-v-0"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t2-v-25"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t2-v-50"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t2-v-75"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t2-v-100"></td></tr></tbody>
+                                </table>
+                            </div>
+                            <p class="measurement-caption">Record measured voltage at the same light levels used in Table 1.</p>
+                        </div>
+                    </div>
+
+                    <div class="quiz-stack mt-6">
+                        <fieldset class="quiz-card auto-question" data-question-id="divider-fixed-resistor">
+                            <legend class="quiz-title">What resistor value is used in the simulated divider?<span class="quiz-points">1 point</span></legend>
+                            <label class="quiz-option"><input type="radio" name="divider-fixed-resistor" value="a"><span>220 ohm</span></label>
+                            <label class="quiz-option"><input type="radio" name="divider-fixed-resistor" value="b"><span>1 k&Omega;</span></label>
+                            <label class="quiz-option"><input type="radio" name="divider-fixed-resistor" value="c"><span>4.7 k&Omega;</span></label>
+                            <label class="quiz-option"><input type="radio" name="divider-fixed-resistor" value="d"><span>10 k&Omega;</span></label>
+                            <div class="quiz-actions">
+                                <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
+                                <span class="attempt-count" data-attempts-for="divider-fixed-resistor"></span>
+                            </div>
+                            <div class="quiz-feedback" data-feedback-for="divider-fixed-resistor" role="status" aria-live="polite"></div>
+                        </fieldset>
+
+                        <fieldset class="quiz-card auto-question" data-question-id="divider-conversion">
+                            <legend class="quiz-title">Why add the voltage divider before Arduino sensing?<span class="quiz-points">1 point</span></legend>
+                            <label class="quiz-option"><input type="radio" name="divider-conversion" value="a"><span>It turns photoresistor resistance changes into voltage changes the Arduino can read.</span></label>
+                            <label class="quiz-option"><input type="radio" name="divider-conversion" value="b"><span>It prevents the LED from using digital pin 7.</span></label>
+                            <label class="quiz-option"><input type="radio" name="divider-conversion" value="c"><span>It replaces the need for ground.</span></label>
+                            <label class="quiz-option"><input type="radio" name="divider-conversion" value="d"><span>It makes the photoresistor resistance constant.</span></label>
+                            <div class="quiz-actions">
+                                <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
+                                <span class="attempt-count" data-attempts-for="divider-conversion"></span>
+                            </div>
+                            <div class="quiz-feedback" data-feedback-for="divider-conversion" role="status" aria-live="polite"></div>
+                        </fieldset>
+                    </div>
+
+                    <div class="stage-footer">
+                        <button class="nav-button secondary" onclick="setStage(2)">Back to Resistance</button>
+                        <button class="nav-button primary" onclick="completeAndGo(3, 4)">Complete Divider Checkpoint</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-4">
+            <div class="relative pl-8 border-l-2 border-gray-200">
+                <span class="checkpoint-marker">4</span>
+
+                <div class="card p-7">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-widest text-[#7A003C] mb-1">Lab 1 - Part 4</p>
+                            <h2 class="text-3xl font-bold">Connect and Program the Automatic Lighting System</h2>
+                        </div>
+                        <span class="time-badge">A0 sensor + D7 LED</span>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <div class="code-header">
+                            <button class="code-tab active" data-tabs="arduino" data-target="arduino-wiring" onclick="switchTab(this)">Wiring</button>
+                            <button class="code-tab" data-tabs="arduino" data-target="arduino-code" onclick="switchTab(this)">Code</button>
+                            <button class="code-tab" data-tabs="arduino" data-target="arduino-test" onclick="switchTab(this)">Test</button>
+                        </div>
+
+                        <div id="arduino-wiring" class="tab-content active p-6">
+                            <div class="grid lg:grid-cols-2 gap-5">
+                                <div class="figure-frame">
+                                    <img src="../../assets/lab2-arduino-led.png" alt="Photoresistor and LED connected to Arduino">
+                                </div>
+                                <div class="card p-5">
+                                    <h4 class="font-bold mb-3">Connection Steps</h4>
+                                    <ol class="list-decimal ml-5 space-y-2 text-gray-600">
+                                        <li>Delete the multimeter.</li>
+                                        <li>Connect the divider junction to Arduino Analog Input A0.</li>
+                                        <li>Add the LED and a 220 &Omega; current-limiting resistor in series.</li>
+                                        <li>Connect the LED circuit between Arduino digital output pin 7 and ground, using the correct LED polarity.</li>
+                                        <li>Before running code, confirm common ground is shared by the divider and LED circuit.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="arduino-code" class="tab-content">
+                            <pre><code class="language-cpp">// Add variables for the photoresistor input, LED output, sensor reading, and threshold.
+
+void setup()
+{
+  // Set the LED pin mode.
+}
+
+void loop()
+{
+  // Read the analog value from A0.
+  // Compare the value against the low-light threshold.
+  // Write HIGH or LOW to the LED pin based on that comparison.
+}</code></pre>
+                        </div>
+
+                        <div id="arduino-test" class="tab-content p-6">
+                            <div class="grid lg:grid-cols-2 gap-5">
+                                <div class="figure-frame">
+                                    <img src="../../assets/lab2-code-mode.png" alt="Tinkercad code mode interface">
+                                </div>
+                                <div class="card p-5">
+                                    <h4 class="font-bold mb-3">Program and Verify</h4>
+                                    <ol class="list-decimal ml-5 space-y-2 text-gray-600">
+                                        <li>Click Code at the top right of <a class="concept-link" href="../../knowledge/index.html#tinkercad">Tinkercad</a>.</li>
+                                        <li>Change edit mode from Blocks to Text.</li>
+                                        <li>Enter the automatic lighting sketch.</li>
+                                        <li>Start the simulation and change light level.</li>
+                                        <li>Confirm the LED turns on when the sensor reading is below 400.</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="grid md:grid-cols-3 gap-4 mt-6">
+                                <label class="block"><span class="font-semibold text-sm">Dark PR reading</span><input type="number" class="response-input persist-text mt-2" data-key="arduino-dark-reading"></label>
+                                <label class="block"><span class="font-semibold text-sm">Bright PR reading</span><input type="number" class="response-input persist-text mt-2" data-key="arduino-bright-reading"></label>
+                                <label class="block"><span class="font-semibold text-sm">LED turns on below 400?</span><select class="response-input persist-text mt-2" data-key="arduino-led-state"><option value="">Choose...</option><option>Yes</option><option>No</option></select></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-stack mt-6">
+                        <fieldset class="quiz-card auto-question" data-question-id="arduino-pin-map">
+                            <legend class="quiz-title">Which pin map matches Exercise 3?<span class="quiz-points">1 point</span></legend>
+                            <label class="quiz-option"><input type="radio" name="arduino-pin-map" value="a"><span>J7 to A0, LED output to digital pin 7.</span></label>
+                            <label class="quiz-option"><input type="radio" name="arduino-pin-map" value="b"><span>J7 to D7, LED output to A0.</span></label>
+                            <label class="quiz-option"><input type="radio" name="arduino-pin-map" value="c"><span>Photoresistor to digital pin 13, LED to A5.</span></label>
+                            <label class="quiz-option"><input type="radio" name="arduino-pin-map" value="d"><span>Both photoresistor and LED to GND only.</span></label>
+                            <div class="quiz-actions">
+                                <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
+                                <span class="attempt-count" data-attempts-for="arduino-pin-map"></span>
+                            </div>
+                            <div class="quiz-feedback" data-feedback-for="arduino-pin-map" role="status" aria-live="polite"></div>
+                        </fieldset>
+
+                        <fieldset class="quiz-card auto-question" data-question-id="arduino-low-light">
+                            <legend class="quiz-title">What does the provided code do when PR is below lowLightLim?<span class="quiz-points">1 point</span></legend>
+                            <label class="quiz-option"><input type="radio" name="arduino-low-light" value="a"><span>It turns the LED on by writing HIGH.</span></label>
+                            <label class="quiz-option"><input type="radio" name="arduino-low-light" value="b"><span>It turns the LED off by writing LOW.</span></label>
+                            <label class="quiz-option"><input type="radio" name="arduino-low-light" value="c"><span>It changes PRPin from A0 to A1.</span></label>
+                            <label class="quiz-option"><input type="radio" name="arduino-low-light" value="d"><span>It changes the threshold to 0.</span></label>
+                            <div class="quiz-actions">
+                                <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
+                                <span class="attempt-count" data-attempts-for="arduino-low-light"></span>
+                            </div>
+                            <div class="quiz-feedback" data-feedback-for="arduino-low-light" role="status" aria-live="polite"></div>
+                        </fieldset>
+                    </div>
+
+                    <div class="stage-footer">
+                        <button class="nav-button secondary" onclick="setStage(3)">Back to Divider</button>
+                        <button class="nav-button primary" onclick="completeAndGo(4, 5)">Complete Arduino Checkpoint</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stage-panel stage-5 space-y-8">
+            <div class="card overflow-hidden shadow-2xl">
+                <div class="gradient-bg p-8 text-white">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-white/75 mb-2">Lab 1 - Part 5</p>
+                            <h2 class="text-4xl font-extrabold uppercase tracking-wide">Real Photoresistor Divider</h2>
+                            <p class="mt-2 text-white/80">Build the real circuit, compare calculated and measured voltage, then show the required demonstrations.</p>
+                        </div>
+                        <div class="rounded-xl bg-white/20 border border-white/30 px-5 py-4">
+                            <span class="block text-[10px] font-bold uppercase tracking-widest text-white/70">Submission</span>
+                            <span class="text-2xl font-bold">No report</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-7 bg-gray-50 border-b">
+                    <div class="mini-flow">
+                        <span>Trainer 5 V</span>
+                        <span>Photoresistor</span>
+                        <span>4.7 k&Omega;</span>
+                        <span>Multimeter</span>
+                        <span>Dark / normal / flashlight</span>
+                    </div>
+                </div>
+
+                <div class="p-7 grid lg:grid-cols-2 gap-6">
+                    <div class="card p-5">
+                        <h3 class="text-xl font-bold mb-4">Equipment Required</h3>
+                        <ul class="compact-list list-disc ml-5 text-gray-600">
+                            <li>Trainer board with internal power supply - quantity 1</li>
+                            <li>Photoresistor - quantity 1</li>
+                            <li>4.7 k&Omega; resistor, 0.25 Watt - quantity 1</li>
+                            <li>Multimeter - quantity 1</li>
+                        </ul>
+                    </div>
+                    <div class="warning-card">
+                        <h3 class="text-lg font-bold mb-3">Measurement Conditions</h3>
+                        <ol class="list-decimal ml-5 space-y-2">
+                            <li>Dark: cover the top surface of the sensor with your finger.</li>
+                            <li>Normal light: use the ambient room condition.</li>
+                            <li>Flashlight: shine your phone flashlight on the sensor surface.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="px-7 pb-7">
+                    <h3 class="text-2xl font-bold mb-5">Tables 3 and 4</h3>
+                    <div class="overflow-x-auto mb-6">
+                        <table class="metric-table lab-table w-full text-sm border-collapse">
+                            <thead><tr class="bg-gray-100"><th class="p-3 text-left border">Light</th><th class="p-3 border">Dark</th><th class="p-3 border">Normal</th><th class="p-3 border">Flashlight</th></tr></thead>
+                            <tbody><tr><td class="p-3 border font-semibold">Total resistance (k&Omega;)</td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t3-r-dark"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t3-r-normal"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t3-r-flash"></td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="metric-table lab-table w-full text-sm border-collapse">
+                            <thead><tr class="bg-gray-100"><th class="p-3 text-left border">Light</th><th class="p-3 border">Dark</th><th class="p-3 border">Normal</th><th class="p-3 border">Flashlight</th></tr></thead>
+                            <tbody>
+                                <tr><td class="p-3 border font-semibold">Voltage (V) calculated</td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t4-vcalc-dark"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t4-vcalc-normal"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t4-vcalc-flash"></td></tr>
+                                <tr><td class="p-3 border font-semibold">Voltage (V) measured</td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t4-vmeas-dark"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t4-vmeas-normal"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t4-vmeas-flash"></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="measurement-caption">Use the <a class="concept-link" href="../../knowledge/skill-tree.html?topic=experimental-evidence">voltage-divider rule for calculated values</a>, then use a voltmeter to measure sensor voltage under the same conditions.</p>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div class="card p-7 border-t-4 border-[#7A003C]">
+                    <h3 class="text-xl font-bold mb-4">Demonstration Checklist</h3>
+                    <div class="space-y-3">
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="submit-lab1-vi"><span>Lab 1 VI program file is ready for submission.</span></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="submit-lab1-quiz"><span>Lab 1 quiz is complete on Avenue to Learn.</span></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="submit-tables"><span>Results of Tables 1-4 are ready to show the instructor.</span></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="submit-ex4-demo"><span>Exercise 4 automatic lighting circuit is ready to demonstrate.</span></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="submit-ex5-demo"><span>Exercise 5 real photoresistor divider is ready to demonstrate.</span></label>
+                    </div>
+                </div>
+
+                <div class="success-card">
+                    <h3 class="text-xl font-bold mb-4">Submission Rules From the PDFs</h3>
+                    <ol class="list-decimal ml-5 space-y-3">
+                        <li>Laboratory 1: submit the VI program file and complete the Lab 1 quiz.</li>
+                        <li>No separate report is required for the photoresistor demonstration sequence unless your instructor requests one.</li>
+                        <li>Show Tables 1-4 to the lab instructor.</li>
+                        <li>Demonstrate Exercise 4 and Exercise 5 functionality to the lab instructor.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="stage-footer">
+                <button class="nav-button secondary" onclick="setStage(4)">Back to Arduino</button>
+                <button class="nav-button primary" onclick="completeStage(5)">Mark Lab Sequence Complete</button>
+                <button class="nav-button secondary" type="button" data-lab-export disabled aria-disabled="true">Completion file locked</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center py-12 text-gray-400 text-xs">
+        McMaster University | &copy; 2026 W Booth School of Engineering Practice and Technology
+    </footer>
+
+    <script>
+        if (window.hljs) {
+            hljs.highlightAll();
+        }
+
+        const TOTAL_STAGES = 6;
+        const STORAGE_PREFIX = 'smrttech-lab1-lab2';
+        // Confirm this acceptance window with the instructor if photoresistors or units change.
+        const PHOTORESISTOR_RANGE_OHMS = {
+            min: 100,
+            max: 2000000
+        };
+
+        const QUIZ_ANSWERS = {
+            'ready-labview-access': {
+                correct: 'b',
+                hint: 'Laboratory 1 starts with the LabVIEW learning material and requires the software locally.',
+                explanation: 'Correct. Laboratory 1 requires LinkedIn Learning access and LabVIEW installed on the machine.'
+            },
+            'ready-tinkercad-nickname': {
+                correct: 'c',
+                hint: 'The PDF says to use the email address without the McMaster domain.',
+                explanation: 'Correct. Use your McMaster ID, which is your email address without @mcmaster.ca.'
+            },
+            'labview-divider-equation': {
+                correct: 'b',
+                hint: 'The output is the input voltage multiplied by the lower resistor fraction.',
+                explanation: 'Correct. The VI should calculate Vout = Vin * R2 / (R1 + R2).'
+            },
+            'labview-front-panel-id': {
+                correct: 'b',
+                hint: 'The PDF calls out this requirement directly beside the VI exercise.',
+                explanation: 'Correct. The VI front panel must include your student name and ID.'
+            },
+            'pr-meter-mode': {
+                correct: 'c',
+                hint: 'Exercise 1 measures the sensor before it is converted to a voltage.',
+                explanation: 'Correct. The multimeter is set to Resistance for the photoresistor-only measurement.'
+            },
+            'pr-light-levels': {
+                correct: 'b',
+                hint: 'Table 1 uses five percentage-based light settings.',
+                explanation: 'Correct. Table 1 records 0%, 25%, 50%, 75%, and 100% light.'
+            },
+            'divider-fixed-resistor': {
+                correct: 'c',
+                hint: 'This value appears in both the Tinkercad divider and real hardware exercise.',
+                explanation: 'Correct. The divider uses a 4.7 kOhm resistor.'
+            },
+            'divider-conversion': {
+                correct: 'a',
+                hint: 'Arduino analog inputs measure voltage, not resistance directly.',
+                explanation: 'Correct. The divider converts photoresistor resistance variation into a voltage variation.'
+            },
+            'arduino-pin-map': {
+                correct: 'a',
+                hint: 'The sensor voltage goes to an analog input; the LED is controlled by a digital output.',
+                explanation: 'Correct. J7 connects to A0, and the LED is controlled from digital output pin 7.'
+            },
+            'arduino-low-light': {
+                correct: 'a',
+                hint: 'Read the if statement: PR below the limit enters the first branch.',
+                explanation: 'Correct. When PR is below lowLightLim, the code writes HIGH to the LED pin.'
+            }
+        };
+
+        function storageKey(key) {
+            return `${STORAGE_PREFIX}-${key}`;
+        }
+
+        function initializeAutogradingVersion() {
+            const version = '1';
+            const versionKey = storageKey('autograding-version');
+
+            if (localStorage.getItem(versionKey) !== version) {
+                for (let stage = 0; stage < TOTAL_STAGES; stage++) {
+                    localStorage.removeItem(storageKey(`stage-${stage}-complete`));
+                }
+                Object.keys(QUIZ_ANSWERS).forEach(id => {
+                    localStorage.removeItem(storageKey(`quiz-${id}-correct`));
+                    localStorage.removeItem(storageKey(`quiz-${id}-selection`));
+                    localStorage.removeItem(storageKey(`quiz-${id}-attempts`));
+                });
+                localStorage.setItem(versionKey, version);
+            }
+        }
+
+        function setStage(stage) {
+            document.body.className = `pb-24 pt-24 stage-${stage}`;
+
+            document.querySelectorAll('.stage-btn').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            const activeButton = document.getElementById(`btn-stage-${stage}`);
+            if (activeButton) activeButton.classList.add('active');
+
+            localStorage.setItem(storageKey('current-stage'), String(stage));
+
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        function markStageComplete(stage) {
+            localStorage.setItem(storageKey(`stage-${stage}-complete`), 'true');
+            updateCompletionUI();
+        }
+
+        function completeStage(stage) {
+            const validation = validateStage(stage);
+
+            if (!validation.ok) {
+                showStageMessage(stage, validation.message, 'error');
+                return false;
+            }
+
+            markStageComplete(stage);
+            showStageMessage(
+                stage,
+                stage === 5
+                    ? 'Lab sequence complete. Your tables and checklist are saved locally in this browser.'
+                    : 'Stage complete. Your progress has been saved in this browser.',
+                'success'
+            );
+            return true;
+        }
+
+        function completeAndGo(stage, nextStage) {
+            if (completeStage(stage)) {
+                setStage(nextStage);
+            }
+        }
+
+        function validateStage(stage) {
+            const panel = document.querySelector(`.stage-panel.stage-${stage}`);
+            if (!panel) return { ok: false, message: 'This stage could not be found.' };
+
+            const unansweredQuiz = [...panel.querySelectorAll('.auto-question')]
+                .filter(question => {
+                    const id = question.dataset.questionId;
+                    return localStorage.getItem(storageKey(`quiz-${id}-correct`)) !== 'true';
+                });
+
+            if (unansweredQuiz.length > 0) {
+                return {
+                    ok: false,
+                    message: `Complete all auto-graded knowledge checks in this stage. ${unansweredQuiz.length} question${unansweredQuiz.length === 1 ? '' : 's'} remain.`
+                };
+            }
+
+            const uncheckedBoxes = [...panel.querySelectorAll('.persist-check')]
+                .filter(input => !input.checked);
+
+            if (uncheckedBoxes.length > 0) {
+                return {
+                    ok: false,
+                    message: `Confirm every required checklist item before completing this stage. ${uncheckedBoxes.length} item${uncheckedBoxes.length === 1 ? '' : 's'} remain.`
+                };
+            }
+
+            const emptyFields = [...panel.querySelectorAll('.persist-text')]
+                .filter(input => input.value.trim() === '');
+
+            if (emptyFields.length > 0) {
+                emptyFields[0].focus();
+                return {
+                    ok: false,
+                    message: `Fill every required experiment or analysis field. ${emptyFields.length} field${emptyFields.length === 1 ? '' : 's'} remain.`
+                };
+            }
+
+            const invalidNumbers = [...panel.querySelectorAll('input[type="number"].persist-text')]
+                .filter(input => !Number.isFinite(Number(input.value)) || Number(input.value) < 0);
+
+            if (invalidNumbers.length > 0) {
+                invalidNumbers[0].focus();
+                return {
+                    ok: false,
+                    message: 'Enter valid nonnegative numerical measurements before continuing.'
+                };
+            }
+
+            if (stage === 2) {
+                const resistanceInputs = [...panel.querySelectorAll('[data-key^="t1-r-"]')];
+                const outOfRange = resistanceInputs.find(input => {
+                    const value = Number(input.value);
+                    return value < PHOTORESISTOR_RANGE_OHMS.min || value > PHOTORESISTOR_RANGE_OHMS.max;
+                });
+
+                if (outOfRange) {
+                    outOfRange.focus();
+                    return {
+                        ok: false,
+                        message: `Photoresistor resistance should be between ${PHOTORESISTOR_RANGE_OHMS.min} and ${PHOTORESISTOR_RANGE_OHMS.max} ohms. If you used kOhm, convert to ohms before completing this checkpoint.`
+                    };
+                }
+            }
+
+            if (stage === 4) {
+                const ledState = panel.querySelector('[data-key="arduino-led-state"]');
+                if (ledState && ledState.value !== 'Yes') {
+                    ledState.focus();
+                    return {
+                        ok: false,
+                        message: 'Confirm the LED turns on below the low-light threshold before completing this stage.'
+                    };
+                }
+            }
+
+            return { ok: true, message: '' };
+        }
+
+        function showStageMessage(stage, message, type) {
+            const panel = document.querySelector(`.stage-panel.stage-${stage}`);
+            if (!panel) return;
+
+            let messageBox = panel.querySelector('.stage-message');
+            if (!messageBox) {
+                messageBox = document.createElement('div');
+                messageBox.className = 'stage-message';
+                messageBox.setAttribute('role', 'status');
+                messageBox.setAttribute('aria-live', 'polite');
+
+                const footer = panel.querySelector('.stage-footer');
+                if (footer) {
+                    footer.before(messageBox);
+                } else {
+                    panel.appendChild(messageBox);
+                }
+            }
+
+            messageBox.textContent = message;
+            messageBox.className = `stage-message show ${type}`;
+            messageBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function updateCompletionUI() {
+            for (let stage = 0; stage < TOTAL_STAGES; stage++) {
+                const button = document.getElementById(`btn-stage-${stage}`);
+                if (!button) continue;
+
+                const complete =
+                    localStorage.getItem(storageKey(`stage-${stage}-complete`)) === 'true';
+
+                button.classList.toggle('completed', complete);
+            }
+
+            const exportButton = document.querySelector('[data-lab-export]');
+            if (exportButton) {
+                const complete = localStorage.getItem(storageKey('stage-5-complete')) === 'true';
+                exportButton.disabled = !complete;
+                exportButton.title = complete
+                    ? 'Download locally saved Lab 1 responses as JSON.'
+                    : 'Complete the final checkpoint before exporting.';
+            }
+        }
+
+        function updateAutoScore() {
+            const earned = Object.keys(QUIZ_ANSWERS).filter(id =>
+                localStorage.getItem(storageKey(`quiz-${id}-correct`)) === 'true'
+            ).length;
+
+            const score = document.getElementById('autoScoreValue');
+            if (score) score.textContent = `${earned}/${Object.keys(QUIZ_ANSWERS).length}`;
+        }
+
+        function gradeQuestion(button) {
+            const question = button.closest('.auto-question');
+            const id = question.dataset.questionId;
+            const answer = QUIZ_ANSWERS[id];
+            const selected = question.querySelector('input:checked');
+            const feedback = question.querySelector(`[data-feedback-for="${id}"]`);
+
+            if (!selected) {
+                feedback.textContent = 'Select an answer before checking.';
+                feedback.className = 'quiz-feedback show incorrect';
+                question.classList.remove('correct');
+                question.classList.add('incorrect');
+                return;
+            }
+
+            const attemptsKey = storageKey(`quiz-${id}-attempts`);
+            const attempts = Number(localStorage.getItem(attemptsKey) || 0) + 1;
+            localStorage.setItem(attemptsKey, String(attempts));
+            localStorage.setItem(storageKey(`quiz-${id}-selection`), selected.value);
+            updateAttemptDisplay(id, attempts);
+
+            if (selected.value === answer.correct) {
+                localStorage.setItem(storageKey(`quiz-${id}-correct`), 'true');
+                question.classList.remove('incorrect');
+                question.classList.add('correct');
+                feedback.textContent = answer.explanation;
+                feedback.className = 'quiz-feedback show correct';
+                lockQuestion(question);
+            } else {
+                localStorage.setItem(storageKey(`quiz-${id}-correct`), 'false');
+                question.classList.remove('correct');
+                question.classList.add('incorrect');
+                feedback.textContent = `Not yet. ${answer.hint}`;
+                feedback.className = 'quiz-feedback show incorrect';
+            }
+
+            updateAutoScore();
+        }
+
+        function lockQuestion(question) {
+            question.querySelectorAll('input').forEach(input => {
+                input.disabled = true;
+            });
+
+            const button = question.querySelector('.quiz-check-button');
+            if (button) {
+                button.disabled = true;
+                button.textContent = 'Correct';
+            }
+        }
+
+        function restoreQuizState() {
+            document.querySelectorAll('.auto-question').forEach(question => {
+                const id = question.dataset.questionId;
+                const selectedValue = localStorage.getItem(storageKey(`quiz-${id}-selection`));
+                const correct = localStorage.getItem(storageKey(`quiz-${id}-correct`)) === 'true';
+                const attempts = Number(localStorage.getItem(storageKey(`quiz-${id}-attempts`)) || 0);
+
+                question.querySelectorAll('input').forEach(input => {
+                    input.checked = input.value === selectedValue;
+
+                    input.addEventListener('change', () => {
+                        localStorage.setItem(storageKey(`quiz-${id}-selection`), input.value);
+                    });
+                });
+
+                updateAttemptDisplay(id, attempts);
+
+                if (correct) {
+                    const feedback = question.querySelector(`[data-feedback-for="${id}"]`);
+                    question.classList.add('correct');
+                    feedback.textContent = QUIZ_ANSWERS[id].explanation;
+                    feedback.className = 'quiz-feedback show correct';
+                    lockQuestion(question);
+                }
+            });
+
+            updateAutoScore();
+        }
+
+        function updateAttemptDisplay(id, attempts) {
+            const target = document.querySelector(`[data-attempts-for="${id}"]`);
+            if (!target) return;
+            target.textContent = attempts > 0
+                ? `${attempts} attempt${attempts === 1 ? '' : 's'}`
+                : '';
+        }
+
+        function switchTab(button) {
+            const group = button.dataset.tabs;
+            const targetId = button.dataset.target;
+
+            document.querySelectorAll(`.code-tab[data-tabs="${group}"]`)
+                .forEach(tab => tab.classList.remove('active'));
+
+            document.querySelectorAll(`.tab-content[data-tabs="${group}"], .tab-content[id^="${group}-"]`)
+                .forEach(panel => panel.classList.remove('active'));
+
+            button.classList.add('active');
+
+            const target = document.getElementById(targetId);
+            if (target) target.classList.add('active');
+        }
+
+        function toggleSidebar(id) {
+            const selected = document.getElementById(id);
+            const wasOpen = selected.classList.contains('active');
+
+            document.querySelectorAll('.sidebar')
+                .forEach(sidebar => sidebar.classList.remove('active'));
+
+            if (!wasOpen) selected.classList.add('active');
+        }
+
+        function restorePersistentInputs() {
+            document.querySelectorAll('.persist-check').forEach(input => {
+                input.checked = localStorage.getItem(storageKey(input.dataset.key)) === 'true';
+
+                input.addEventListener('change', () => {
+                    localStorage.setItem(
+                        storageKey(input.dataset.key),
+                        input.checked ? 'true' : 'false'
+                    );
+                });
+            });
+
+            document.querySelectorAll('.persist-text').forEach(input => {
+                const saved = localStorage.getItem(storageKey(input.dataset.key));
+                if (saved !== null) input.value = saved;
+
+                const eventName = input.tagName === 'SELECT' ? 'change' : 'input';
+
+                input.addEventListener(eventName, () => {
+                    localStorage.setItem(storageKey(input.dataset.key), input.value);
+                    updateDividerCalc();
+                });
+            });
+
+            updateDividerCalc();
+        }
+
+        function updateDividerCalc() {
+            const vin = Number(document.querySelector('[data-key="lab1-vin"]')?.value);
+            const r1 = Number(document.querySelector('[data-key="lab1-r1"]')?.value);
+            const r2 = Number(document.querySelector('[data-key="lab1-r2"]')?.value);
+            const target = document.getElementById('lab1Vout');
+
+            if (!target) return;
+
+            if (Number.isFinite(vin) && Number.isFinite(r1) && Number.isFinite(r2) && (r1 + r2) > 0) {
+                target.textContent = `${(vin * r2 / (r1 + r2)).toFixed(3)} V`;
+            } else {
+                target.textContent = 'Enter values';
+            }
+        }
+
+        function collectLabExportData() {
+            return window.LabCompletionExport?.buildExportData();
+        }
+
+        function exportLabResponses() {
+            return window.LabCompletionExport?.download();
+        }
+
+        // Completion-file export is provided by assets/js/lab-export.js.
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeAutogradingVersion();
+            updateCompletionUI();
+            restorePersistentInputs();
+            restoreQuizState();
+
+            const savedStage = Number(
+                localStorage.getItem(storageKey('current-stage')) ?? 0
+            );
+
+            setStage(
+                Number.isInteger(savedStage) &&
+                savedStage >= 0 &&
+                savedStage < TOTAL_STAGES
+                    ? savedStage
+                    : 0
+            );
+        });
+    </script>
+    <script src="../../assets/js/lab-shared.js"></script>
+    <script src="../../assets/js/lab-export.js"></script>
+</body>
+
+</html>

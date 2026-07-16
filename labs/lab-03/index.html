@@ -1,0 +1,1404 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SMRTTECH 3CC3 Lab 3: Tilt Sensor Detection with LabVIEW and Arduino.">
+    <title>Lab 3 | Tilt Sensor Detection with LabVIEW and Arduino</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mac-maroon: #7A003C;
+            --mac-gold: #FDBF57;
+            --mac-grey: #495965;
+            --mac-maroon-20: #E4CCDA;
+            --mac-maroon-80: #953360;
+            --mac-gold-20: #FFF2DD;
+            --mac-gold-60: #FED999;
+            --mac-grey-20: #DBDEE0;
+            --mac-grey-40: #B6BDC1;
+            --mac-grey-80: #6D7A82;
+            --lab-background: #F7F8FA;
+            --lab-surface: #FFFFFF;
+            --lab-text: #2D3338;
+            --success: #287A4B;
+            --danger: #B42318;
+            --content: 1180px;
+        }
+
+        * { box-sizing: border-box; }
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+        body {
+            margin: 0;
+            font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--lab-background);
+            color: var(--lab-text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        a { color: inherit; }
+        button, input, select, textarea { font: inherit; }
+        code, .font-mono { font-family: 'Roboto Mono', Consolas, monospace; }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--mac-maroon) 0%, var(--mac-maroon-80) 62%, var(--mac-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stage-bar {
+            position: fixed;
+            inset: 0 0 auto 0;
+            z-index: 40;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(73, 89, 101, 0.12);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            max-width: 100vw;
+            overflow: hidden;
+        }
+
+        .stage-bar-inner {
+            width: 100%;
+            max-width: var(--content);
+            margin: 0 auto;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            overflow-x: auto;
+        }
+
+        .stage-label {
+            flex: 0 0 auto;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--mac-grey-80);
+            margin-right: 0.3rem;
+        }
+
+        .stage-btn {
+            flex: 0 0 auto;
+            min-height: 38px;
+            padding: 0.55rem 0.95rem;
+            border-radius: 9px;
+            border: 1px solid transparent;
+            font-size: 0.83rem;
+            font-weight: 700;
+            color: var(--mac-grey);
+            background: transparent;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .stage-btn:hover { background: var(--mac-grey-20); }
+        .stage-btn:focus-visible,
+        .utility-button:focus-visible,
+        .nav-button:focus-visible,
+        details summary:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 3px solid var(--mac-gold);
+            outline-offset: 3px;
+        }
+
+        .stage-btn.active,
+        .stage-btn.page-current {
+            color: white;
+            background: var(--mac-maroon);
+            box-shadow: 0 5px 13px rgba(122, 0, 60, 0.28);
+        }
+
+        .stage-btn.completed:not(.active)::after {
+            content: "âœ“";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            margin-left: 6px;
+            border-radius: 50%;
+            color: white;
+            background: var(--success);
+            font-size: 0.68rem;
+            font-weight: 700;
+        }
+
+        .lab-stage-label {
+            margin-left: 0.65rem;
+            padding-left: 0.85rem;
+            border-left: 1px solid rgba(73, 89, 101, 0.18);
+        }
+
+        .auto-score-chip {
+            flex: 0 0 auto;
+            margin-left: auto;
+            padding: 0.45rem 0.7rem;
+            border-radius: 999px;
+            border: 1px solid var(--mac-gold-60);
+            background: var(--mac-gold-20);
+            color: #5B3900;
+            font-size: 0.78rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .page-header { padding: 0 0 2.2rem; }
+        h1, h2, h3 { line-height: 1.15; margin-top: 0; }
+        h1 { margin: 0 0 0.7rem; letter-spacing: 0; }
+        p { margin-top: 0; }
+
+        .card {
+            background: var(--lab-surface);
+            border: 1px solid rgba(73, 89, 101, 0.10);
+            border-radius: 16px;
+            box-shadow: 0 10px 18px -8px rgba(0, 0, 0, 0.16), 0 4px 8px -4px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-card { padding: 1.75rem; margin-bottom: 2rem; }
+        .border-maroon { border-left: 4px solid var(--mac-maroon); }
+        .border-gold { border-left: 4px solid var(--mac-gold); }
+        .border-success { border-left: 4px solid var(--success); }
+        .border-warning { border-left: 4px solid var(--mac-gold); }
+
+        .stage-panel { display: block; padding-bottom: 2rem; }
+        .js-enabled .stage-panel { display: none; }
+        .js-enabled.stage-0 .stage-panel.stage-0,
+        .js-enabled.stage-1 .stage-panel.stage-1,
+        .js-enabled.stage-2 .stage-panel.stage-2,
+        .js-enabled.stage-3 .stage-panel.stage-3,
+        .js-enabled.stage-4 .stage-panel.stage-4,
+        .js-enabled.stage-5 .stage-panel.stage-5,
+        .js-enabled.stage-6 .stage-panel.stage-6,
+        .js-enabled.stage-7 .stage-panel.stage-7,
+        .js-enabled.stage-8 .stage-panel.stage-8 { display: block; }
+
+        .grid-layout { display: grid; gap: 1rem; }
+        .grid-layout.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-layout.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid-layout.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+        .mini-card {
+            border: 1px solid rgba(73, 89, 101, 0.13);
+            border-radius: 12px;
+            padding: 1rem;
+            background: #fff;
+        }
+
+        .briefing-card {
+            background: #F8FAFC;
+            border-radius: 12px;
+            padding: 18px;
+            border-left: 4px solid var(--mac-maroon);
+        }
+
+        .warning-card {
+            background: var(--mac-gold-20);
+            border: 1px solid var(--mac-gold-60);
+            border-left: 5px solid var(--mac-gold);
+            color: #5B3900;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .danger-card {
+            background: #FFF3F2;
+            border: 1px solid #FECACA;
+            border-left: 5px solid var(--danger);
+            color: #7A271A;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .success-card {
+            background: #EFFAF3;
+            border: 1px solid #B7E4C7;
+            border-left: 5px solid var(--success);
+            color: #174D2D;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .chip-row { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 1rem 0; }
+        .chip-row.compact { margin: 0; }
+        .mt-block { margin-top: 1rem; }
+
+        .stage-summary-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.42rem 0.7rem;
+            border-radius: 999px;
+            background: var(--mac-gold-20);
+            color: #5B3900;
+            border: 1px solid rgba(253, 191, 87, 0.35);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .signal-chain {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(120px, 1fr));
+            gap: 0.7rem;
+            margin-top: 1rem;
+        }
+
+        .signal-step {
+            min-height: 88px;
+            padding: 0.85rem;
+            border-radius: 12px;
+            background: #fff;
+            border: 1px solid rgba(122, 0, 60, 0.16);
+            color: var(--mac-maroon);
+            font-weight: 800;
+        }
+
+        .signal-step span {
+            display: block;
+            margin-top: 0.3rem;
+            color: var(--mac-grey);
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+
+        .completion-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            min-height: 44px;
+            padding: 0.75rem;
+            border-radius: 10px;
+            border: 1px solid rgba(73, 89, 101, 0.14);
+            background: #fff;
+        }
+
+        .completion-box input { margin-top: 0.25rem; min-width: 18px; min-height: 18px; accent-color: var(--mac-maroon); }
+        .response-field { display: grid; gap: 0.35rem; margin-bottom: 0.85rem; }
+        .response-field span { font-weight: 700; }
+        .response-input,
+        .response-field textarea,
+        .response-field input,
+        .response-field select,
+        table input,
+        table select,
+        table textarea {
+            width: 100%;
+            border: 1px solid #CBD5E1;
+            border-radius: 9px;
+            padding: 0.65rem 0.75rem;
+            background: #fff;
+            color: var(--lab-text);
+        }
+
+        textarea { min-height: 92px; resize: vertical; }
+
+        details {
+            border: 1px solid rgba(73, 89, 101, 0.14);
+            border-radius: 12px;
+            background: #fff;
+            margin: 0.75rem 0;
+        }
+
+        details summary {
+            cursor: pointer;
+            padding: 0.9rem 1rem;
+            font-weight: 800;
+            color: var(--mac-maroon);
+        }
+
+        details > div { padding: 0 1rem 1rem; }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(73, 89, 101, 0.14);
+            background: #fff;
+        }
+
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th, td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(73, 89, 101, 0.12);
+            text-align: left;
+            vertical-align: top;
+        }
+        th { background: #F3F4F6; color: var(--mac-grey); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; }
+
+        .diagram-card {
+            padding: 1rem;
+            border-radius: 14px;
+            background: #fff;
+            border: 1px solid rgba(73, 89, 101, 0.14);
+        }
+
+        .diagram-card img,
+        .diagram-card svg { max-width: 100%; height: auto; display: block; }
+        figcaption { color: var(--mac-grey); font-size: 0.92rem; margin-top: 0.6rem; }
+
+        .logic-flow {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            align-items: center;
+        }
+
+        .logic-flow span {
+            padding: 0.6rem 0.75rem;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid rgba(122, 0, 60, 0.15);
+            font-weight: 700;
+        }
+
+        .logic-flow b { color: var(--mac-gold); }
+
+        .order-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .order-item {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.6rem;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid rgba(73, 89, 101, 0.14);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            height: 100vh;
+            width: min(500px, calc(100vw - 48px));
+            background: white;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.22);
+            z-index: 60;
+            transition: transform 0.38s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #hardwareSidebar { left: 0; transform: translateX(-100%); }
+        #hardwareSidebar.active { transform: translateX(0); }
+        #softwareSidebar { right: 0; transform: translateX(100%); }
+        #softwareSidebar.active { transform: translateX(0); }
+
+        .sidebar-handle {
+            position: absolute;
+            top: 50%;
+            width: 34px;
+            height: 62px;
+            border: 0;
+            background: var(--mac-maroon);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            z-index: 65;
+        }
+
+        .sidebar-handle:hover { background: var(--mac-maroon-80); }
+        #handle-hw { right: -34px; border-radius: 0 9px 9px 0; box-shadow: 4px 0 12px rgba(0, 0, 0, 0.16); }
+        #handle-sw { left: -34px; border-radius: 9px 0 0 9px; box-shadow: -4px 0 12px rgba(0, 0, 0, 0.16); }
+        .handle-icon { transition: transform 0.4s ease; stroke-width: 3px; }
+        #hardwareSidebar.active #handle-hw .handle-icon,
+        #softwareSidebar.active #handle-sw .handle-icon { transform: rotate(180deg); }
+
+        .utility-button,
+        .nav-button {
+            min-height: 42px;
+            padding: 0.72rem 1rem;
+            border-radius: 9px;
+            font-size: 0.88rem;
+            font-weight: 800;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .utility-button,
+        .nav-button.secondary {
+            background: white;
+            color: var(--mac-grey);
+            border: 1px solid var(--mac-grey-40);
+        }
+
+        .utility-button:hover,
+        .nav-button.secondary:hover { background: var(--mac-grey-20); }
+
+        .nav-button.primary {
+            background: var(--mac-maroon);
+            color: white;
+            border: 1px solid var(--mac-maroon);
+        }
+
+        .nav-button.primary:hover { background: var(--mac-maroon-80); }
+
+        .stage-footer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .stage-message {
+            display: none;
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+        .stage-message.show { display: block; }
+        .stage-message.success { background: #EFFAF3; border: 1px solid #B7E4C7; color: #174D2D; }
+
+        .knowledge-skill-list {
+            display: grid;
+            gap: 0.55rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .knowledge-skill-list a {
+            display: block;
+            padding: 0.7rem 0.8rem;
+            border-radius: 10px;
+            border: 1px solid #DDE3E8;
+            background: white;
+            color: var(--lab-text);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .optional-card { border-left: 5px solid var(--mac-gold); }
+
+        @media (max-width: 900px) {
+            .grid-layout.two, .grid-layout.three, .grid-layout.four, .order-grid { grid-template-columns: 1fr; }
+            .signal-chain { grid-template-columns: 1fr; }
+            .auto-score-chip { margin-left: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.001ms !important;
+                animation-duration: 0.001ms !important;
+            }
+        }
+
+        @media print {
+            .stage-bar { display: none !important; }
+            .stage-panel { display: block !important; break-inside: avoid; }
+            body { background: #fff; }
+            .card { box-shadow: none; }
+            a::after { content: " (" attr(href) ")"; font-size: 0.8em; }
+        }
+        /* Completion indicator: use a CSS escape so the glyph remains valid in every file encoding. */
+        .stage-btn.completed::after { content: "\2713"; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 6px; border: 1px solid #23834d; border-radius: 50%; color: #126b3a; background: #e3f5e9; font-size: 0.84rem; font-weight: 800; line-height: 1; }
+    </style>
+    <link rel="icon" type="image/png" href="../../assets/McMaster-logo.png">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+</head>
+<body class="pb-24 pt-24 stage-0">
+    <nav class="stage-bar" aria-label="Lab progress">
+        <div class="stage-bar-inner">
+            <span class="stage-label">Student Space</span>
+            <a class="stage-btn" href="../../index.html">Home</a>
+            <span class="stage-btn page-current" aria-current="page">Lab 3</span>
+            <span class="stage-label lab-stage-label">Lab Progress</span>
+            <button class="stage-btn active" id="btn-stage-0" type="button" data-stage="0">Prepare</button>
+            <button class="stage-btn" id="btn-stage-1" type="button" data-stage="1">Predict</button>
+            <button class="stage-btn" id="btn-stage-2" type="button" data-stage="2">Build Circuit</button>
+            <button class="stage-btn" id="btn-stage-3" type="button" data-stage="3">Read Sensor</button>
+            <button class="stage-btn" id="btn-stage-4" type="button" data-stage="4">Control Buzzer</button>
+            <button class="stage-btn" id="btn-stage-5" type="button" data-stage="5">Count Events</button>
+            <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">Extend</button>
+            <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Troubleshoot</button>
+            <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Reflect</button>
+            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/9</strong></div>
+        </div>
+    </nav>
+
+    <aside id="hardwareSidebar" class="sidebar" aria-label="Lab tools and access reference">
+        <button id="handle-hw" class="sidebar-handle" type="button" data-sidebar-toggle="hardwareSidebar" title="Open lab tools reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            <span class="sr-only">Open lab tools reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Tools & Access</h3>
+            <p class="text-sm text-white/75 mt-1">LINX, Arduino Mega, tilt switch, buzzer</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Setup Checklist</h4>
+                <ul class="compact-list text-sm text-gray-600 list-disc ml-5">
+                    <li>Read the NI documentation on LabVIEW shift registers.</li>
+                    <li>Confirm LINX firmware is loaded to Arduino.</li>
+                    <li>Confirm Arduino Mega board type and serial port.</li>
+                    <li>Use a USB data cable, not a power-only cable.</li>
+                </ul>
+            </div>
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Pin Map</h4>
+                <dl class="grid grid-cols-2 gap-y-3 text-sm">
+                    <dt class="text-gray-500">Tilt input</dt><dd class="font-semibold text-right">Digital Pin 2</dd>
+                    <dt class="text-gray-500">Buzzer output</dt><dd class="font-semibold text-right">Digital Pin 3</dd>
+                    <dt class="text-gray-500">Pull-down</dt><dd class="font-semibold text-right">10 k&Omega;</dd>
+                    <dt class="text-gray-500">Loop timing</dt><dd class="font-semibold text-right">100 ms</dd>
+                    <dt class="text-gray-500">Final VI</dt><dd class="font-semibold text-right">lab3_tilt_counter.vi</dd>
+                </dl>
+            </div>
+            <div class="warning-card text-sm">
+                <h4 class="font-bold uppercase mb-2">Buzzer Awareness</h4>
+                <p>The active buzzer may be loud. Do not hold it close to your ear and ask for help if it remains on unexpectedly.</p>
+            </div>
+        </div>
+    </aside>
+
+    <aside id="softwareSidebar" class="sidebar" aria-label="Formula and concept reference">
+        <button id="handle-sw" class="sidebar-handle" type="button" data-sidebar-toggle="softwareSidebar" title="Open formula and concept reference">
+            <svg class="handle-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            <span class="sr-only">Open formula and concept reference</span>
+        </button>
+        <div class="p-6 bg-[#7A003C] text-white shadow-md">
+            <h3 class="font-bold text-xl tracking-wide">Logic & Concepts</h3>
+            <p class="text-sm text-white/75 mt-1">Digital logic, buzzer command, shift registers</p>
+        </div>
+        <div class="p-5 space-y-5 overflow-y-auto">
+            <div class="card p-5 border-l-4 border-[#FDBF57]">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Lab 3 Knowledge Skills</h4>
+                <ul class="knowledge-skill-list text-sm">
+                    <li><a href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW interface</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=while-loops">Loops and shift registers</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=analog-input">Digital input and output</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=breadboard">Breadboard connectivity</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Troubleshooting sequence</a></li>
+                </ul>
+            </div>
+            <div class="formula-card card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Core Logic</h4>
+                <p class="font-mono text-base">Upright: D2 = HIGH</p>
+                <p class="font-mono text-base mt-2">Tilted: D2 = LOW</p>
+                <p class="font-mono text-base mt-2">Buzzer command = NOT raw D2</p>
+                <p class="text-sm text-gray-600 mt-3">Count a new event by comparing current state with the previous state stored in a shift register.</p>
+            </div>
+            <div class="card p-5">
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Worksheet Tools</h4>
+                <div class="grid gap-2">
+                    <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
+                    <button class="utility-button" type="button" data-print>Print worksheet</button>
+                    <button class="utility-button" type="button" data-reset>Reset Lab 3 local data</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <header class="page-header max-w-6xl mx-auto px-6 lg:px-8 mb-10">
+        <div class="flex flex-col md:flex-row md:items-center gap-7 border-b border-gray-200 pb-8">
+            <img src="../../assets/McMaster-logo.png" alt="McMaster University logo" class="h-20 w-auto object-contain">
+            <div class="hidden md:block h-16 w-px bg-gray-200" aria-hidden="true"></div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#7A003C] mb-2">SMRTTECH 3CC3 &middot; Cloud Computing and Internet of Things</p>
+                <h1 class="lab-page-title text-4xl lg:text-5xl font-extrabold tracking-tight mb-2">
+                    <span class="lab-title-prefix">Lab 3:</span> <span class="lab-title-gradient">Tilt Sensor Detection with LabVIEW and Arduino</span>
+                </h1>
+                <p class="text-[#495965] text-lg lg:text-xl font-light max-w-4xl">
+                    From digital input to audible alert to event counting.
+                </p>
+            </div>
+        </div>
+        <div class="flex flex-wrap gap-2 mt-5">
+            <span class="stage-summary-chip">Software: LabVIEW + LINX</span>
+            <span class="stage-summary-chip">Hardware: Arduino Mega + tilt switch</span>
+            <span class="stage-summary-chip">Core concept: state versus event</span>
+            <span class="stage-summary-chip">Deliverables: circuit, VIs, counter, extension</span>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 lg:px-8">
+        <noscript>
+            <section class="section-card card border-warning">
+                <h2>JavaScript is disabled</h2>
+                <p>This lab remains readable. Interactive progress saving, ordering checks, and response export require JavaScript.</p>
+            </section>
+        </noscript>
+
+        <section class="stage-panel stage-0" id="prepare" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Scenario</p>
+                <h2>Build the local event-detection layer</h2>
+                <div class="briefing-card mt-block">
+                    <h3 class="text-lg font-bold mb-2">Central question</h3>
+                    <p class="mb-0">How does a physical tilt event become a digital signal, an audible alert, and a counted event in LabVIEW?</p>
+                </div>
+                <p>You are building a local IoT safety node that detects whether an object has been tilted or disturbed. Before this event can be logged or sent to the cloud, the system must reliably detect a digital input, trigger a local alert, and count each new event without counting the same tilt repeatedly.</p>
+                <p>This lab focuses on the local sensing and event-detection layer of an IoT system. It does not yet upload data to the cloud.</p>
+                <div class="signal-chain" aria-label="Conceptual signal chain">
+                    <div class="signal-step">Physical tilt<span>The object changes orientation.</span></div>
+                    <div class="signal-step">Switch state<span>The ball switch opens or closes.</span></div>
+                    <div class="signal-step">D2 HIGH/LOW<span>Arduino reads a digital state.</span></div>
+                    <div class="signal-step">LabVIEW LINX<span>LabVIEW receives the value.</span></div>
+                    <div class="signal-step">Alert and count<span>Buzzer command and event counter update.</span></div>
+                </div>
+                <p class="briefing-card mt-block">LabVIEW does not directly sense tilt. It receives a digital HIGH or LOW value from Arduino and interprets that value based on the circuit logic.</p>
+            </article>
+
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Overview</p>
+                <h2>Time, tools, and prerequisites</h2>
+                <div class="grid-layout four">
+                    <div class="mini-card"><strong>Pre-lab</strong><p>20-30 minutes</p></div>
+                    <div class="mini-card"><strong>Lab time</strong><p>2.5-3 hours</p></div>
+                    <div class="mini-card"><strong>Post-lab</strong><p>30-45 minutes</p></div>
+                    <div class="mini-card"><strong>Safety</strong><p>Low-voltage digital electronics with buzzer noise awareness.</p></div>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <div class="mini-card"><h3>Software</h3><p>LabVIEW, NI LabVIEW LINX Toolkit, and LINX firmware loaded to Arduino.</p></div>
+                    <div class="mini-card"><h3>Hardware</h3><p>Arduino Mega, tilt ball switch, 10 k&Omega; resistor, active buzzer, breadboard, jumper wires, and USB cable.</p></div>
+                </div>
+                <p class="warning-card mt-block">Prerequisite: LabVIEW LINX communication from previous labs.</p>
+            </article>
+
+            <article class="section-card card border-success">
+                <p class="eyebrow">Learning Outcomes</p>
+                <h2>By the end of this lab, you should be able to...</h2>
+                <div class="learning-outcome-grid">
+                    <div class="learning-outcome-card"><strong>Tilt switch</strong><span>Explain how the switch behaves electrically when orientation changes.</span></div>
+                    <div class="learning-outcome-card"><strong>Defined logic</strong><span>Explain why pull-down resistors prevent floating digital inputs.</span></div>
+                    <div class="learning-outcome-card"><strong>Digital states</strong><span>Distinguish HIGH, LOW, open circuit, short circuit, and floating input.</span></div>
+                    <div class="learning-outcome-card"><strong>Hardware build</strong><span>Build the tilt sensor on D2 and active buzzer on D3.</span></div>
+                    <div class="learning-outcome-card"><strong>LINX I/O</strong><span>Use LabVIEW LINX Digital Read and Digital Write.</span></div>
+                    <div class="learning-outcome-card"><strong>Logic inversion</strong><span>Explain why the Not function is required for the buzzer behavior.</span></div>
+                    <div class="learning-outcome-card"><strong>Event counting</strong><span>Use shift registers to count new tilt events rather than loop iterations.</span></div>
+                    <div class="learning-outcome-card"><strong>Troubleshooting</strong><span>Diagnose common wiring, LabVIEW, and logic faults.</span></div>
+                </div>
+            </article>
+
+            <article class="section-card card border-warning">
+                <p class="eyebrow">Safety And Setup</p>
+                <h2>Pre-power checklist</h2>
+                <div class="danger-card"><strong>STOP - Check the circuit before connecting Arduino to USB or running the VI.</strong><p>This checklist supports safe work, but it does not replace instructor approval when approval is required.</p></div>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-power"><span>USB or power is disconnected before wiring changes.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-rails"><span>5 V and GND rails are verified before powering.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-short"><span>5 V is not shorted to GND.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-buzzer"><span>Buzzer polarity is checked.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-noise"><span>The buzzer is not held close to anyone's ear.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-wires"><span>Wires are secure and clear of accidental shorts.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-port"><span>Arduino board type and serial port are confirmed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-linx"><span>LINX firmware is loaded.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-stop"><span>The VI will be stopped using the Stop button, not Abort.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-help"><span>I will ask for help if the Arduino heats up, disconnects repeatedly, or the buzzer remains on unexpectedly.</span></label>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-1" id="predict" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Pre-Lab</p>
+                <h2>Predict before wiring</h2>
+                <div class="grid-layout two">
+                    <div class="mini-card">
+                        <h3>Activity A: Shift-register readiness</h3>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-shift-doc"><span>I read the NI documentation on LabVIEW shift registers.</span></label>
+                        <label class="response-field mt-block"><span>What problem does a shift register solve in a loop?</span><textarea class="persist-text" data-key="pre-shift-answer"></textarea></label>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Activity D: Input or output?</h3>
+                        <div class="table-wrap">
+                            <table class="classification-table">
+                                <thead><tr><th>Item</th><th>Classification</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Tilt switch</td><td><select class="persist-text" data-key="class-tilt"><option value="">Choose...</option><option>Input</option><option>Output</option><option>Display</option></select></td></tr>
+                                    <tr><td>Active buzzer</td><td><select class="persist-text" data-key="class-buzzer"><option value="">Choose...</option><option>Input</option><option>Output</option><option>Display</option></select></td></tr>
+                                    <tr><td>Arduino Digital Pin 2</td><td><select class="persist-text" data-key="class-d2"><option value="">Choose...</option><option>Input</option><option>Output</option></select></td></tr>
+                                    <tr><td>Arduino Digital Pin 3</td><td><select class="persist-text" data-key="class-d3"><option value="">Choose...</option><option>Input</option><option>Output</option></select></td></tr>
+                                    <tr><td>Round LED indicator</td><td><select class="persist-text" data-key="class-led"><option value="">Choose...</option><option>Input</option><option>Output display</option></select></td></tr>
+                                    <tr><td>Waveform Chart</td><td><select class="persist-text" data-key="class-chart"><option value="">Choose...</option><option>Input</option><option>Output display</option></select></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Activity B: Build the digital signal chain</h3>
+                <p>Drag the events into order, or use the numbered selects if you prefer keyboard entry.</p>
+                <div class="order-grid" data-order-activity data-dnd-order>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-tilt"></select><span>Tilt occurs</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-switch"></select><span>Tilt switch changes open/closed state</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-pulldown"></select><span>Pull-down circuit creates defined HIGH or LOW</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-d2"></select><span>Arduino Digital Pin 2 reads the state</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-linx"></select><span>LabVIEW LINX receives the digital value</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-led"></select><span>LabVIEW displays tilt status</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-d3"></select><span>LabVIEW writes a value to Digital Pin 3</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-buzzer"></select><span>Active buzzer turns on or off</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-shift"></select><span>Shift registers compare current and previous states</span></label>
+                    <label class="order-item"><select class="persist-text order-select" data-key="chain-count"></select><span>Tilt count updates</span></label>
+                </div>
+                <div class="chip-row">
+                    <button class="utility-button" type="button" data-check-order>Check order</button>
+                    <span class="stage-status" data-order-feedback aria-live="polite"></span>
+                </div>
+
+                <h3>Activity C: Predict upright versus tilted readings</h3>
+                <div class="grid-layout two">
+                    <label class="response-field"><span>Sensor upright: predicted Digital Pin 2 value</span><select class="persist-text" data-key="predict-upright"><option value="">Choose...</option><option>HIGH</option><option>LOW</option><option>Floating</option></select></label>
+                    <label class="response-field"><span>Sensor tilted: predicted Digital Pin 2 value</span><select class="persist-text" data-key="predict-tilted"><option value="">Choose...</option><option>HIGH</option><option>LOW</option><option>Floating</option></select></label>
+                </div>
+                <label class="response-field"><span>Why would the input be unreliable without the pull-down resistor?</span><textarea class="persist-text" data-key="predict-floating"></textarea></label>
+                <details><summary>Hint after you predict</summary><div><p>A floating input has no defined reference to decide HIGH or LOW. A pull-down resistor gives the input a defined LOW when the switch is open.</p></div></details>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-2" id="build" tabindex="-1">
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Checkpoint 1</p>
+                <h2>Build the digital input and buzzer output circuit</h2>
+                <p>Wire the tilt ball switch, 10 k&Omega; pull-down resistor, active buzzer, Arduino Mega, breadboard, and jumper wires. Preserve the PDF pin assignments: Digital Pin 2 reads the tilt sensor and Digital Pin 3 drives the active buzzer.</p>
+                <div class="grid-layout two">
+                    <div class="mini-card">
+                        <h3>Skill map references</h3>
+                        <ul>
+                            <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=digital-output">Digital output</a></li>
+                            <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=power-rails-common-ground">Common ground</a></li>
+                            <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=breadboard">Breadboard connectivity</a></li>
+                            <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Systematic troubleshooting</a></li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Build focus</h3>
+                        <p>Use the instructor-provided schematic to place the tilt switch, pull-down resistor, active buzzer, Digital Pin 2, Digital Pin 3, 5 V, and GND.</p>
+                        <p class="warning-card">Before powering, trace the current path for both the input circuit and the buzzer circuit.</p>
+                    </div>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <div class="mini-card">
+                        <h3>Think it through</h3>
+                        <ul>
+                            <li>What does the tilt switch physically do when it changes orientation?</li>
+                            <li>What makes the input HIGH?</li>
+                            <li>What makes the input LOW?</li>
+                            <li>Why does the circuit need a defined reference to ground?</li>
+                            <li>What would happen if the pull-down resistor were removed?</li>
+                            <li>Why does the active buzzer require correct polarity?</li>
+                            <li>Is the buzzer sensing or acting?</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Required evidence</h3>
+                        <label class="response-field"><span>Pin used for tilt input</span><input class="persist-text" data-key="build-input-pin" value="Digital Pin 2"></label>
+                        <label class="response-field"><span>Pin used for buzzer output</span><input class="persist-text" data-key="build-output-pin" value="Digital Pin 3"></label>
+                        <label class="response-field"><span>Resistor value</span><input class="persist-text" data-key="build-resistor" value="10 kOhm"></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-buzzer-polarity"><span>Buzzer polarity checked.</span></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-pulldown"><span>Pull-down resistor location checked.</span></label>
+                        <label class="response-field mt-block"><span>Predicted upright digital value</span><input class="persist-text" data-key="build-upright" value="HIGH"></label>
+                        <label class="response-field"><span>Predicted tilted digital value</span><input class="persist-text" data-key="build-tilted" value="LOW"></label>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-3" id="read" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Checkpoint 2</p>
+                <h2>Display tilt status in LabVIEW</h2>
+                <p>Create a VI that opens a LINX connection, reads Digital Pin 2, displays the tilt state using a Round LED labelled <code>Tilted</code>, runs inside a while loop, waits 100 ms per loop, stops with a Stop button, and closes LINX after the loop ends.</p>
+                <figure class="diagram-card">
+                    <img src="../../assets/lab3-pdf-labview-digital-read-write.png" alt="Source PDF LabVIEW block diagram showing LINX digital read, digital write, wait timing, stop control, and close logic.">
+                    <figcaption>Source PDF LabVIEW VI: read Digital Pin 2, write the buzzer command on Digital Pin 3, and close LINX after the loop.</figcaption>
+                </figure>
+                <div class="grid-layout four">
+                    <details open><summary>A. Front Panel</summary><div><p>Add a Round LED labelled <code>Tilted</code> and a Stop button.</p></div></details>
+                    <details><summary>B. Block Diagram</summary><div><p>Arrange dataflow left to right: LINX Open, Digital Read, display logic, loop timing, Stop, LINX Close.</p></div></details>
+                    <details><summary>C. LINX Open</summary><div><p>Keep LINX Open outside the loop so communication is not reopened every iteration.</p></div></details>
+                    <details><summary>D. Digital Read</summary><div><p>Use LINX Digital Read with DI Channel constant set to <code>2</code>.</p></div></details>
+                    <details><summary>E. While Loop</summary><div><p>Put repeated sensor reading and display logic inside the loop.</p></div></details>
+                    <details><summary>F. Timing Delay</summary><div><p>Use Wait Until Next ms Multiple with numeric constant <code>100</code>.</p></div></details>
+                    <details><summary>G. Stop And Close</summary><div><p>Use the Stop button for normal stopping and place LINX Close after the loop.</p></div></details>
+                    <details><summary>H. Run And Test</summary><div><p>Verify the LED display for upright and tilted states.</p></div></details>
+                </div>
+                <div class="briefing-card mt-block">
+                    <strong>Reason through the LED label.</strong>
+                    <p>If the raw input is HIGH when upright and LOW when tilted, should a front-panel indicator labelled <code>Tilted</code> display the raw signal or the inverted signal? Explain your choice.</p>
+                    <label class="response-field"><span>Your reasoning</span><textarea class="persist-text" data-key="read-led-logic"></textarea></label>
+                </div>
+                <div class="grid-layout two">
+                    <div class="mini-card">
+                        <h3>Think it through</h3>
+                        <ul>
+                            <li>What does Digital Read return?</li>
+                            <li>Does Digital Read measure voltage, resistance, or a logic state?</li>
+                            <li>Why must the sensor be read repeatedly?</li>
+                            <li>What is the purpose of the 100 ms wait?</li>
+                            <li>What might happen if the loop runs as fast as possible?</li>
+                            <li>Why should LINX Open stay outside the loop?</li>
+                            <li>Why should LINX Close occur after the loop?</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Evidence</h3>
+                        <label class="response-field"><span>Upright LED behavior</span><input class="persist-text" data-key="read-upright-led"></label>
+                        <label class="response-field"><span>Tilted LED behavior</span><input class="persist-text" data-key="read-tilted-led"></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="read-stop-used"><span>VI stopped with Stop button, not Abort.</span></label>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-4" id="buzzer" tabindex="-1">
+            <article class="section-card card border-success">
+                <p class="eyebrow">Checkpoint 3</p>
+                <h2>Turn tilt detection into an audible alert</h2>
+                <p>Add LabVIEW control of the active buzzer using LINX Digital Write with DO Channel constant set to <code>3</code>. Because the raw sensor reads HIGH when upright and LOW when tilted, the buzzer command should be the inverse of the raw tilt input.</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Physical state</th><th>Raw Digital Pin 2 reading</th><th>Desired buzzer state</th><th>Digital Pin 3 command</th></tr></thead>
+                        <tbody>
+                            <tr><td>Upright</td><td>HIGH</td><td>OFF</td><td>LOW</td></tr>
+                            <tr><td>Tilted</td><td>LOW</td><td>ON</td><td>HIGH</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="logic-flow mt-block" aria-label="Buzzer logic">
+                    <span>Raw D2 value</span><b>-&gt;</b><span>Not function</span><b>-&gt;</b><span>D3 buzzer command</span><b>-&gt;</b><span>Active buzzer</span>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <div class="mini-card">
+                        <h3>Think it through</h3>
+                        <ul>
+                            <li>Why does the buzzer need the inverse of the raw sensor signal?</li>
+                            <li>What would happen if the Not function were removed?</li>
+                            <li>Is the Round LED showing raw sensor state or interpreted tilt state?</li>
+                            <li>Should the LED and buzzer always agree?</li>
+                            <li>What would happen if Digital Pin 2 and Digital Pin 3 were swapped?</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Required evidence</h3>
+                        <label class="response-field evidence-upload"><span>Front panel screenshot</span><input class="persist-file" data-key="buzz-front" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="buzz-front">No file selected.</small></label>
+                        <label class="response-field evidence-upload"><span>Block diagram screenshot</span><input class="persist-file" data-key="buzz-block" type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="buzz-block">No file selected.</small></label>
+                        <label class="response-field"><span>Upright test result</span><input class="persist-text" data-key="buzz-upright"></label>
+                        <label class="response-field"><span>Tilted test result</span><input class="persist-text" data-key="buzz-tilted"></label>
+                        <label class="response-field"><span>Explain the Not function</span><textarea class="persist-text" data-key="buzz-not"></textarea></label>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-5" id="count" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Checkpoint 4</p>
+                <h2>Count events, not loop iterations</h2>
+                <p>A loop running every 100 ms sees the same tilted state many times. If the program adds 1 every time it sees <code>tilted</code>, one physical tilt could be counted many times. To count events properly, compare current state with previous state and count only the desired transition.</p>
+                <div class="diagram-card">
+                    <div class="logic-flow" aria-label="Shift register event logic">
+                        <span>Loop k-1: previous state</span><b>-&gt;</b><span>Loop k: current state</span><b>-&gt;</b><span>previous upright and current tilted?</span><b>-&gt;</b><span>count = count + 1</span>
+                    </div>
+                </div>
+                <figure class="diagram-card mt-block">
+                    <img src="../../assets/lab3-pdf-tilt-counter-block-diagram.jpg" alt="Source PDF LabVIEW block diagram showing shift-register-based tilt counting logic.">
+                    <figcaption>Source PDF counter logic: shift registers carry previous values so one physical tilt is counted as an event rather than repeated loop iterations.</figcaption>
+                </figure>
+                <div class="grid-layout two mt-block">
+                    <div class="mini-card">
+                        <h3>Required LabVIEW elements</h3>
+                        <ul>
+                            <li>Two shift registers</li>
+                            <li>Numeric constant initialized to 0 for tilt count</li>
+                            <li>False constant initialized for previous digital state</li>
+                            <li>Not Equal? function</li>
+                            <li>And function</li>
+                            <li>Boolean To (1,0) function</li>
+                            <li>Add function</li>
+                            <li>Waveform Chart with digital display</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>What the shift registers store</h3>
+                        <p><strong>Shift register 1:</strong> stores the current tilt count and carries it into the next loop iteration.</p>
+                        <p><strong>Shift register 2:</strong> stores the previous sensor reading so the current reading can be compared against it.</p>
+                    </div>
+                </div>
+                <h3>Think it through</h3>
+                <ul>
+                    <li>Why is reading the current sensor value not enough to count tilts?</li>
+                    <li>What is the difference between a state and an event?</li>
+                    <li>What transition should count as a new tilt?</li>
+                    <li>How does Not Equal? detect a change?</li>
+                    <li>Why is the And function needed?</li>
+                    <li>Why convert Boolean to 1 or 0?</li>
+                    <li>What would happen if the sensor bounces between HIGH and LOW quickly?</li>
+                </ul>
+                <label class="response-field"><span>Explain which transition your VI counts.</span><textarea class="persist-text" data-key="count-transition"></textarea></label>
+            </article>
+
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Checkpoint 5</p>
+                <h2>Visualize events over time</h2>
+                <p>Add a Waveform Chart from Controls - Modern - Graph. Enable digital display, rename it <code>Number of Tilts vs Time</code>, change the Y-axis label to <code>Number of Tilts</code>, and wire it to the output of the Add function. Save the final VI as <code>lab3_tilt_counter.vi</code>.</p>
+                <figure class="diagram-card">
+                    <img src="../../assets/lab3-pdf-tilt-front-panel.png" alt="Source PDF final front panel with Stop button, Tilted indicator, Number of Tilts vs Time chart, and count display.">
+                    <figcaption>Source PDF final front panel: the chart and numeric display show the tilt count over time.</figcaption>
+                </figure>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Test</th><th>Expected result</th><th>Observed result</th></tr></thead>
+                        <tbody>
+                            <tr><td>Initial count</td><td>0</td><td><input class="persist-text" data-key="chart-initial"></td></tr>
+                            <tr><td>After one tilt</td><td>1</td><td><input class="persist-text" data-key="chart-one"></td></tr>
+                            <tr><td>After three tilts</td><td>3</td><td><input class="persist-text" data-key="chart-three"></td></tr>
+                            <tr><td>Hold sensor tilted</td><td>No repeated counting</td><td><input class="persist-text" data-key="chart-held"></td></tr>
+                            <tr><td>Final front panel screenshot</td><td>Included</td><td><input class="persist-text" data-key="chart-front" data-stage-required></td></tr>
+                            <tr><td>Final block diagram screenshot</td><td>Included</td><td><input class="persist-text" data-key="chart-block"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h3>Think it through</h3>
+                <ul>
+                    <li>Why should the graph increase in steps rather than continuously?</li>
+                    <li>What would a flat line mean?</li>
+                    <li>What would a rapidly increasing count while the sensor is held still mean?</li>
+                    <li>How could switch bounce affect the chart?</li>
+                    <li>Does the chart prove the physical sensor works, or only that the program count changes?</li>
+                </ul>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-6" id="extend" tabindex="-1">
+            <article class="section-card card border-success">
+                <p class="eyebrow">Checkpoint 6</p>
+                <h2>Add a selectable buzzer mode</h2>
+                <p>Add a toggle switch control that inverts active buzzer behaviour. Normal mode activates the buzzer when tilt is detected. Inverted mode activates the buzzer when there is no tilt.</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Mode</th><th>Upright</th><th>Tilted</th></tr></thead>
+                        <tbody>
+                            <tr><td>Normal mode</td><td>Buzzer OFF</td><td>Buzzer ON</td></tr>
+                            <tr><td>Inverted mode</td><td>Buzzer ON</td><td>Buzzer OFF</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <div class="mini-card">
+                        <h3>Implementation options</h3>
+                        <ul>
+                            <li>Add a Select function controlled by the toggle switch.</li>
+                            <li>Add Boolean logic to choose between normal and inverted buzzer command.</li>
+                            <li>Create a clearly labelled front-panel toggle.</li>
+                        </ul>
+                        <p>Do not change the physical sensor reading. Change the buzzer command logic.</p>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Required evidence</h3>
+                        <label class="response-field"><span>Modified front panel screenshot or file name</span><input class="persist-text" data-key="extend-front"></label>
+                        <label class="response-field"><span>Modified block diagram screenshot or file name</span><input class="persist-text" data-key="extend-block"></label>
+                        <label class="response-field"><span>Logic modification explanation</span><textarea class="persist-text" data-key="extend-logic" data-stage-required></textarea></label>
+                        <label class="response-field"><span>Normal mode test result</span><input class="persist-text" data-key="extend-normal"></label>
+                        <label class="response-field"><span>Inverted mode test result</span><input class="persist-text" data-key="extend-inverted"></label>
+                    </div>
+                </div>
+                <h3>Think it through</h3>
+                <ul>
+                    <li>What signal represents tilt detected?</li>
+                    <li>What signal represents no tilt?</li>
+                    <li>Should the toggle switch change the sensor reading or the buzzer command?</li>
+                    <li>Where is the cleanest place to insert inversion logic?</li>
+                    <li>What should happen if the toggle is changed while the VI is running?</li>
+                </ul>
+            </article>
+
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Optional Extensions</p>
+                <h2>Try these after required evidence is complete</h2>
+                <div class="grid-layout two">
+                    <div class="mini-card optional-card">Add switch-debounce logic.</div>
+                    <div class="mini-card optional-card">Add a reset-count button.</div>
+                    <div class="mini-card optional-card">Add a visual warning indicator when tilt count exceeds a threshold.</div>
+                    <div class="mini-card optional-card">Log tilt events to a file.</div>
+                    <div class="mini-card optional-card">Add a timestamp for each tilt event.</div>
+                    <div class="mini-card optional-card">Compare loop timing values: 50 ms, 100 ms, and 500 ms.</div>
+                    <div class="mini-card optional-card">Add a simulated cloud-upload placeholder.</div>
+                    <div class="mini-card optional-card">Add a second digital sensor.</div>
+                    <div class="mini-card optional-card">Convert the counter into an alarm-state machine.</div>
+                    <div class="mini-card optional-card">Explain how this local event node could later publish tilt events to a cloud dashboard.</div>
+                </div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-7" id="troubleshoot" tabindex="-1">
+            <article class="section-card card border-warning">
+                <p class="eyebrow">Troubleshooting Challenge</p>
+                <h2>Use evidence before changing the system</h2>
+                <div class="danger-card"><strong>Before changing the circuit or LabVIEW block diagram, write one hypothesis and one measurement or inspection that could support or reject it.</strong></div>
+                <div class="table-wrap mt-block">
+                    <table>
+                        <thead><tr><th>Observation</th><th>Possible cause</th><th>Test</th><th>Expected evidence</th><th>Actual evidence</th><th>Decision</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><textarea class="persist-text" data-key="trouble-observation"></textarea></td>
+                                <td><textarea class="persist-text" data-key="trouble-cause"></textarea></td>
+                                <td><textarea class="persist-text" data-key="trouble-test"></textarea></td>
+                                <td><textarea class="persist-text" data-key="trouble-expected"></textarea></td>
+                                <td><textarea class="persist-text" data-key="trouble-actual"></textarea></td>
+                                <td><textarea class="persist-text" data-key="trouble-decision" data-stage-required></textarea></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid-layout three mt-block">
+                    <div class="mini-card">
+                        <h3>Hardware faults</h3>
+                        <ul>
+                            <li>5 V and GND shorted</li>
+                            <li>Missing GND connection</li>
+                            <li>Pull-down resistor not connected to ground</li>
+                            <li>Tilt switch in the wrong breadboard row</li>
+                            <li>Digital Pin 2 connected to wrong node</li>
+                            <li>Buzzer polarity reversed or wrong pin</li>
+                            <li>Loose jumper wire or power-only USB cable</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Software/configuration faults</h3>
+                        <ul>
+                            <li>LINX firmware not loaded</li>
+                            <li>Wrong serial port selected</li>
+                            <li>DI channel not set to 2</li>
+                            <li>DO channel not set to 3</li>
+                            <li>Not function missing or placed incorrectly</li>
+                            <li>Shift register not initialized or wired incorrectly</li>
+                            <li>Boolean To (1,0) or And logic missing</li>
+                        </ul>
+                    </div>
+                    <div class="mini-card">
+                        <h3>Data interpretation faults</h3>
+                        <ul>
+                            <li>Assuming the sensor outputs an analog angle</li>
+                            <li>Counting state instead of event</li>
+                            <li>Ignoring switch bounce</li>
+                            <li>Assuming buzzer silence proves sensor failure</li>
+                            <li>Assuming LED and buzzer state must always be identical</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="briefing-card mt-block"><h3>Troubleshooting discussion</h3><p>First decide whether the issue is wiring, Arduino communication, LabVIEW logic, or interpretation. Then test one hypothesis with one measurement or inspection.</p></div>
+            </article>
+        </section>
+
+        <section class="stage-panel stage-8" id="reflect" tabindex="-1">
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Deliverables</p>
+                <h2>Submission checklist</h2>
+                <div class="grid-layout two">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-display-buzzer"><span>Completed LabVIEW VI for tilt display and buzzer control.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-counter"><span>Completed LabVIEW VI for tilt counting.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-file"><span>Final VI file named <code>lab3_tilt_counter.vi</code> or instructor-approved equivalent.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-circuit"><span>Evidence of completed physical circuit.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-front"><span>Screenshot/export of front panel.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-block"><span>Screenshot/export of block diagram.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-switch"><span>Explanation of tilt switch operation and two applications.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-buzzer"><span>Explanation of active buzzer operation and two applications.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-io"><span>Classification of tilt switch and buzzer as input/output devices.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-shift"><span>Explanation of both shift registers and tilt-counting logic.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-extension"><span>Extension implementation for inverted buzzer behaviour.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-names"><span>Student names and numbers included as required.</span></label>
+                </div>
+            </article>
+
+            <article class="section-card card border-gold">
+                <p class="eyebrow">Assessment Guide</p>
+                <h2>Suggested weighting</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Category</th><th>Weight</th><th>Assessment type</th></tr></thead>
+                        <tbody>
+                            <tr><td>Pre-lab and predictions</td><td>10%</td><td>Structured evidence</td></tr>
+                            <tr><td>Circuit construction and explanation</td><td>15%</td><td>Instructor assessed</td></tr>
+                            <tr><td>Sensor read and buzzer control VI</td><td>20%</td><td>Structured and instructor assessed</td></tr>
+                            <tr><td>Event-counting logic and shift-register explanation</td><td>25%</td><td>Instructor assessed</td></tr>
+                            <tr><td>Waveform chart and test evidence</td><td>10%</td><td>Structured evidence</td></tr>
+                            <tr><td>Extension implementation</td><td>10%</td><td>Structured and instructor assessed</td></tr>
+                            <tr><td>Troubleshooting and reflection</td><td>10%</td><td>Instructor assessed</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="warning-card mt-block">This page does not grade automatically. It helps collect required evidence and reasoning for instructor assessment.</p>
+            </article>
+
+            <article class="section-card card border-success">
+                <p class="eyebrow">Reflection</p>
+                <h2>Final questions</h2>
+                <label class="response-field"><span>1. What physical change occurs inside the tilt ball switch when it is tilted?</span><textarea class="persist-text" data-key="reflect-1"></textarea></label>
+                <label class="response-field"><span>2. What does Arduino Digital Pin 2 actually read?</span><textarea class="persist-text" data-key="reflect-2"></textarea></label>
+                <label class="response-field"><span>3. Why is the 10 k&Omega; pull-down resistor necessary?</span><textarea class="persist-text" data-key="reflect-3"></textarea></label>
+                <label class="response-field"><span>4. Why does the buzzer require the inverse of the raw sensor reading in the original circuit?</span><textarea class="persist-text" data-key="reflect-4"></textarea></label>
+                <label class="response-field"><span>5. Is the tilt switch an input or output device? Explain.</span><textarea class="persist-text" data-key="reflect-5"></textarea></label>
+                <label class="response-field"><span>6. Is the active buzzer an input or output device? Explain.</span><textarea class="persist-text" data-key="reflect-6"></textarea></label>
+                <label class="response-field"><span>7. What is the difference between detecting a tilted state and counting a new tilt event?</span><textarea class="persist-text" data-key="reflect-7"></textarea></label>
+                <label class="response-field"><span>8. Why are shift registers needed for the tilt counter?</span><textarea class="persist-text" data-key="reflect-8"></textarea></label>
+                <label class="response-field"><span>9. What could cause the counter to increase more than once for a single physical tilt?</span><textarea class="persist-text" data-key="reflect-9"></textarea></label>
+                <label class="response-field"><span>10. Does this lab create a complete IoT system? If not, which IoT layer has been completed and what still needs to be added?</span><textarea class="persist-text" data-key="reflect-10"></textarea></label>
+                <label class="response-field"><span>11. What did you initially believe about digital sensors that this lab changed or clarified?</span><textarea class="persist-text" data-key="reflect-11"></textarea></label>
+            </article>
+
+            <article class="section-card card border-maroon">
+                <p class="eyebrow">Glossary</p>
+                <h2>Key terms</h2>
+                <div class="grid-layout three">
+                    <details><summary>Tilt ball switch</summary><div>A switch whose open or closed state changes with orientation.</div></details>
+                    <details><summary>Active buzzer</summary><div>A buzzer module that produces sound when powered with the correct polarity.</div></details>
+                    <details><summary>Digital input</summary><div>A pin used to read a logic HIGH or LOW state.</div></details>
+                    <details><summary>Digital output</summary><div>A pin used to command LOW or HIGH.</div></details>
+                    <details><summary>HIGH</summary><div>A digital logic state interpreted as true or on.</div></details>
+                    <details><summary>LOW</summary><div>A digital logic state interpreted as false or off.</div></details>
+                    <details><summary>Open circuit</summary><div>A path that is not electrically connected.</div></details>
+                    <details><summary>Short circuit</summary><div>A very low-resistance connection between two points.</div></details>
+                    <details><summary>Floating input</summary><div>An input with no defined HIGH or LOW reference.</div></details>
+                    <details><summary>Pull-down resistor</summary><div>A resistor that defines an input as LOW when the switch is open.</div></details>
+                    <details><summary>Arduino Digital Pin</summary><div>A microcontroller pin that can read or write digital logic.</div></details>
+                    <details><summary>LabVIEW</summary><div>A graphical programming environment.</div></details>
+                    <details><summary>VI</summary><div>Virtual Instrument, a LabVIEW program.</div></details>
+                    <details><summary>Front Panel</summary><div>The user-facing controls and indicators of a VI.</div></details>
+                    <details><summary>Block Diagram</summary><div>The graphical program logic of a VI.</div></details>
+                    <details><summary>LINX</summary><div>LabVIEW toolkit for communicating with supported hardware such as Arduino.</div></details>
+                    <details><summary>Digital Read</summary><div>A LINX block that reads a digital input channel.</div></details>
+                    <details><summary>Digital Write</summary><div>A LINX block that writes a digital output command.</div></details>
+                    <details><summary>While Loop</summary><div>A repeated LabVIEW structure that continues until a stop condition is met.</div></details>
+                    <details><summary>Wait Until Next ms Multiple</summary><div>A timing function used to pace loop execution.</div></details>
+                    <details><summary>Stop button</summary><div>A controlled way to end a VI and allow cleanup logic to run.</div></details>
+                    <details><summary>Abort button</summary><div>An emergency interruption that should not be normal operation.</div></details>
+                    <details><summary>Shift register</summary><div>A loop feature that carries a value from one iteration to the next.</div></details>
+                    <details><summary>Previous state</summary><div>The sensor value remembered from the prior loop iteration.</div></details>
+                    <details><summary>Current state</summary><div>The sensor value read during the current loop iteration.</div></details>
+                    <details><summary>Event</summary><div>A change or transition that happens at a moment in time.</div></details>
+                    <details><summary>State</summary><div>A condition that may remain true for many loop iterations.</div></details>
+                    <details><summary>Transition</summary><div>A change from one state to another.</div></details>
+                    <details><summary>Boolean</summary><div>A true/false value.</div></details>
+                    <details><summary>Not function</summary><div>A Boolean function that inverts true to false or false to true.</div></details>
+                    <details><summary>And function</summary><div>A Boolean function that is true only when required inputs are true.</div></details>
+                    <details><summary>Not Equal?</summary><div>A comparison function that detects when two values differ.</div></details>
+                    <details><summary>Boolean To (1,0)</summary><div>A conversion that turns true into 1 and false into 0.</div></details>
+                    <details><summary>Waveform Chart</summary><div>A LabVIEW indicator that displays values over time.</div></details>
+                    <details><summary>Switch bounce</summary><div>Rapid electrical changes when a mechanical switch changes state.</div></details>
+                    <details><summary>IoT event node</summary><div>A local device that detects and counts events before later network or cloud connection.</div></details>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        (() => {
+            const STORAGE_PREFIX = 'smrttech-lab3-tilt';
+            const STAGE_COUNT = 9;
+            const STAGE_NAMES = ['Prepare', 'Predict', 'Build Circuit', 'Read Sensor', 'Control Buzzer', 'Count Events', 'Extend', 'Troubleshoot', 'Reflect'];
+            const ORDER_KEYS = ['chain-tilt', 'chain-switch', 'chain-pulldown', 'chain-d2', 'chain-linx', 'chain-led', 'chain-d3', 'chain-buzzer', 'chain-shift', 'chain-count'];
+            const CORRECT_ORDER = ['1','2','3','4','5','6','7','8','9','10'];
+
+            document.body.classList.add('js-enabled');
+
+            function storageKey(key) {
+                return `${STORAGE_PREFIX}:${key}`;
+            }
+
+            function setStage(stage) {
+                const safeStage = Math.max(0, Math.min(STAGE_COUNT - 1, Number(stage) || 0));
+                document.body.className = document.body.className.split(' ').filter(name => !/^stage-\d+$/.test(name)).join(' ');
+                document.body.classList.add('pb-24', 'pt-24', 'js-enabled', `stage-${safeStage}`);
+                document.querySelectorAll('[data-stage]').forEach(button => {
+                    const active = Number(button.dataset.stage) === safeStage;
+                    button.classList.toggle('active', active);
+                    button.setAttribute('aria-current', active ? 'step' : 'false');
+                });
+                localStorage.setItem(storageKey('current-stage'), String(safeStage));
+                updateProgress();
+                const panel = document.querySelector(`.stage-panel.stage-${safeStage}`);
+                if (panel) panel.focus({ preventScroll: true });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function updateProgress() {
+                let complete = 0;
+                document.querySelectorAll('[data-stage]').forEach(button => {
+                    const isComplete = localStorage.getItem(storageKey(`stage-${button.dataset.stage}-complete`)) === 'true';
+                    button.classList.toggle('completed', isComplete);
+                    if (isComplete) complete += 1;
+                });
+                document.querySelectorAll('[data-progress-status]').forEach(status => {
+                    status.textContent = `${complete}/${STAGE_COUNT}`;
+                    status.setAttribute('title', `${complete} of ${STAGE_COUNT} phases marked complete.`);
+                });
+            }
+
+            function showStageMessage(stage, message) {
+                const panel = document.querySelector(`.stage-panel.stage-${stage}`);
+                if (!panel) return;
+                let messageBox = panel.querySelector('.stage-message');
+                if (!messageBox) {
+                    messageBox = document.createElement('div');
+                    messageBox.className = 'stage-message';
+                    messageBox.setAttribute('role', 'status');
+                    messageBox.setAttribute('aria-live', 'polite');
+                    const footer = panel.querySelector('.stage-footer');
+                    if (footer) footer.before(messageBox);
+                    else panel.appendChild(messageBox);
+                }
+                messageBox.textContent = message;
+                messageBox.className = 'stage-message show success';
+            }
+
+            function markStageComplete(stage) {
+                localStorage.setItem(storageKey(`stage-${stage}-complete`), 'true');
+                updateProgress();
+                showStageMessage(stage, 'Stage complete. Your progress has been saved in this browser.');
+            }
+
+            function buildStageFooters() {
+                document.querySelectorAll('.stage-panel').forEach((panel, index) => {
+                    if (panel.querySelector('.stage-footer')) return;
+                    const footer = document.createElement('div');
+                    footer.className = 'stage-footer';
+                    const previous = document.createElement('button');
+                    previous.type = 'button';
+                    previous.className = 'nav-button secondary';
+                    previous.textContent = index === 0 ? 'Back to portal' : `Back: ${STAGE_NAMES[index - 1]}`;
+                    previous.addEventListener('click', () => {
+                        if (index === 0) window.location.href = '../../index.html';
+                        else setStage(index - 1);
+                    });
+                    const controls = document.createElement('div');
+                    controls.className = 'chip-row compact';
+                    const next = document.createElement('button');
+                    next.type = 'button';
+                    next.className = 'nav-button primary';
+                    next.textContent = index === STAGE_COUNT - 1 ? 'Finish Lab 3' : `Next: ${STAGE_NAMES[index + 1]}`;
+                    next.addEventListener('click', () => {
+                        markStageComplete(index);
+                        if (index < STAGE_COUNT - 1) setStage(index + 1);
+                    });
+                    controls.append(next);
+                    footer.append(previous, controls);
+                    panel.appendChild(footer);
+                });
+            }
+
+            function setupOrderOptions() {
+                document.querySelectorAll('.order-select').forEach(select => {
+                    if (select.options.length) return;
+                    const blank = document.createElement('option');
+                    blank.value = '';
+                    blank.textContent = 'Order';
+                    select.appendChild(blank);
+                    for (let i = 1; i <= 10; i += 1) {
+                        const option = document.createElement('option');
+                        option.value = String(i);
+                        option.textContent = String(i);
+                        select.appendChild(option);
+                    }
+                });
+            }
+
+            function restoreInputs() {
+                document.querySelectorAll('.persist-check').forEach(input => {
+                    input.checked = localStorage.getItem(storageKey(input.dataset.key)) === 'true';
+                    input.addEventListener('change', () => localStorage.setItem(storageKey(input.dataset.key), String(input.checked)));
+                });
+                document.querySelectorAll('.persist-text').forEach(input => {
+                    const saved = localStorage.getItem(storageKey(input.dataset.key));
+                    if (saved !== null) input.value = saved;
+                    input.addEventListener('input', () => localStorage.setItem(storageKey(input.dataset.key), input.value));
+                    input.addEventListener('change', () => localStorage.setItem(storageKey(input.dataset.key), input.value));
+                });
+            }
+
+            function checkOrder() {
+                const values = ORDER_KEYS.map(key => document.querySelector(`[data-key="${key}"]`)?.value || '');
+                const feedback = document.querySelector('[data-order-feedback]');
+                if (!feedback) return;
+                if (values.some(value => value === '')) {
+                    feedback.textContent = 'Choose an order for every event.';
+                    return;
+                }
+                if (new Set(values).size !== values.length) {
+                    feedback.textContent = 'Each order number should be used once.';
+                    return;
+                }
+                const correct = values.every((value, index) => value === CORRECT_ORDER[index]);
+                feedback.textContent = correct ? 'Correct signal chain.' : 'Not yet. Trace the path from physical tilt to counted event.';
+            }
+
+            function exportResponses() {
+                return window.LabCompletionExport?.download();
+            }
+
+            function resetLocalData() {
+                if (!confirm('Reset only Lab 3 local progress and responses on this browser?')) return;
+                window.LabCompletionExport?.clearStoredData();
+                Object.keys(localStorage).filter(key => key.startsWith(`${STORAGE_PREFIX}:`)).forEach(key => localStorage.removeItem(key));
+                location.reload();
+            }
+
+            function setupSidebars() {
+                document.querySelectorAll('[data-sidebar-toggle]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const selected = document.getElementById(button.dataset.sidebarToggle);
+                        if (!selected) return;
+                        const wasOpen = selected.classList.contains('active');
+                        document.querySelectorAll('.sidebar').forEach(sidebar => sidebar.classList.remove('active'));
+                        if (!wasOpen) selected.classList.add('active');
+                    });
+                });
+            }
+
+            buildStageFooters();
+            setupSidebars();
+            setupOrderOptions();
+            restoreInputs();
+            document.querySelectorAll('[data-stage]').forEach(button => button.addEventListener('click', () => setStage(button.dataset.stage)));
+            document.querySelector('[data-check-order]')?.addEventListener('click', checkOrder);
+            // Completion-file export is provided by assets/js/lab-export.js.
+            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+            document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
+            setStage(localStorage.getItem(storageKey('current-stage')) || 0);
+        })();
+    </script>
+    <script src="../../assets/js/lab-shared.js"></script>
+    <script src="../../assets/js/lab-export.js"></script>
+</body>
+</html>

@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Searchable CloudLab-styled knowledge database for SMRTTECH 3CC3 lab manuals.">
+    <title>Knowledge Database | SMRTTECH 3CC3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+
+        :root {
+            --mac-maroon: #7A003C;
+            --mac-gold: #FDBF57;
+            --mac-grey: #495965;
+            --mac-maroon-20: #E4CCDA;
+            --mac-maroon-40: #CA99B1;
+            --mac-maroon-80: #953360;
+            --mac-gold-20: #FFF2DD;
+            --mac-gold-60: #FED999;
+            --mac-grey-20: #DBDEE0;
+            --mac-grey-40: #B6BDC1;
+            --mac-grey-80: #6D7A82;
+            --lab-background: #F7F8FA;
+            --lab-surface: #FFFFFF;
+            --lab-text: #2D3338;
+            --success: #287A4B;
+            --warning: #9A5C00;
+            --danger: #B42318;
+            --content: 1180px;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--lab-background);
+            color: var(--lab-text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        a { color: inherit; }
+        button, input { font: inherit; }
+        code, .font-mono { font-family: 'Roboto Mono', Consolas, monospace; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--mac-maroon) 0%, var(--mac-maroon-80) 62%, var(--mac-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--mac-maroon) 0%, var(--mac-maroon-80) 65%, var(--mac-gold) 100%);
+        }
+
+        .stage-bar {
+            position: fixed;
+            inset: 0 0 auto 0;
+            z-index: 40;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(73, 89, 101, 0.12);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .stage-bar-inner {
+            max-width: var(--content);
+            margin: 0 auto;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            overflow-x: auto;
+        }
+
+        .stage-label {
+            flex: 0 0 auto;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--mac-grey-80);
+            margin-right: 0.3rem;
+        }
+
+        .stage-btn {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0.55rem 0.95rem;
+            border-radius: 9px;
+            border: 1px solid transparent;
+            font-size: 0.83rem;
+            font-weight: 700;
+            color: var(--mac-grey);
+            background: transparent;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .stage-btn:hover { background: var(--mac-grey-20); }
+        .stage-btn.active {
+            color: white;
+            background: var(--mac-maroon);
+            box-shadow: 0 5px 13px rgba(122, 0, 60, 0.28);
+        }
+
+        .portal-shell {
+            width: min(calc(100% - 2rem), var(--content));
+            margin: 0 auto;
+        }
+
+        .page-header {
+            padding: 6.25rem 0 2.2rem;
+        }
+
+        .brand-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1.4rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(73, 89, 101, 0.14);
+        }
+
+        .brand-row img {
+            width: 124px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .brand-divider {
+            width: 1px;
+            height: 64px;
+            background: rgba(73, 89, 101, 0.18);
+        }
+
+        .eyebrow {
+            margin: 0 0 0.55rem;
+            color: var(--mac-maroon);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        h1, h2, h3 { line-height: 1.15; margin-top: 0; }
+        h1 {
+            margin-bottom: 0.7rem;
+            font-size: clamp(2.25rem, 5vw, 4.5rem);
+            letter-spacing: -0.02em;
+        }
+        h2 { font-size: clamp(1.6rem, 3vw, 2.35rem); }
+        h3 { font-size: 1.15rem; }
+
+        .lead {
+            max-width: 840px;
+            color: var(--mac-grey);
+            font-size: clamp(1.05rem, 2vw, 1.25rem);
+            font-weight: 300;
+            margin: 0;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            margin-top: 1.2rem;
+        }
+
+        .stage-summary-chip,
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.42rem 0.7rem;
+            border-radius: 999px;
+            background: var(--mac-gold-20);
+            color: #5B3900;
+            border: 1px solid var(--mac-gold-60);
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .tag.subtle {
+            background: #EEF1F4;
+            color: var(--mac-grey);
+            border-color: #DCE2E8;
+        }
+
+        main { padding-bottom: 4rem; }
+
+        .card {
+            background: var(--lab-surface);
+            border-radius: 16px;
+            border: 1px solid rgba(73, 89, 101, 0.10);
+            box-shadow: 0 10px 18px -8px rgba(0, 0, 0, 0.16), 0 4px 8px -4px rgba(0, 0, 0, 0.08);
+            padding: 1.35rem;
+        }
+
+        .card + .card { margin-top: 1rem; }
+        .border-maroon { border-left: 5px solid var(--mac-maroon); }
+        .border-gold { border-left: 5px solid var(--mac-gold); }
+        .border-success { border-left: 5px solid var(--success); }
+
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .three-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .lab-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .lab-card,
+        .topic-card,
+        .arch-node {
+            background: white;
+            border: 1px solid rgba(73, 89, 101, 0.12);
+            border-radius: 14px;
+            padding: 1rem;
+        }
+
+        .lab-card {
+            min-height: 245px;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .lab-card:hover {
+            border-color: var(--mac-maroon);
+            transform: translateY(-2px);
+        }
+
+        .lab-card.available { border-top: 6px solid var(--mac-maroon); }
+        .lab-card.blank { border-top: 6px solid var(--mac-gold); }
+        .lab-card p, .topic-card p, .arch-node p { color: var(--mac-grey); }
+        .lab-card .portal-button { margin-top: auto; align-self: flex-start; }
+
+        .blank-lab-panel {
+            min-height: 360px;
+            display: grid;
+            align-content: center;
+            gap: 1rem;
+        }
+
+        .status-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            padding: 0.9rem;
+            border-radius: 12px;
+            background: #F8FAFC;
+            border: 1px solid rgba(73, 89, 101, 0.10);
+        }
+
+        .portal-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            min-height: 42px;
+            padding: 0.68rem 0.95rem;
+            border-radius: 9px;
+            border: 1px solid var(--mac-maroon);
+            background: var(--mac-maroon);
+            color: white;
+            font-size: 0.88rem;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .portal-button.secondary {
+            background: white;
+            color: var(--mac-grey);
+            border-color: var(--mac-grey-40);
+        }
+
+        .portal-button.secondary:hover { background: var(--mac-grey-20); }
+        .portal-button:hover { background: var(--mac-maroon-80); color: white; }
+
+        .architecture-map {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(145px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.15rem;
+        }
+
+        .arch-node {
+            min-width: 145px;
+            position: relative;
+            border-top: 5px solid var(--mac-maroon);
+        }
+
+        .arch-node.gold { border-top-color: var(--mac-gold); }
+        .arch-node.grey { border-top-color: var(--mac-grey); }
+        .arch-node.success { border-top-color: var(--success); }
+        .arch-node strong {
+            display: block;
+            color: var(--mac-maroon);
+            font-size: 0.88rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .flow-band {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.65rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 14px;
+            background: #F8FAFC;
+            border: 1px solid rgba(73, 89, 101, 0.10);
+        }
+
+        .flow-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 42px;
+            border-radius: 999px;
+            padding: 0.55rem 0.85rem;
+            background: white;
+            border: 1px solid #DCE2E8;
+            color: var(--mac-grey);
+            font-weight: 800;
+            font-size: 0.82rem;
+        }
+
+        .flow-arrow { color: var(--mac-grey-80); font-weight: 900; }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            height: 100vh;
+            width: min(500px, calc(100vw - 48px));
+            background: white;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.22);
+            z-index: 60;
+            transition: transform 0.38s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #architectureSidebar { left: 0; transform: translateX(-100%); }
+        #knowledgeSidebar { right: 0; transform: translateX(100%); }
+        #architectureSidebar.active, #knowledgeSidebar.active { transform: translateX(0); }
+
+        .sidebar-handle {
+            position: absolute;
+            top: 50%;
+            width: 34px;
+            height: 62px;
+            background: var(--mac-maroon);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 65;
+            border: 0;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        #handle-architecture {
+            right: -34px;
+            border-radius: 0 9px 9px 0;
+        }
+
+        #handle-knowledge {
+            left: -34px;
+            border-radius: 9px 0 0 9px;
+        }
+
+        .sidebar-header {
+            padding: 1.4rem;
+            color: white;
+            background: var(--mac-maroon);
+        }
+
+        .sidebar-scroll {
+            padding: 1rem;
+            overflow-y: auto;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .link-list {
+            display: grid;
+            gap: 0.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .link-list a {
+            display: block;
+            text-decoration: none;
+            border-radius: 10px;
+            padding: 0.65rem 0.75rem;
+            border: 1px solid #DDE3E8;
+            background: white;
+            color: var(--lab-text);
+            font-weight: 700;
+        }
+
+        .link-list a:hover { border-color: var(--mac-maroon); background: var(--mac-maroon-20); }
+
+        .search-panel {
+            display: grid;
+            gap: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-panel input {
+            width: 100%;
+            min-height: 46px;
+            border-radius: 10px;
+            border: 1px solid #CBD5E1;
+            padding: 0.7rem 0.85rem;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .filter-button {
+            border: 1px solid #DCE2E8;
+            background: white;
+            border-radius: 999px;
+            padding: 0.48rem 0.75rem;
+            color: var(--mac-grey);
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .filter-button.active {
+            background: var(--mac-maroon);
+            color: white;
+            border-color: var(--mac-maroon);
+        }
+
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .topic-card {
+            border-left: 5px solid var(--mac-maroon);
+            scroll-margin-top: 86px;
+        }
+
+        .topic-card[data-category="Circuits"] { border-left-color: var(--mac-gold); }
+        .topic-card[data-category="Arduino"] { border-left-color: var(--success); }
+        .topic-card[data-category="Measurement"] { border-left-color: var(--warning); }
+        .topic-card[data-category="Practice"] { border-left-color: var(--mac-grey); }
+        .topic-card h3 { margin-bottom: 0.4rem; }
+
+        .topic-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .topic-card[hidden] { display: none; }
+
+        .empty-state {
+            display: none;
+            padding: 1.2rem;
+            border-radius: 14px;
+            background: var(--mac-gold-20);
+            border: 1px solid var(--mac-gold-60);
+            color: #5B3900;
+        }
+
+        .empty-state.show { display: block; }
+
+        .footer {
+            border-top: 1px solid rgba(73, 89, 101, 0.12);
+            background: white;
+            color: var(--mac-grey);
+            font-size: 0.84rem;
+            padding: 1.4rem 0;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 980px) {
+            .section-grid, .three-grid, .lab-grid, .topic-grid { grid-template-columns: 1fr; }
+            .architecture-map { grid-template-columns: repeat(5, minmax(180px, 1fr)); }
+            .brand-divider { display: none; }
+        }
+
+        @media (max-width: 640px) {
+            .page-header { padding-top: 7.25rem; }
+            .brand-row img { width: 96px; }
+            .card { padding: 1rem; }
+            .stage-bar-inner { padding-inline: 0.9rem; }
+            .stage-label { display: none; }
+        }
+
+    </style>
+    <link rel="stylesheet" href="../assets/css/site.css">
+    <link rel="icon" type="image/png" href="../assets/McMaster-logo.png">
+</head>
+
+<body>
+    <nav class="stage-bar" aria-label="Course navigation">
+        <div class="stage-bar-inner">
+            <span class="stage-label">Student Space</span>
+            <a class="stage-btn" href="../index.html">Home</a>
+            <a class="stage-btn active" href="index.html">Knowledge Database</a>
+        </div>
+    </nav>
+
+    <header class="portal-shell page-header">
+        <div class="brand-row">
+            <img src="../assets/McMaster-logo.png" alt="McMaster University logo">
+            <div class="brand-divider" aria-hidden="true"></div>
+            <div>
+                <p class="eyebrow">SMRTTECH 3CC3 - Shared Reference Layer</p>
+                <h1>Knowledge <span class="gradient-text">Database</span></h1>
+                <p class="lead">A searchable concept layer for LabVIEW, circuits, sensors, Arduino, measurement, simulation, and engineering practice. Labs link here at the moment students need support, then students return to the task.</p>
+            </div>
+        </div>
+        <div class="chip-row">
+            <span class="stage-summary-chip">Searchable concepts</span>
+            <span class="stage-summary-chip">Reusable across labs</span>
+            <span class="stage-summary-chip">Lab 1 mapped</span>
+            <span class="stage-summary-chip">Future-lab ready</span>
+        </div>
+    </header>
+
+    <main class="portal-shell">
+        <section class="card border-maroon" aria-labelledby="repositoryViewHeading">
+            <p class="eyebrow">Repository Views</p>
+            <h2 id="repositoryViewHeading">Choose how to browse knowledge</h2>
+            <p>Documentation view keeps the normal articles first. Skill-map view reveals conceptual relationships across labs without replacing the documentation.</p>
+            <div class="skill-view-tabs" role="tablist" aria-label="Knowledge repository views">
+                <button id="documentation-view-tab" class="skill-view-tab" type="button" role="tab" data-skill-view-tab="documentation" aria-selected="true" aria-controls="documentation-view">Documentation view</button>
+                <button id="skill-map-view-tab" class="skill-view-tab" type="button" role="tab" data-skill-view-tab="skill-map" aria-selected="false" aria-controls="skill-map-view" tabindex="-1">Skill-map view</button>
+            </div>
+        </section>
+
+        <section id="documentation-view" class="skill-view-panel" role="tabpanel" data-skill-view-panel="documentation" aria-labelledby="documentation-view-tab" tabindex="-1">
+        <section id="architecture" class="card border-maroon">
+            <p class="eyebrow">Knowledge Architecture</p>
+            <h2>The database is the shared support layer</h2>
+            <p>Instead of duplicating the same explanation inside every manual, each lab points to this database. That keeps the lab page focused on doing the work, while the database carries reusable explanations and troubleshooting patterns.</p>
+            <div class="flow-band">
+                <span class="flow-pill">Lab instruction</span>
+                <span class="flow-arrow">&rarr;</span>
+                <span class="flow-pill">Concept link</span>
+                <span class="flow-arrow">&rarr;</span>
+                <span class="flow-pill">Short explanation</span>
+                <span class="flow-arrow">&rarr;</span>
+                <span class="flow-pill">Return to task</span>
+            </div>
+        </section>
+
+        <section id="topics" class="card border-gold">
+            <p class="eyebrow">Browse Topics</p>
+            <h2>Find the concept you need</h2>
+            <div class="search-panel">
+                <input type="search" data-knowledge-search placeholder="Search topics, tools, code, measurements, or troubleshooting..." aria-label="Search knowledge topics">
+                <div class="filter-row" aria-label="Filter knowledge topics">
+                    <button class="filter-button active" type="button" data-filter="All">All</button>
+                    <button class="filter-button" type="button" data-filter="LabVIEW">LabVIEW</button>
+                    <button class="filter-button" type="button" data-filter="Circuits">Circuits</button>
+                    <button class="filter-button" type="button" data-filter="Measurement">Measurement</button>
+                    <button class="filter-button" type="button" data-filter="Arduino">Arduino</button>
+                    <button class="filter-button" type="button" data-filter="Simulation">Simulation</button>
+                    <button class="filter-button" type="button" data-filter="Practice">Practice</button>
+                </div>
+            </div>
+            <div class="empty-state" data-empty-state>No matching topics. Try a broader search or choose All.</div>
+            <div class="topic-grid">
+
+                <article id="labview-interface" class="topic-card" data-topic-card data-category="LabVIEW" data-keywords="Front Panel and Block Diagram LabVIEW">
+                    <div class="topic-meta">
+                        <span class="tag">LabVIEW</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Front Panel and Block Diagram</h3>
+                    <p>The front panel is the student-facing interface: controls, indicators, labels, and decorations. The block diagram holds the terminals, functions, structures, wires, and execution logic.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>Use this when building the voltage-divider VI and deciding what belongs on the interface.</p>
+                    </div>
+                </article>
+
+                <article id="controls-indicators" class="topic-card" data-topic-card data-category="LabVIEW" data-keywords="Controls and Indicators LabVIEW">
+                    <div class="topic-meta">
+                        <span class="tag">LabVIEW</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Controls and Indicators</h3>
+                    <p>Controls provide input values to a VI. Indicators display output values produced by the VI. In the divider VI, Vin, R1, and R2 are controls; Vout is an indicator.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>Quick check: a Stop button is a Boolean control because it supplies a value to the loop condition.</p>
+                    </div>
+                </article>
+
+                <article id="vi-subvi" class="topic-card" data-topic-card data-category="LabVIEW" data-keywords="VI and SubVI LabVIEW">
+                    <div class="topic-meta">
+                        <span class="tag">LabVIEW</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>VI and SubVI</h3>
+                    <p>A VI is a LabVIEW program. A VI becomes a SubVI when it is given a connector pane and reused inside another block diagram.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>A future lab can package the voltage-divider calculation as a reusable SubVI.</p>
+                    </div>
+                </article>
+
+                <article id="labview-data" class="topic-card" data-topic-card data-category="LabVIEW" data-keywords="Data Types, Arrays, and Clusters LabVIEW">
+                    <div class="topic-meta">
+                        <span class="tag">LabVIEW</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Data Types, Arrays, and Clusters</h3>
+                    <p>Numeric wires carry numbers, Boolean wires carry true or false, and strings carry text. Arrays hold multiple values of one type. Clusters group related values and may combine different types.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>Five voltage readings naturally form an array; a student ID plus readings plus a completion flag could form a cluster.</p>
+                    </div>
+                </article>
+
+                <article id="labview-loops" class="topic-card" data-topic-card data-category="LabVIEW" data-keywords="While Loops, For Loops, and Shift Registers LabVIEW">
+                    <div class="topic-meta">
+                        <span class="tag">LabVIEW</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>While Loops, For Loops, and Shift Registers</h3>
+                    <p>A while loop repeats until a stop condition is met. A for loop repeats a known number of times. A shift register carries a value from one iteration to the next.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>The LabVIEW exercise uses a while loop so the calculation can continue until the user stops it.</p>
+                    </div>
+                </article>
+
+                <article id="voltage-divider" class="topic-card" data-topic-card data-category="Circuits" data-keywords="Voltage Divider Circuits">
+                    <div class="topic-meta">
+                        <span class="tag">Circuits</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Voltage Divider</h3>
+                    <p>A voltage divider uses two resistors to create an output voltage that is a fraction of the input voltage: Vout = Vin * R2 / (R1 + R2).</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>Before calculating, identify which resistor is between the output node and ground.</p>
+                    </div>
+                </article>
+
+                <article id="photoresistor" class="topic-card" data-topic-card data-category="Circuits" data-keywords="Photoresistor Circuits">
+                    <div class="topic-meta">
+                        <span class="tag">Circuits</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Photoresistor</h3>
+                    <p>A photoresistor is a light-dependent resistor. Its resistance changes with illumination, which makes it useful as the sensing element in the automatic lighting system.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>The divider turns resistance change into voltage change so the Arduino can read it.</p>
+                    </div>
+                </article>
+
+                <article id="breadboard" class="topic-card" data-topic-card data-category="Circuits" data-keywords="Breadboard and Trainer Board Circuits">
+                    <div class="topic-meta">
+                        <span class="tag">Circuits</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Breadboard and Trainer Board</h3>
+                    <p>A breadboard connects holes in internal rows and power rails. A trainer board adds a controlled supply and other lab resources.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>Verify rail continuity and common ground instead of assuming every board matches the picture.</p>
+                    </div>
+                </article>
+
+                <article id="resistors-led" class="topic-card" data-topic-card data-category="Circuits" data-keywords="Resistors and LED Polarity Circuits">
+                    <div class="topic-meta">
+                        <span class="tag">Circuits</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Resistors and LED Polarity</h3>
+                    <p>The divider uses a 4.7 kOhm resistor. The LED path uses 220 ohm to limit current. An LED is polarized, so orientation matters.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>A reversed LED may stay off; an LED without current limiting can be damaged.</p>
+                    </div>
+                </article>
+
+                <article id="multimeter" class="topic-card" data-topic-card data-category="Measurement" data-keywords="Multimeter Modes Measurement">
+                    <div class="topic-meta">
+                        <span class="tag">Measurement</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Multimeter Modes</h3>
+                    <p>Use resistance mode on an unpowered circuit or isolated component. Use voltage mode on a powered circuit with the meter placed in parallel between the node and ground.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>Current mode is not required for the provided labs.</p>
+                    </div>
+                </article>
+
+                <article id="measurement" class="topic-card" data-topic-card data-category="Measurement" data-keywords="Calculated Versus Measured Values Measurement">
+                    <div class="topic-meta">
+                        <span class="tag">Measurement</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Calculated Versus Measured Values</h3>
+                    <p>Calculated values assume ideal components and controlled conditions. Measured values include tolerance, sensor variation, supply variation, meter accuracy, and contact resistance.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>Percent difference = abs(measured - calculated) / abs(calculated) * 100%.</p>
+                    </div>
+                </article>
+
+                <article id="analog-digital" class="topic-card" data-topic-card data-category="Arduino" data-keywords="Analog Input and Digital Output Arduino">
+                    <div class="topic-meta">
+                        <span class="tag">Arduino</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Analog Input and Digital Output</h3>
+                    <p>Analog input A0 reads a range of voltages as a number. Digital pin 7 commands the LED as LOW or HIGH.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>Use A0 for the sensor voltage and D7 for the LED state.</p>
+                    </div>
+                </article>
+
+                <article id="arduino-code" class="topic-card" data-topic-card data-category="Arduino" data-keywords="Arduino Code Flow Arduino">
+                    <div class="topic-meta">
+                        <span class="tag">Arduino</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Arduino Code Flow</h3>
+                    <p>setup() runs once. loop() repeats continuously. analogRead() samples the sensor. digitalWrite() controls the output. if/else selects the LED action.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>If PR is below lowLightLim, the given code writes HIGH to LEDPin.</p>
+                    </div>
+                </article>
+
+                <article id="tinkercad" class="topic-card" data-topic-card data-category="Simulation" data-keywords="Tinkercad Circuits Simulation">
+                    <div class="topic-meta">
+                        <span class="tag">Simulation</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Tinkercad Circuits</h3>
+                    <p>Tinkercad lets students construct, measure, and program the circuit before using physical hardware.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>Simulation is a model. It helps find logic and wiring errors, but the real circuit still needs bench verification.</p>
+                    </div>
+                </article>
+
+                <article id="troubleshooting" class="topic-card" data-topic-card data-category="Practice" data-keywords="Circuit Troubleshooting Sequence Practice">
+                    <div class="topic-meta">
+                        <span class="tag">Practice</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Circuit Troubleshooting Sequence</h3>
+                    <p>State expected behavior, remove power before rewiring, verify supply and ground, trace one signal path, measure intermediate nodes, change one thing at a time, and retest.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>Use this sequence before replacing parts or rewriting working code.</p>
+                    </div>
+                </article>
+
+                <article id="deployment" class="topic-card" data-topic-card data-category="Practice" data-keywords="Deployment and LMS Integration Practice">
+                    <div class="topic-meta">
+                        <span class="tag">Practice</span>
+                        <span class="tag subtle">Reusable topic</span>
+                    </div>
+                    <h3>Deployment and LMS Integration</h3>
+                    <p>The site is static first: index, labs, knowledge, and assets can be hosted together. A later LMS connection should use an approved institutional method such as LTI.</p>
+                    <div class="card border-gold" style="box-shadow:none; margin-top:0.85rem;">
+                        <strong>Lab connection</strong>
+                        <p>Client-side pages should not directly post grades or sensitive student data.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="section-grid">
+            <article class="card border-success">
+                <p class="eyebrow">Back To Lab Work</p>
+                <h2>Continue the active manual</h2>
+                <p>Lab 1 uses the same architecture and links into the knowledge database for just-in-time support.</p>
+                <a class="portal-button" href="../labs/lab-01/index.html">Open Lab 1</a>
+            </article>
+            <article class="card border-maroon">
+                <p class="eyebrow">Course Hub</p>
+                <h2>Return to the architecture map</h2>
+                <p>The start page shows how labs, the database, shared assets, and future manuals fit together.</p>
+                <a class="portal-button secondary" href="../index.html#architecture">View System Architecture</a>
+            </article>
+        </section>
+        </section>
+
+        <section id="skill-map-view" class="skill-view-panel" role="tabpanel" data-skill-view-panel="skill-map" aria-labelledby="skill-map-view-tab" tabindex="-1" hidden>
+            <section id="skill-map" class="card border-gold skill-map-section">
+                <p class="eyebrow">Course Skill Map</p>
+                <h2>Explore how skills connect across laboratories</h2>
+                <p>This map is optional. It uses the new radial skill-tree design from the uploaded package, with the existing course skills merged into its curriculum. It does not unlock, lock, or replace laboratory access.</p>
+                <div class="skill-tree-embed">
+                    <iframe title="3CC3 radial skill tree" src="skill-tree.html" loading="lazy"></iframe>
+                </div>
+                <p class="skill-tree-fallback"><a class="portal-button secondary" href="skill-tree.html">Open the skill tree in a full page</a></p>
+            </section>
+
+            <section class="card border-success">
+                <p class="eyebrow">Documentation-Literacy Progression</p>
+                <h2>How documentation support changes across the course</h2>
+                <p>The repository is instructional scaffolding. It gives direct support early, then gradually moves students toward professional documentation habits.</p>
+                <div class="documentation-progression">
+                    <article class="progression-step">
+                        <strong>Labs 1-2</strong>
+                        <p>Direct links to exact documentation.</p>
+                    </article>
+                    <article class="progression-step">
+                        <strong>Labs 3-4</strong>
+                        <p>Links to a relevant repository category.</p>
+                    </article>
+                    <article class="progression-step">
+                        <strong>Labs 5-6</strong>
+                        <p>Students search the repository.</p>
+                    </article>
+                    <article class="progression-step">
+                        <strong>Labs 7-8</strong>
+                        <p>Students consult manufacturer documentation or datasheets.</p>
+                    </article>
+                    <article class="progression-step">
+                        <strong>Lab 9</strong>
+                        <p>Students identify, locate, evaluate, and apply appropriate sources independently.</p>
+                    </article>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="portal-shell">McMaster University | SMRTTECH 3CC3 knowledge database prototype</div>
+    </footer>
+
+    <script>
+
+        function toggleSidebar(id) {
+            const selected = document.getElementById(id);
+            const wasOpen = selected.classList.contains('active');
+            document.querySelectorAll('.sidebar').forEach(sidebar => sidebar.classList.remove('active'));
+            if (!wasOpen) selected.classList.add('active');
+        }
+
+        function setupKnowledgeFilters() {
+            const search = document.querySelector('[data-knowledge-search]');
+            const filters = [...document.querySelectorAll('[data-filter]')];
+            const cards = [...document.querySelectorAll('[data-topic-card]')];
+            const empty = document.querySelector('[data-empty-state]');
+            if (!cards.length) return;
+
+            let active = 'All';
+            function applyFilters() {
+                const query = (search?.value || '').trim().toLowerCase();
+                let shown = 0;
+
+                cards.forEach(card => {
+                    const haystack = `${card.textContent} ${card.dataset.keywords || ''}`.toLowerCase();
+                    const categoryMatch = active === 'All' || card.dataset.category === active;
+                    const queryMatch = !query || haystack.includes(query);
+                    const visible = categoryMatch && queryMatch;
+                    card.hidden = !visible;
+                    if (visible) shown += 1;
+                });
+
+                if (empty) empty.classList.toggle('show', shown === 0);
+            }
+
+            search?.addEventListener('input', applyFilters);
+            filters.forEach(button => {
+                button.addEventListener('click', () => {
+                    active = button.dataset.filter;
+                    filters.forEach(item => item.classList.toggle('active', item === button));
+                    applyFilters();
+                });
+            });
+        }
+
+        function setupHomeScrollSpy() {
+            const nav = document.querySelector('[data-home-nav]');
+            if (!nav) return;
+
+            const links = [...nav.querySelectorAll('[data-home-section]')];
+            const sections = links
+                .map(link => ({
+                    link,
+                    id: link.dataset.homeSection,
+                    target: document.getElementById(link.dataset.homeSection)
+                }))
+                .filter(item => item.target);
+
+            function setActive(id) {
+                links.forEach(link => {
+                    link.classList.toggle('active', link.dataset.homeSection === id);
+                });
+            }
+
+            const observer = new IntersectionObserver(entries => {
+                const visible = entries
+                    .filter(entry => entry.isIntersecting)
+                    .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+                if (visible) setActive(visible.target.id);
+            }, {
+                rootMargin: '-45% 0px -45% 0px',
+                threshold: [0.01, 0.2, 0.5, 0.8]
+            });
+
+            sections.forEach(item => observer.observe(item.target));
+            setActive('home');
+        }
+
+        function setupRepositoryTabs() {
+            const tabs = [...document.querySelectorAll('[data-skill-view-tab]')];
+            const panels = [...document.querySelectorAll('[data-skill-view-panel]')];
+            if (!tabs.length || !panels.length) return;
+
+            function setView(view, focusTab = false) {
+                tabs.forEach(tab => {
+                    const selected = tab.dataset.skillViewTab === view;
+                    tab.setAttribute('aria-selected', String(selected));
+                    tab.tabIndex = selected ? 0 : -1;
+                    if (selected && focusTab) tab.focus();
+                });
+                panels.forEach(panel => {
+                    const selected = panel.dataset.skillViewPanel === view;
+                    panel.hidden = !selected;
+                    if (selected) panel.focus({ preventScroll: true });
+                });
+                try {
+                    localStorage.setItem('smrttech-knowledge:view', view);
+                } catch {}
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => setView(tab.dataset.skillViewTab));
+                tab.addEventListener('keydown', event => {
+                    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+                    event.preventDefault();
+                    const current = tabs.indexOf(tab);
+                    const next = event.key === 'Home' ? 0
+                        : event.key === 'End' ? tabs.length - 1
+                        : event.key === 'ArrowRight' ? (current + 1) % tabs.length
+                        : (current - 1 + tabs.length) % tabs.length;
+                    setView(tabs[next].dataset.skillViewTab, true);
+                });
+            });
+
+            let initial = 'documentation';
+            try {
+                initial = localStorage.getItem('smrttech-knowledge:view') || initial;
+            } catch {}
+            if (window.location.hash === '#skill-map') initial = 'skill-map';
+            setView(initial === 'skill-map' ? 'skill-map' : 'documentation');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupKnowledgeFilters();
+            setupHomeScrollSpy();
+            setupRepositoryTabs();
+        });
+
+    </script>
+</body>
+
+</html>
