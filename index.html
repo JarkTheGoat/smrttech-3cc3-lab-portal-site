@@ -694,42 +694,15 @@
             </div>
         </section>
 
-        <section id="skill-map-preview" class="card border-gold skill-map-section">
-            <p class="eyebrow">Optional Conceptual Navigation</p>
-            <h2>Explore the Course Skill Map</h2>
-            <p>Laboratories are organized by scheduled tasks. Knowledge is organized for retrieval and reuse. The skill map reveals how concepts relate across the course, but it does not control access to any lab.</p>
-            <div class="chip-row">
-                <span class="stage-summary-chip">Browse by relationship</span>
-                <span class="stage-summary-chip">Keep labs task-based</span>
-                <span class="stage-summary-chip" data-skill-map-count>Concept map loading...</span>
-            </div>
-            <div data-skill-map-preview data-doc-path="knowledge/index.html">
-                <div class="section-grid">
-                    <article class="card border-maroon">
-                        <h3>LabVIEW and graphical programming</h3>
-                        <p>Interface, program elements, data organization, program flow, and the voltage-divider VI.</p>
-                    </article>
-                    <article class="card border-gold">
-                        <h3>Circuits, sensors, Arduino, and practice</h3>
-                        <p>Core electronics, measurement, sensor interfaces, embedded programming, and engineering habits.</p>
-                    </article>
-                </div>
-            </div>
-            <div class="skill-map-toolbar">
-                <a class="portal-button" href="knowledge/index.html#skill-map">Open full skill map</a>
-                <a class="portal-button secondary" href="knowledge/index.html">Browse documentation</a>
-            </div>
-            <noscript>
-                <p>The interactive map requires JavaScript, but labs and documentation remain available through the links above.</p>
-            </noscript>
-        </section>
-
         <section id="knowledge" class="section-grid">
             <article class="card border-gold">
                 <p class="eyebrow">Knowledge Database</p>
                 <h2>Reusable student support</h2>
                 <p>The database is organized by concept family: LabVIEW, circuits, measurement, Arduino, simulation, and engineering practice. Students can search or filter topics and return to the lab workflow.</p>
-                <a class="portal-button" href="knowledge/index.html">Browse Knowledge Database</a>
+                <div class="chip-row">
+                    <a class="portal-button" href="knowledge/index.html">Browse Knowledge Database</a>
+                    <a class="portal-button secondary" href="knowledge/skill-tree.html">Open Master Skill Tree</a>
+                </div>
             </article>
             <article class="card border-success">
                 <p class="eyebrow">Student Experience</p>
@@ -826,8 +799,6 @@
         });
 
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
-    <script src="assets/js/skill-tree.js"></script>
 </body>
 
 </html>

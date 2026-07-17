@@ -18,7 +18,7 @@ Live site: https://jarkthegoat.github.io/smrttech-3cc3-lab-portal-site/
 - `project/index.html` - active 3CC3 design project manual for the final smart-system prototype
 - `labs/lab-09/index.html` - blank lab manual space retained for future course content
 - `knowledge/index.html` - searchable shared knowledge database
-- `knowledge/skill-tree.html` - radial skill-tree graphic embedded from the knowledge database
+- `knowledge/skill-tree.html` - the single Master Skill Tree used throughout the portal
 - `knowledge/curriculum.json` - data source for the radial skill tree
 - `knowledge/curriculum-data.js` - local-file fallback copy of the skill-tree curriculum
 - `assets/` - shared McMaster logo and lab imagery
