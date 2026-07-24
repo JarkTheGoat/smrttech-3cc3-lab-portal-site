@@ -51,7 +51,7 @@
         .stage-btn:hover { background: var(--mac-grey-20); }
         .stage-btn:focus-visible, .utility-button:focus-visible, .nav-button:focus-visible, details summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--mac-gold); outline-offset: 3px; }
         .stage-btn.active, .stage-btn.page-current { color: white; background: var(--mac-maroon); box-shadow: 0 5px 13px rgba(122,0,60,0.28); }
-        .stage-btn.completed:not(.active)::after { content: "âœ“"; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 6px; border-radius: 50%; color: white; background: var(--success); font-size: 0.68rem; font-weight: 700; }
+        .stage-btn.completed:not(.active)::after { content: "\2713"; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 6px; border-radius: 50%; color: white; background: var(--success); font-size: 0.68rem; font-weight: 700; }
         .lab-stage-label { margin-left: 0.65rem; padding-left: 0.85rem; border-left: 1px solid rgba(73,89,101,0.18); }
         .auto-score-chip { flex: 0 0 auto; margin-left: auto; padding: 0.45rem 0.7rem; border-radius: 999px; border: 1px solid var(--mac-gold-60); background: var(--mac-gold-20); color: #5B3900; font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
         .page-header { padding: 0 0 2.2rem; }
@@ -74,8 +74,7 @@
         .js-enabled.stage-6 .stage-panel.stage-6,
         .js-enabled.stage-7 .stage-panel.stage-7,
         .js-enabled.stage-8 .stage-panel.stage-8,
-        .js-enabled.stage-9 .stage-panel.stage-9,
-        .js-enabled.stage-10 .stage-panel.stage-10 { display: block; }
+        .js-enabled.stage-9 .stage-panel.stage-9 { display: block; }
         .grid-layout { display: grid; gap: 1rem; }
         .grid-layout.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .grid-layout.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -171,9 +170,8 @@
             <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">Build HMI</button>
             <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Create SubVI</button>
             <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Automatic Control</button>
-            <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Troubleshoot</button>
-            <button class="stage-btn" id="btn-stage-10" type="button" data-stage="10">Reflect</button>
-            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/11</strong></div>
+            <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Reflect</button>
+            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/10</strong></div>
         </div>
     </nav>
 
@@ -231,7 +229,8 @@
             <div class="card p-5">
                 <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Knowledge Links</h4>
                 <ul class="knowledge-skill-list">
-                    <li><a href="../../knowledge/skill-tree.html?topic=analog-input">Analog input and digital control</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=analog-input">Analog input sensing (A0)</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=digital-output">Digital output and servo signal (D7)</a></li>
                     <li><a href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW interface</a></li>
                     <li><a href="../../knowledge/skill-tree.html?topic=while-loops">LabVIEW loops</a></li>
                     <li><a href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Troubleshooting sequence</a></li>
@@ -409,6 +408,7 @@
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-clear"><span>Wires clear of servo motion.</span></label>
                 </div>
                 <label class="response-field mt-block"><span>What evidence tells you the circuit is safe to power?</span><textarea class="persist-text" data-key="build-safe-evidence"></textarea></label>
+                <p class="danger-card mt-block"><strong>If a wiring check fails:</strong> disconnect power before correcting it, then recheck servo polarity, D7, A0, common ground, the coupling, and clearance around the moving shaft before powering again.</p>
             </article>
         </section>
 
@@ -430,6 +430,7 @@
                     <details><summary>F. Close functions</summary><div>Add Servo Close after the loop, then LINX Close. Wire resource and error lines through all blocks.</div></details>
                 </div>
                 <div class="warning-card mt-block">A pulse width around 1500 microseconds is typically near center. Many servos use about 1000-2000 microseconds, but actual limits vary. The PDF's 600-2400 microseconds range is a lab-preparation value for the tested servo.</div>
+                <details><summary>If the fixed pulse-width test does not move safely</summary><div>Stop the VI normally and disconnect power if the servo is blocked, hot, or driving against an end stop. Verify the LINX firmware and COM port, Servo Channel 7, Analog Channel 0, common ground, and wiring before changing one item and retesting.</div></details>
                 <details><summary>Think it through</summary><div><ul><li>Why does the servo need to be opened before writing commands?</li><li>What does Analog Read return?</li><li>Does Analog Read measure angle directly?</li><li>What does Set Pulse Width send to the servo?</li><li>Why should Servo Close and LINX Close occur after the loop?</li><li>What could happen if the VI is aborted before close functions run?</li><li>What does a constant pulse width of 1000 microseconds test?</li></ul></div></details>
                 <div class="grid-layout two mt-block">
                     <label class="response-field"><span>Arduino COM port selected</span><input class="persist-text" data-key="manual-com"></label>
@@ -470,13 +471,13 @@
                     <table>
                         <thead><tr><th>Potentiometer position</th><th>Voltage at A0</th><th>Calculated angle</th><th>Observed servo response</th></tr></thead>
                         <tbody>
-                            <tr><td>Minimum</td><td><input class="persist-text" data-key="manual-v-min"></td><td><input class="persist-text" data-key="manual-a-min"></td><td><input class="persist-text" data-key="manual-r-min"></td></tr>
-                            <tr><td>Middle</td><td><input class="persist-text" data-key="manual-v-mid"></td><td><input class="persist-text" data-key="manual-a-mid"></td><td><input class="persist-text" data-key="manual-r-mid"></td></tr>
-                            <tr><td>Maximum</td><td><input class="persist-text" data-key="manual-v-max"></td><td><input class="persist-text" data-key="manual-a-max"></td><td><input class="persist-text" data-key="manual-r-max"></td></tr>
+                            <tr><td>Minimum</td><td><input class="persist-text" data-key="manual-v-min" aria-label="Minimum potentiometer voltage at A0"></td><td><input class="persist-text" data-key="manual-a-min" aria-label="Minimum potentiometer calculated angle"></td><td><input class="persist-text" data-key="manual-r-min" aria-label="Minimum potentiometer observed servo response"></td></tr>
+                            <tr><td>Middle</td><td><input class="persist-text" data-key="manual-v-mid" aria-label="Middle potentiometer voltage at A0"></td><td><input class="persist-text" data-key="manual-a-mid" aria-label="Middle potentiometer calculated angle"></td><td><input class="persist-text" data-key="manual-r-mid" aria-label="Middle potentiometer observed servo response"></td></tr>
+                            <tr><td>Maximum</td><td><input class="persist-text" data-key="manual-v-max" aria-label="Maximum potentiometer voltage at A0"></td><td><input class="persist-text" data-key="manual-a-max" aria-label="Maximum potentiometer calculated angle"></td><td><input class="persist-text" data-key="manual-r-max" aria-label="Maximum potentiometer observed servo response"></td></tr>
                         </tbody>
                     </table>
                 </div>
-                <label class="response-field evidence-upload mt-block"><span>Manual case screenshot/export</span><input class="persist-file" data-key="manual-screenshot" data-stage-required type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="manual-screenshot">No file selected.</small></label>
+                <label class="response-field evidence-upload mt-block"><span>Manual case evidence file</span><input class="persist-file" data-key="manual-screenshot" data-stage-required type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.pdf"><small class="file-name-preview" data-file-name-for="manual-screenshot">No file selected.</small><small class="text-gray-500">Accepted: PNG, JPG/JPEG, WebP, GIF, or PDF. The completion record stores only the filename; it does not upload or embed the file.</small></label>
             </article>
         </section>
 
@@ -585,9 +586,9 @@ end</code></pre>
                 </div>
                 <details><summary>Think it through</summary><div><ul><li>Why does automatic mode need memory of the previous angle?</li><li>What do Waving, Direction, and WaveCount represent?</li><li>What happens when GO becomes true?</li><li>What condition causes direction to reverse?</li><li>What does <code>==</code> mean?</li><li>What does <code>|</code> mean?</li><li>Why does the code stop when WaveCount reaches 0?</li><li>Why are local variables used here?</li><li>What are the risks of using local variables carelessly?</li></ul></div></details>
                 <div class="grid-layout two mt-block">
-                    <label class="response-field evidence-upload"><span>SubVI front panel evidence</span><input class="persist-file" data-key="subvi-front" type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="subvi-front">No file selected.</small></label>
-                    <label class="response-field evidence-upload"><span>SubVI block diagram evidence</span><input class="persist-file" data-key="subvi-block" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="subvi-block">No file selected.</small></label>
-                    <label class="response-field evidence-upload"><span>Icon and connector pane evidence</span><input class="persist-file" data-key="subvi-icon" type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="subvi-icon">No file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>SubVI front panel evidence file</span><input class="persist-file" data-key="subvi-front" type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="subvi-front">No file selected.</small><small class="text-gray-500">Accepted: PNG, JPG/JPEG, WebP, GIF, or PDF. Filename only; the file is not uploaded or embedded.</small></label>
+                    <label class="response-field evidence-upload"><span>SubVI block diagram evidence file</span><input class="persist-file" data-key="subvi-block" type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="subvi-block">No file selected.</small><small class="text-gray-500">Accepted: PNG, JPG/JPEG, WebP, GIF, or PDF. Filename only; the file is not uploaded or embedded.</small></label>
+                    <label class="response-field evidence-upload"><span>Icon and connector pane evidence file</span><input class="persist-file" data-key="subvi-icon" type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="subvi-icon">No file selected.</small><small class="text-gray-500">Accepted: PNG, JPG/JPEG, WebP, GIF, or PDF. Filename only; the file is not uploaded or embedded.</small></label>
                     <label class="response-field"><span>Explain one if statement</span><textarea class="persist-text" data-key="subvi-if"></textarea></label>
                 </div>
             </article>
@@ -597,7 +598,7 @@ end</code></pre>
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 7</p>
                 <h2>Insert the automatic-wave SubVI into the main VI</h2>
-                <p>Return to the main VI from Exercise 2. Place the saved SubVI in the Automatic case, remove the temporary DBL constant, and connect the SubVI output to the Case Structure output.</p>
+                <p>Return to the main VI from the <a class="concept-link" href="?stage=6#build-hmi">Build HMI stage, “Route Manual and Automatic choices through one Case Structure”</a>. Place the saved SubVI in the Automatic case, remove the temporary DBL constant, and connect the SubVI output to the Case Structure output.</p>
                 <figure class="diagram-card">
                     <img src="../../assets/lab5-pdf-final-program.png" alt="Source PDF final LabVIEW program showing the automatic-wave SubVI inserted into the Automatic case and connected to the pulse-width calculation.">
                     <figcaption>Source PDF final program: the Automatic case calls the SubVI, then the shared pulse-width mapping commands the servo.</figcaption>
@@ -612,41 +613,18 @@ end</code></pre>
                     <table>
                         <thead><tr><th>Test</th><th>Setting</th><th>Expected observation</th><th>Actual observation</th><th>Decision</th></tr></thead>
                         <tbody>
-                            <tr><td>Manual mode</td><td><input class="persist-text" data-key="auto-manual-setting"></td><td>Potentiometer changes command angle</td><td><input class="persist-text" data-key="auto-manual-actual"></td><td><input class="persist-text" data-key="auto-manual-decision"></td></tr>
-                            <tr><td>Automatic mode</td><td><input class="persist-text" data-key="auto-auto-setting"></td><td>Servo waves using GO, Speed, NumberOfWaves</td><td><input class="persist-text" data-key="auto-auto-actual"></td><td><input class="persist-text" data-key="auto-auto-decision"></td></tr>
-                            <tr><td>Stop button</td><td><input class="persist-text" data-key="auto-stop-setting"></td><td>Loop ends and close functions run</td><td><input class="persist-text" data-key="auto-stop-actual"></td><td><input class="persist-text" data-key="auto-stop-decision"></td></tr>
+                            <tr><td>Manual mode</td><td><input class="persist-text" data-key="auto-manual-setting" aria-label="Manual mode test setting"></td><td>Potentiometer changes command angle</td><td><input class="persist-text" data-key="auto-manual-actual" aria-label="Manual mode actual observation"></td><td><input class="persist-text" data-key="auto-manual-decision" aria-label="Manual mode test decision"></td></tr>
+                            <tr><td>Automatic mode</td><td><input class="persist-text" data-key="auto-auto-setting" aria-label="Automatic mode test setting"></td><td>Servo waves using GO, Speed, NumberOfWaves</td><td><input class="persist-text" data-key="auto-auto-actual" aria-label="Automatic mode actual observation"></td><td><input class="persist-text" data-key="auto-auto-decision" aria-label="Automatic mode test decision"></td></tr>
+                            <tr><td>Stop button</td><td><input class="persist-text" data-key="auto-stop-setting" aria-label="Stop button test setting"></td><td>Loop ends and close functions run</td><td><input class="persist-text" data-key="auto-stop-actual" aria-label="Stop button actual observation"></td><td><input class="persist-text" data-key="auto-stop-decision" aria-label="Stop button test decision"></td></tr>
                         </tbody>
                     </table>
                 </div>
-                <label class="response-field evidence-upload mt-block"><span>Final main VI front-panel and block-diagram evidence</span><input class="persist-file" data-key="auto-final-evidence" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="auto-final-evidence">No file selected.</small></label>
+                <details><summary>If Manual mode works but Automatic mode does not</summary><div>Keep the known-good wiring and scaling unchanged. Check the Choice selector, SubVI connector pane, Automatic-case output tunnel, and local-variable read direction one at a time, then repeat the same controlled test.</div></details>
+                <label class="response-field evidence-upload mt-block"><span>Final main VI front-panel and block-diagram evidence file</span><input class="persist-file" data-key="auto-final-evidence" type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="auto-final-evidence">No file selected.</small><small class="text-gray-500">Accepted: PNG, JPG/JPEG, WebP, GIF, or PDF. The completion record stores only the filename; it does not upload or embed the file.</small></label>
             </article>
         </section>
 
-        <section class="stage-panel stage-9" id="troubleshoot" tabindex="-1">
-            <article class="section-card card border-maroon">
-                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Troubleshoot</p>
-                <h2>Observation, hypothesis, test, evidence, decision</h2>
-                <p class="danger-card"><strong>Before changing the circuit or LabVIEW block diagram, write one hypothesis and one measurement or inspection that could support or reject it.</strong></p>
-                <div class="table-wrap mt-block">
-                    <table>
-                        <thead><tr><th>Observation</th><th>Possible cause</th><th>Test</th><th>Expected result if correct</th><th>Actual result</th><th>Decision</th></tr></thead>
-                        <tbody>
-                            <tr><td><input class="persist-text" data-key="tr-obs-1" data-stage-required></td><td><input class="persist-text" data-key="tr-cause-1" data-stage-required></td><td><input class="persist-text" data-key="tr-test-1" data-stage-required></td><td><input class="persist-text" data-key="tr-exp-1" data-stage-required></td><td><input class="persist-text" data-key="tr-act-1" data-stage-required></td><td><input class="persist-text" data-key="tr-dec-1" data-stage-required></td></tr>
-                            <tr><td><input class="persist-text" data-key="tr-obs-2"></td><td><input class="persist-text" data-key="tr-cause-2"></td><td><input class="persist-text" data-key="tr-test-2"></td><td><input class="persist-text" data-key="tr-exp-2"></td><td><input class="persist-text" data-key="tr-act-2"></td><td><input class="persist-text" data-key="tr-dec-2"></td></tr>
-                            <tr><td><input class="persist-text" data-key="tr-obs-3"></td><td><input class="persist-text" data-key="tr-cause-3"></td><td><input class="persist-text" data-key="tr-test-3"></td><td><input class="persist-text" data-key="tr-exp-3"></td><td><input class="persist-text" data-key="tr-act-3"></td><td><input class="persist-text" data-key="tr-dec-3"></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="grid-layout three mt-block">
-                    <div class="mini-card"><h3>Hardware faults</h3><ul><li>Servo red and brown wires reversed</li><li>Servo signal not on Digital Pin 7</li><li>Potentiometer middle terminal not on A0</li><li>Missing common ground</li><li>Loose jumper or rail discontinuity</li><li>Servo coupling not attached or mechanically blocked</li><li>USB cable is power-only</li></ul></div>
-                    <div class="mini-card"><h3>LabVIEW and LINX faults</h3><ul><li>LINX firmware not loaded</li><li>Wrong COM port</li><li>Servo channel not 7</li><li>Analog channel not 0</li><li>Servo Open or Servo Close missing</li><li>LINX Open inside loop</li><li>Choice not wired to Case selector</li><li>SubVI connector pane wired incorrectly</li></ul></div>
-                    <div class="mini-card"><h3>Scaling and logic faults</h3><ul><li>Wrong voltage range in angle formula</li><li>Wrong LRV/URV</li><li>Pulse width exceeds safe range</li><li>Speed too large</li><li>GO not wired correctly</li><li>Local variables set to Write instead of Read</li><li>Direction logic reversed</li><li>Assuming gauge angle is measured actual angle</li></ul></div>
-                </div>
-                <div class="briefing-card mt-block"><h3>Troubleshooting discussion</h3><p>Use your observation, possible cause, proposed test, actual evidence, and next action. Do not change wiring, scaling, and SubVI logic at the same time.</p></div>
-            </article>
-        </section>
-
-        <section class="stage-panel stage-10" id="reflect" tabindex="-1">
+        <section class="stage-panel stage-9" id="reflect" tabindex="-1">
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Reflect</p>
                 <h2>Deliverables and assessment</h2>
@@ -654,6 +632,16 @@ end</code></pre>
                     <div class="mini-card"><h3>Submit</h3><ol><li>Completed servo and potentiometer circuit.</li><li>Manual-control front panel and block diagram evidence.</li><li>Evidence that A0 is read and Digital Pin 7 commands the servo.</li><li>Voltage-to-angle and angle-to-pulse-width calculations.</li><li>MathScript Node explanations.</li><li>Completed automatic-wave SubVI with front panel, block diagram, icon, and connector pane.</li><li>Final main VI with SubVI in Automatic case.</li><li>Manual and automatic mode test evidence.</li><li>Explanation of each if statement, <code>==</code>, <code>|</code>, and local variables.</li><li>Three applications of servomotors.</li><li>Student names and numbers as required.</li><li>Report formatted according to 3CC3 Lab Policies and Report Writing.pdf.</li></ol></div>
                     <div class="mini-card"><h3>Suggested weighting</h3><table><tbody><tr><td>Circuit construction and safety evidence</td><td>10%</td></tr><tr><td>Manual-control VI and HMI</td><td>15%</td></tr><tr><td>Scaling calculations</td><td>15%</td></tr><tr><td>Manual servo test evidence</td><td>10%</td></tr><tr><td>Automatic-wave SubVI</td><td>20%</td></tr><tr><td>Final automatic integration</td><td>15%</td></tr><tr><td>Code explanation and report responses</td><td>10%</td></tr><tr><td>Troubleshooting and reflection</td><td>5%</td></tr></tbody></table></div>
                 </div>
+            </article>
+
+            <article class="section-card card border-success" aria-labelledby="lab5-outcomes-achieved">
+                <h2 id="lab5-outcomes-achieved">Learning Outcomes Achieved</h2>
+                <ul class="list-disc ml-5 space-y-2">
+                    <li>Acquire potentiometer voltage through Arduino A0 with LabVIEW LINX.</li>
+                    <li>Scale voltage to commanded angle and angle to a safe servo pulse width on D7.</li>
+                    <li>Build Manual and Automatic HMI paths and integrate reusable automatic-wave SubVI logic.</li>
+                    <li>Verify controlled motion, normal shutdown, and task-specific fault recovery using evidence.</li>
+                </ul>
             </article>
 
             <article class="section-card card border-gold">
@@ -743,16 +731,45 @@ end</code></pre>
         </section>
     </main>
 
-    <script>
+        <script>
         (() => {
             const STORAGE_PREFIX = 'smrttech-lab5-servo-control';
-            const STAGE_COUNT = 11;
-            const STAGE_NAMES = ['Prepare', 'Predict', 'Build Circuit', 'Manual Control', 'Scale Angle', 'Scale Pulse Width', 'Build HMI', 'Create SubVI', 'Automatic Control', 'Troubleshoot', 'Reflect'];
+            const STAGE_COUNT = 10;
+            const STAGE_NAMES = ['Prepare', 'Predict', 'Build Circuit', 'Manual Control', 'Scale Angle', 'Scale Pulse Width', 'Build HMI', 'Create SubVI', 'Automatic Control', 'Reflect'];
             const ORDER_KEYS = ['chain-pot','chain-a0','chain-linx','chain-angle','chain-pw','chain-d7','chain-motion'];
             const CORRECT_ORDER = ['1','2','3','4','5','6','7'];
             document.body.classList.add('js-enabled');
 
             function storageKey(key) { return `${STORAGE_PREFIX}:${key}`; }
+
+            function migrateRemovedTroubleshootStage() {
+                const migrationKey = storageKey('stage-layout-migration');
+                const migrationVersion = 'troubleshoot-removed-v1';
+                if (localStorage.getItem(migrationKey) === migrationVersion) return;
+
+                const oldCurrentStage = Number(localStorage.getItem(storageKey('current-stage')));
+                if (Number.isFinite(oldCurrentStage) && oldCurrentStage >= 9) {
+                    localStorage.setItem(storageKey('current-stage'), '9');
+                }
+
+                const oldReflectComplete = localStorage.getItem(storageKey('stage-10-complete')) === 'true';
+                if (oldReflectComplete) {
+                    localStorage.setItem(storageKey('stage-9-complete'), 'true');
+                } else {
+                    localStorage.removeItem(storageKey('stage-9-complete'));
+                }
+                localStorage.removeItem(storageKey('stage-10-complete'));
+
+                const sharedConfirmationPrefix = 'smrttech:stage-confirmed:v1:lab-05:';
+                const oldReflectConfirmed = localStorage.getItem(`${sharedConfirmationPrefix}10`) === 'true';
+                if (oldReflectConfirmed) {
+                    localStorage.setItem(`${sharedConfirmationPrefix}9`, 'true');
+                } else {
+                    localStorage.removeItem(`${sharedConfirmationPrefix}9`);
+                }
+                localStorage.removeItem(`${sharedConfirmationPrefix}10`);
+                localStorage.setItem(migrationKey, migrationVersion);
+            }
 
             function setStage(stage) {
                 const safeStage = Math.max(0, Math.min(STAGE_COUNT - 1, Number(stage) || 0));
@@ -923,6 +940,7 @@ end</code></pre>
                 });
             }
 
+            migrateRemovedTroubleshootStage();
             buildStageFooters();
             setupSidebars();
             setupOrderOptions();

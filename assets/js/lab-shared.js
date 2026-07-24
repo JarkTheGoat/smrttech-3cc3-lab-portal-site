@@ -89,18 +89,105 @@
         return `smrttech:evidence-file:${window.location.pathname}:${input.dataset.key}`;
     }
 
+    function acceptedFileTokens(input) {
+        return String(input.accept || '')
+            .split(',')
+            .map(token => token.trim().toLowerCase())
+            .filter(Boolean);
+    }
+
+    function evidenceFileIsAccepted(input, fileOrName) {
+        const tokens = acceptedFileTokens(input);
+        if (!tokens.length) return true;
+
+        const name = String(fileOrName?.name || fileOrName || '').trim().toLowerCase();
+        const type = String(fileOrName?.type || '').trim().toLowerCase();
+        if (!name) return false;
+
+        return tokens.some(token => {
+            if (token.startsWith('.')) return name.endsWith(token);
+            if (token === 'image/*') {
+                return (Boolean(type) && type.startsWith('image/')) ||
+                    /\.(?:avif|bmp|gif|heic|heif|jpe?g|png|svg|webp)$/i.test(name);
+            }
+            if (token.endsWith('/*')) return Boolean(type) && type.startsWith(token.slice(0, -1));
+            return Boolean(type) && type === token;
+        });
+    }
+
+    function storedEvidenceFileName(input) {
+        const selectedFile = input.files?.[0];
+        if (selectedFile) {
+            return evidenceFileIsAccepted(input, selectedFile) ? selectedFile.name : '';
+        }
+        const saved = localStorage.getItem(evidenceFileStorageKey(input)) || '';
+        return evidenceFileIsAccepted(input, saved) ? saved : '';
+    }
+
+    function evidenceAcceptDescription(input) {
+        const tokens = acceptedFileTokens(input);
+        return tokens.length ? tokens.join(', ') : 'the listed file type';
+    }
+
+    function setEvidenceFileFeedback(input, output, state, message) {
+        input.setAttribute('aria-invalid', String(state === 'error'));
+        input.setCustomValidity(state === 'error' ? message : '');
+        if (!output) return;
+        output.textContent = message;
+        output.classList.toggle('is-success', state === 'success');
+        output.classList.toggle('is-error', state === 'error');
+    }
+
     function setupEvidenceFileInputs() {
         document.querySelectorAll('input[type="file"][data-key]').forEach(input => {
             const fileKey = evidenceFileStorageKey(input);
             const saved = localStorage.getItem(fileKey);
             const output = document.querySelector(`[data-file-name-for="${input.dataset.key}"]`);
-            if (output && saved) output.textContent = saved;
+            if (output) {
+                if (!output.id) output.id = `file-status-${input.dataset.key}`;
+                input.setAttribute('aria-describedby', output.id);
+                output.setAttribute('role', 'status');
+                output.setAttribute('aria-live', 'polite');
+            }
+
+            if (saved && evidenceFileIsAccepted(input, saved)) {
+                setEvidenceFileFeedback(
+                    input,
+                    output,
+                    'success',
+                    `Saved evidence selection: ${saved}. The filename is stored locally; reselect the file to replace it.`
+                );
+            } else if (saved) {
+                localStorage.removeItem(fileKey);
+                setEvidenceFileFeedback(
+                    input,
+                    output,
+                    'error',
+                    `The saved filename is not an accepted type. Choose ${evidenceAcceptDescription(input)}.`
+                );
+            }
+
             input.addEventListener('change', () => {
-                const fileName = input.files?.[0]?.name || '';
+                const file = input.files?.[0];
+                const fileName = file?.name || '';
+                if (file && !evidenceFileIsAccepted(input, file)) {
+                    const message = `File not accepted. Choose ${evidenceAcceptDescription(input)}.`;
+                    localStorage.removeItem(fileKey);
+                    input.value = '';
+                    setEvidenceFileFeedback(input, output, 'error', message);
+                    return;
+                }
                 try {
                     localStorage.setItem(fileKey, fileName);
                 } catch {}
-                if (output) output.textContent = fileName || 'No file selected';
+                setEvidenceFileFeedback(
+                    input,
+                    output,
+                    fileName ? 'success' : '',
+                    fileName
+                        ? `Selected: ${fileName}. This filename will be recorded locally with the completion file.`
+                        : 'No file selected.'
+                );
             });
         });
     }
@@ -125,6 +212,26 @@
             title.textContent = match[2];
 
             heading.append(label, title);
+        });
+    }
+
+    function setupCheckpointMarkers() {
+        stagePanels().forEach(({ panel, stage }) => {
+            if (stage === 0) return;
+            const existing = panel.querySelector('.checkpoint-marker');
+            if (existing) {
+                existing.setAttribute('aria-hidden', 'true');
+                return;
+            }
+
+            const heading = panel.querySelector('h2');
+            if (!heading) return;
+            heading.classList.add('checkpoint-heading');
+            const marker = document.createElement('span');
+            marker.className = 'checkpoint-marker';
+            marker.textContent = String(stage);
+            marker.setAttribute('aria-hidden', 'true');
+            heading.prepend(marker);
         });
     }
 
@@ -224,7 +331,7 @@
 
         function hasRequiredValue(field) {
             if (field.matches('input[type="file"]')) {
-                return Boolean(field.files?.[0]?.name || localStorage.getItem(evidenceFileStorageKey(field)));
+                return Boolean(storedEvidenceFileName(field)) && field.validity.valid;
             }
             if (field.matches('input[type="checkbox"], input[type="radio"]')) return field.checked;
             const value = String(field.value || '').trim();
@@ -284,7 +391,7 @@
         if (unchecked.length) parts.push(`${unchecked.length} checklist item${unchecked.length === 1 ? '' : 's'}`);
         if (unansweredQuiz.length) parts.push(`${unansweredQuiz.length} knowledge check${unansweredQuiz.length === 1 ? '' : 's'}`);
         if (orderChecks.length) parts.push(`${orderChecks.length} ordering check${orderChecks.length === 1 ? '' : 's'}`);
-        if (missingUploads.length) parts.push(`${missingUploads.length} required screenshot upload${missingUploads.length === 1 ? '' : 's'}`);
+        if (missingUploads.length) parts.push(`${missingUploads.length} required evidence file${missingUploads.length === 1 ? '' : 's'}`);
         const missingResponseCount = missingResponses.length + missingResponseGroups.length;
         if (missingResponseCount) parts.push(`${missingResponseCount} required response${missingResponseCount === 1 ? '' : 's'}`);
         if (incorrectExpectedResponses.length) parts.push(`${incorrectExpectedResponses.length} knowledge check${incorrectExpectedResponses.length === 1 ? '' : 's'}`);
@@ -317,6 +424,10 @@
 
     function isBackButton(control) {
         return control.matches('button.nav-button.secondary') && /^Back\b/i.test(control.textContent.trim());
+    }
+
+    function isPreviewNavigationControl(control) {
+        return control.matches('.code-tab, [role="tab"], [data-tab-preview]');
     }
 
     function isProgressionButton(control) {
@@ -413,6 +524,10 @@
 
             panelControls(panel).forEach(control => {
                 if (isBackButton(control)) {
+                    setGateDisabled(control, false);
+                    return;
+                }
+                if (isPreviewNavigationControl(control)) {
                     setGateDisabled(control, false);
                     return;
                 }
@@ -971,6 +1086,7 @@
         setupGatedHints();
         setupEvidenceFileInputs();
         setupActivityHeadings();
+        setupCheckpointMarkers();
         setupEssentialResponseFields();
         setupTableControlLabels();
         setupSidebarAccessibility();

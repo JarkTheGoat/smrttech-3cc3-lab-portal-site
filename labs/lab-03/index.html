@@ -132,7 +132,7 @@
         }
 
         .stage-btn.completed:not(.active)::after {
-            content: "âœ“";
+            content: "\2713";
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -192,8 +192,7 @@
         .js-enabled.stage-4 .stage-panel.stage-4,
         .js-enabled.stage-5 .stage-panel.stage-5,
         .js-enabled.stage-6 .stage-panel.stage-6,
-        .js-enabled.stage-7 .stage-panel.stage-7,
-        .js-enabled.stage-8 .stage-panel.stage-8 { display: block; }
+        .js-enabled.stage-7 .stage-panel.stage-7 { display: block; }
 
         .grid-layout { display: grid; gap: 1rem; }
         .grid-layout.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -546,9 +545,8 @@
             <button class="stage-btn" id="btn-stage-4" type="button" data-stage="4">Control Buzzer</button>
             <button class="stage-btn" id="btn-stage-5" type="button" data-stage="5">Count Events</button>
             <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">Extend</button>
-            <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Troubleshoot</button>
-            <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Reflect</button>
-            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/9</strong></div>
+            <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Reflect</button>
+            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/8</strong></div>
         </div>
     </nav>
 
@@ -607,7 +605,7 @@
                 <ul class="knowledge-skill-list text-sm">
                     <li><a href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW interface</a></li>
                     <li><a href="../../knowledge/skill-tree.html?topic=while-loops">Loops and shift registers</a></li>
-                    <li><a href="../../knowledge/skill-tree.html?topic=analog-input">Digital input and output</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=digital-input">Digital input and output</a></li>
                     <li><a href="../../knowledge/skill-tree.html?topic=breadboard">Breadboard connectivity</a></li>
                     <li><a href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Troubleshooting sequence</a></li>
                 </ul>
@@ -832,6 +830,9 @@
                         <label class="response-field"><span>Predicted tilted digital value</span><input class="persist-text" data-key="build-tilted" value="LOW"></label>
                     </div>
                 </div>
+                <div class="warning-card mt-block">
+                    <strong>Safe recovery sequence:</strong> disconnect USB power before moving wires. Verify the common ground, D2 pull-down connection, D3 buzzer connection and polarity, then confirm LINX firmware, serial port, and channel constants. Test one hypothesis at a time and limit prolonged buzzer exposure.
+                </div>
             </article>
         </section>
 
@@ -912,13 +913,14 @@
                     </div>
                     <div class="mini-card">
                         <h3>Required evidence</h3>
-                        <label class="response-field evidence-upload"><span>Front panel screenshot</span><input class="persist-file" data-key="buzz-front" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="buzz-front">No file selected.</small></label>
-                        <label class="response-field evidence-upload"><span>Block diagram screenshot</span><input class="persist-file" data-key="buzz-block" type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="buzz-block">No file selected.</small></label>
+                        <label class="response-field evidence-upload"><span>Front panel evidence (PNG, JPG, or PDF)</span><input class="persist-file" data-key="buzz-front" type="file" accept=".png,.jpg,.jpeg,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="buzz-front">No file selected.</small></label>
+                        <label class="response-field evidence-upload"><span>Block diagram evidence (PNG, JPG, or PDF)</span><input class="persist-file" data-key="buzz-block" type="file" accept=".png,.jpg,.jpeg,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="buzz-block">No file selected.</small></label>
                         <label class="response-field"><span>Upright test result</span><input class="persist-text" data-key="buzz-upright"></label>
                         <label class="response-field"><span>Tilted test result</span><input class="persist-text" data-key="buzz-tilted"></label>
                         <label class="response-field"><span>Explain the Not function</span><textarea class="persist-text" data-key="buzz-not"></textarea></label>
                     </div>
                 </div>
+                <p class="warning-card mt-block">The chooser records the selected filename as local evidence in this browser. It does not upload or submit your VI or report. Accepted formats are PNG, JPG, and PDF.</p>
             </article>
         </section>
 
@@ -1062,67 +1064,7 @@
             </article>
         </section>
 
-        <section class="stage-panel stage-7" id="troubleshoot" tabindex="-1">
-            <article class="section-card card border-warning">
-                <p class="eyebrow">Troubleshooting Challenge</p>
-                <h2>Use evidence before changing the system</h2>
-                <div class="danger-card"><strong>Before changing the circuit or LabVIEW block diagram, write one hypothesis and one measurement or inspection that could support or reject it.</strong></div>
-                <div class="table-wrap mt-block">
-                    <table>
-                        <thead><tr><th>Observation</th><th>Possible cause</th><th>Test</th><th>Expected evidence</th><th>Actual evidence</th><th>Decision</th></tr></thead>
-                        <tbody>
-                            <tr>
-                                <td><textarea class="persist-text" data-key="trouble-observation"></textarea></td>
-                                <td><textarea class="persist-text" data-key="trouble-cause"></textarea></td>
-                                <td><textarea class="persist-text" data-key="trouble-test"></textarea></td>
-                                <td><textarea class="persist-text" data-key="trouble-expected"></textarea></td>
-                                <td><textarea class="persist-text" data-key="trouble-actual"></textarea></td>
-                                <td><textarea class="persist-text" data-key="trouble-decision" data-stage-required></textarea></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="grid-layout three mt-block">
-                    <div class="mini-card">
-                        <h3>Hardware faults</h3>
-                        <ul>
-                            <li>5 V and GND shorted</li>
-                            <li>Missing GND connection</li>
-                            <li>Pull-down resistor not connected to ground</li>
-                            <li>Tilt switch in the wrong breadboard row</li>
-                            <li>Digital Pin 2 connected to wrong node</li>
-                            <li>Buzzer polarity reversed or wrong pin</li>
-                            <li>Loose jumper wire or power-only USB cable</li>
-                        </ul>
-                    </div>
-                    <div class="mini-card">
-                        <h3>Software/configuration faults</h3>
-                        <ul>
-                            <li>LINX firmware not loaded</li>
-                            <li>Wrong serial port selected</li>
-                            <li>DI channel not set to 2</li>
-                            <li>DO channel not set to 3</li>
-                            <li>Not function missing or placed incorrectly</li>
-                            <li>Shift register not initialized or wired incorrectly</li>
-                            <li>Boolean To (1,0) or And logic missing</li>
-                        </ul>
-                    </div>
-                    <div class="mini-card">
-                        <h3>Data interpretation faults</h3>
-                        <ul>
-                            <li>Assuming the sensor outputs an analog angle</li>
-                            <li>Counting state instead of event</li>
-                            <li>Ignoring switch bounce</li>
-                            <li>Assuming buzzer silence proves sensor failure</li>
-                            <li>Assuming LED and buzzer state must always be identical</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="briefing-card mt-block"><h3>Troubleshooting discussion</h3><p>First decide whether the issue is wiring, Arduino communication, LabVIEW logic, or interpretation. Then test one hypothesis with one measurement or inspection.</p></div>
-            </article>
-        </section>
-
-        <section class="stage-panel stage-8" id="reflect" tabindex="-1">
+        <section class="stage-panel stage-7" id="reflect" tabindex="-1">
             <article class="section-card card border-maroon">
                 <p class="eyebrow">Deliverables</p>
                 <h2>Submission checklist</h2>
@@ -1131,8 +1073,8 @@
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-counter"><span>Completed LabVIEW VI for tilt counting.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-file"><span>Final VI file named <code>lab3_tilt_counter.vi</code> or instructor-approved equivalent.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-circuit"><span>Evidence of completed physical circuit.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-front"><span>Screenshot/export of front panel.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-block"><span>Screenshot/export of block diagram.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-front"><span>Front-panel evidence prepared in PNG, JPG, or PDF format.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-block"><span>Block-diagram evidence prepared in PNG, JPG, or PDF format.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-switch"><span>Explanation of tilt switch operation and two applications.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-buzzer"><span>Explanation of active buzzer operation and two applications.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-io"><span>Classification of tilt switch and buzzer as input/output devices.</span></label>
@@ -1176,6 +1118,21 @@
                 <label class="response-field"><span>9. What could cause the counter to increase more than once for a single physical tilt?</span><textarea class="persist-text" data-key="reflect-9"></textarea></label>
                 <label class="response-field"><span>10. Does this lab create a complete IoT system? If not, which IoT layer has been completed and what still needs to be added?</span><textarea class="persist-text" data-key="reflect-10"></textarea></label>
                 <label class="response-field"><span>11. What did you initially believe about digital sensors that this lab changed or clarified?</span><textarea class="persist-text" data-key="reflect-11"></textarea></label>
+            </article>
+
+            <article class="section-card card border-success">
+                <h2>Learning Outcomes Achieved</h2>
+                <p>What you can now demonstrate after completing this lab:</p>
+                <div class="learning-outcome-grid">
+                    <div class="learning-outcome-card"><strong>Tilt switch</strong><span>Explain how orientation changes the switch's electrical state.</span></div>
+                    <div class="learning-outcome-card"><strong>Defined logic</strong><span>Use a pull-down resistor to prevent a floating input.</span></div>
+                    <div class="learning-outcome-card"><strong>Digital states</strong><span>Distinguish HIGH, LOW, open, shorted, and floating conditions.</span></div>
+                    <div class="learning-outcome-card"><strong>Hardware build</strong><span>Build and verify the D2 tilt input and D3 buzzer output.</span></div>
+                    <div class="learning-outcome-card"><strong>LINX I/O</strong><span>Use LabVIEW LINX Digital Read and Digital Write.</span></div>
+                    <div class="learning-outcome-card"><strong>Logic inversion</strong><span>Apply the Not function to obtain the intended alert behavior.</span></div>
+                    <div class="learning-outcome-card"><strong>Event counting</strong><span>Use prior state to count transitions rather than loop iterations.</span></div>
+                    <div class="learning-outcome-card"><strong>Troubleshooting</strong><span>Isolate wiring, communication, or logic faults with evidence.</span></div>
+                </div>
             </article>
 
             <article class="section-card card border-maroon">
@@ -1226,8 +1183,8 @@
     <script>
         (() => {
             const STORAGE_PREFIX = 'smrttech-lab3-tilt';
-            const STAGE_COUNT = 9;
-            const STAGE_NAMES = ['Prepare', 'Predict', 'Build Circuit', 'Read Sensor', 'Control Buzzer', 'Count Events', 'Extend', 'Troubleshoot', 'Reflect'];
+            const STAGE_COUNT = 8;
+            const STAGE_NAMES = ['Prepare', 'Predict', 'Build Circuit', 'Read Sensor', 'Control Buzzer', 'Count Events', 'Extend', 'Reflect'];
             const ORDER_KEYS = ['chain-tilt', 'chain-switch', 'chain-pulldown', 'chain-d2', 'chain-linx', 'chain-led', 'chain-d3', 'chain-buzzer', 'chain-shift', 'chain-count'];
             const CORRECT_ORDER = ['1','2','3','4','5','6','7','8','9','10'];
 
@@ -1235,6 +1192,36 @@
 
             function storageKey(key) {
                 return `${STORAGE_PREFIX}:${key}`;
+            }
+
+            function migrateRemovedTroubleshootStage() {
+                const migrationKey = storageKey('stage-layout-v2-migrated');
+                if (localStorage.getItem(migrationKey) === 'true') return;
+
+                const removedStage = 7;
+                const oldReflectStage = 8;
+                const newReflectStage = 7;
+                const oldReflectComplete = localStorage.getItem(storageKey(`stage-${oldReflectStage}-complete`)) === 'true';
+                const oldReflectConfirmedKey = 'smrttech:stage-confirmed:v1:lab-03:8';
+                const newReflectConfirmedKey = 'smrttech:stage-confirmed:v1:lab-03:7';
+                const oldReflectConfirmed = localStorage.getItem(oldReflectConfirmedKey) === 'true';
+                const currentStage = Number(localStorage.getItem(storageKey('current-stage')));
+
+                localStorage.removeItem(storageKey(`stage-${newReflectStage}-complete`));
+                localStorage.removeItem(storageKey(`stage-${oldReflectStage}-complete`));
+                if (oldReflectComplete) {
+                    localStorage.setItem(storageKey(`stage-${newReflectStage}-complete`), 'true');
+                }
+
+                localStorage.removeItem(newReflectConfirmedKey);
+                localStorage.removeItem(oldReflectConfirmedKey);
+                if (oldReflectConfirmed) localStorage.setItem(newReflectConfirmedKey, 'true');
+
+                if (Number.isFinite(currentStage) && currentStage >= removedStage) {
+                    const migratedStage = Math.min(STAGE_COUNT - 1, currentStage > removedStage ? currentStage - 1 : currentStage);
+                    localStorage.setItem(storageKey('current-stage'), String(migratedStage));
+                }
+                localStorage.setItem(migrationKey, 'true');
             }
 
             function setStage(stage) {
@@ -1386,6 +1373,7 @@
                 });
             }
 
+            migrateRemovedTroubleshootStage();
             buildStageFooters();
             setupSidebars();
             setupOrderOptions();

@@ -131,7 +131,7 @@
         }
 
         .stage-btn.completed:not(.active)::after {
-            content: "âœ“";
+            content: "\2713";
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -260,8 +260,7 @@
         .js-enabled.stage-4 .stage-panel.stage-4,
         .js-enabled.stage-5 .stage-panel.stage-5,
         .js-enabled.stage-6 .stage-panel.stage-6,
-        .js-enabled.stage-7 .stage-panel.stage-7,
-        .js-enabled.stage-8 .stage-panel.stage-8 { display: block; }
+        .js-enabled.stage-7 .stage-panel.stage-7 { display: block; }
 
         .grid { display: grid; gap: 1rem; }
         .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -762,10 +761,9 @@
             <button class="stage-btn" id="btn-stage-4" type="button" data-stage="4">Sense</button>
             <button class="stage-btn" id="btn-stage-5" type="button" data-stage="5">Display</button>
             <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">Extend</button>
-            <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Troubleshoot</button>
-            <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Reflect</button>
+            <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Reflect</button>
             <div class="auto-score-chip" aria-live="polite">
-                Progress <strong data-progress-status>0/9</strong>
+                Progress <strong data-progress-status>0/8</strong>
             </div>
         </div>
     </nav>
@@ -1168,7 +1166,7 @@
         <section class="stage-panel stage-4" id="sense" tabindex="-1">
             <article class="section-card card border-warning">
                 <p class="eyebrow">Checkpoint 4</p>
-                <h2>Convert temperature change into voltage change</h2>
+                <h2>Build and verify the thermistor voltage-divider circuit</h2>
                 <p>Build the thermistor voltage-divider circuit using the thermistor, 10 k&Omega; resistor, Arduino Mega, breadboard, jumper wires, 5 V, GND, and A0.</p>
                 <div class="grid two">
                     <div class="mini-card">
@@ -1189,6 +1187,10 @@
                 <div class="warning-box">
                     <strong>Confirm placement before power.</strong>
                     Confirm the exact thermistor and resistor placement with your instructor or the course-provided schematic before powering the Arduino. Reversing the thermistor and fixed resistor may reverse the temperature-voltage relationship.
+                </div>
+                <div class="briefing-card mt-block">
+                    <h3>Safe recovery sequence</h3>
+                    <p>If the reading is missing or implausible, disconnect USB power before moving wires. Verify 5 V, GND, the A0 divider junction, thermistor seating, and the 10 k&Omega; resistor row; then confirm LINX firmware, serial port, and analog channel 0. Change one item at a time and retest with a measurement or inspection.</p>
                 </div>
                 <div class="grid two mt-block">
                     <div class="mini-card">
@@ -1314,9 +1316,10 @@
                 <div class="grid two">
                     <label class="response-field"><span>Which option did you choose?</span><select class="persist-text" data-key="kelvin-option"><option value="">Choose...</option><option>Option A: SubVI</option><option>Option B: Direct logic</option></select></label>
                     <label class="response-field"><span>How did you test that Kelvin is correct?</span><textarea class="persist-text" data-key="kelvin-test"></textarea></label>
-                    <label class="response-field evidence-upload"><span>Front panel screenshot</span><input class="persist-file" data-key="kelvin-front-panel" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="kelvin-front-panel">No file selected.</small></label>
-                    <label class="response-field evidence-upload"><span>Block diagram screenshot</span><input class="persist-file" data-key="kelvin-block-diagram" type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="kelvin-block-diagram">No file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>Front panel evidence (PNG, JPG, or PDF)</span><input class="persist-file" data-key="kelvin-front-panel" type="file" accept=".png,.jpg,.jpeg,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="kelvin-front-panel">No file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>Block diagram evidence (PNG, JPG, or PDF)</span><input class="persist-file" data-key="kelvin-block-diagram" type="file" accept=".png,.jpg,.jpeg,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="kelvin-block-diagram">No file selected.</small></label>
                 </div>
+                <p class="callout">The chooser records the selected filename as local evidence in this browser. It does not upload or submit your VI or report. Accepted formats are PNG, JPG, and PDF.</p>
                 <div class="mini-card">
                     <h3>Think it through</h3>
                     <ul>
@@ -1347,69 +1350,7 @@
             </article>
         </section>
 
-        <section class="stage-panel stage-7" id="troubleshoot" tabindex="-1">
-            <article class="section-card card border-warning">
-                <p class="eyebrow">Troubleshooting Challenge</p>
-                <h2>Use evidence before changing the system</h2>
-                <div class="warning-box">
-                    <strong>Before changing the circuit or block diagram, write one hypothesis and one measurement or inspection that could support or reject it.</strong>
-                </div>
-                <div class="table-wrap mt-block">
-                    <table>
-                        <thead><tr><th>Observation</th><th>Possible cause</th><th>Test</th><th>Expected evidence</th><th>Actual evidence</th><th>Decision</th></tr></thead>
-                        <tbody>
-                            <tr>
-                                <td><textarea class="persist-text" data-key="trouble-observation"></textarea></td>
-                                <td><textarea class="persist-text" data-key="trouble-cause"></textarea></td>
-                                <td><textarea class="persist-text" data-key="trouble-test"></textarea></td>
-                                <td><textarea class="persist-text" data-key="trouble-expected"></textarea></td>
-                                <td><textarea class="persist-text" data-key="trouble-actual"></textarea></td>
-                                <td><textarea class="persist-text" data-key="trouble-decision" data-stage-required></textarea></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="grid three mt-block">
-                    <div class="mini-card">
-                        <h3>Hardware faults</h3>
-                        <ul>
-                            <li>5 V and GND reversed</li>
-                            <li>Missing GND connection</li>
-                            <li>A0 connected to the wrong divider point</li>
-                            <li>Thermistor not seated properly</li>
-                            <li>10 k&Omega; resistor in the wrong row</li>
-                            <li>Loose jumper wire</li>
-                            <li>USB cable is power-only</li>
-                        </ul>
-                    </div>
-                    <div class="mini-card">
-                        <h3>Software and configuration faults</h3>
-                        <ul>
-                            <li>LINX firmware not loaded</li>
-                            <li>Wrong serial port or board</li>
-                            <li>Analog channel constant not set to 0</li>
-                            <li>LINX Open placed inside the while loop</li>
-                            <li>LINX Close missing</li>
-                            <li>Stop button not wired</li>
-                            <li>Select function or SubVI terminals reversed</li>
-                        </ul>
-                    </div>
-                    <div class="mini-card">
-                        <h3>Data interpretation faults</h3>
-                        <ul>
-                            <li>Assuming Arduino reads temperature directly</li>
-                            <li>Assuming A0 reads resistance directly</li>
-                            <li>Assuming Fahrenheit and Celsius have the same numeric value</li>
-                            <li>Ignoring sensor settling time</li>
-                            <li>Treating noise as proof the circuit is wrong without testing</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="briefing-card mt-block"><h3>Troubleshooting discussion</h3><p>Use your observation, possible cause, proposed test, actual evidence, and next action. Do not change multiple wires or code blocks at once.</p></div>
-            </article>
-        </section>
-
-        <section class="stage-panel stage-8" id="reflect" tabindex="-1">
+        <section class="stage-panel stage-7" id="reflect" tabindex="-1">
             <article class="section-card card border-maroon">
                 <p class="eyebrow">Deliverables</p>
                 <h2>Submission checklist</h2>
@@ -1461,6 +1402,21 @@
                 <label class="response-field"><span>8. What did you initially believe about sensor measurement that this lab changed or clarified?</span><textarea class="persist-text" data-key="reflect-8"></textarea></label>
             </article>
 
+            <article class="section-card card border-success">
+                <h2>Learning Outcomes Achieved</h2>
+                <p>What you can now demonstrate after completing this lab:</p>
+                <div class="learning-outcome-grid">
+                    <div class="learning-outcome-card"><strong>Sensor model</strong><span>Explain how temperature changes thermistor resistance.</span></div>
+                    <div class="learning-outcome-card"><strong>Voltage divider</strong><span>Trace resistance change to a measurable junction voltage.</span></div>
+                    <div class="learning-outcome-card"><strong>Arduino role</strong><span>Identify A0 as the analog-voltage acquisition point.</span></div>
+                    <div class="learning-outcome-card"><strong>LabVIEW LINX</strong><span>Explain how voltage data reaches LabVIEW.</span></div>
+                    <div class="learning-outcome-card"><strong>VI building</strong><span>Build and test temperature-conversion controls, logic, and indicators.</span></div>
+                    <div class="learning-outcome-card"><strong>SubVI reuse</strong><span>Package unit conversion as a reusable SubVI.</span></div>
+                    <div class="learning-outcome-card"><strong>Live display</strong><span>Display and verify Celsius, Fahrenheit, and Kelvin readings.</span></div>
+                    <div class="learning-outcome-card"><strong>Troubleshooting</strong><span>Diagnose the sensing chain with one evidence-based change at a time.</span></div>
+                </div>
+            </article>
+
             <article class="section-card card border-maroon">
                 <p class="eyebrow">Glossary</p>
                 <h2>Key terms</h2>
@@ -1500,7 +1456,7 @@
     <script>
         (() => {
             const STORAGE_PREFIX = 'smrttech-lab2-temperature';
-            const STAGE_COUNT = 9;
+            const STAGE_COUNT = 8;
             const ORDER_KEYS = ['chain-temperature', 'chain-resistance', 'chain-divider', 'chain-a0', 'chain-linx', 'chain-convert', 'chain-display'];
             const CORRECT_ORDER = ['1', '2', '3', '4', '5', '6', '7'];
 
@@ -1508,6 +1464,36 @@
 
             function storageKey(key) {
                 return `${STORAGE_PREFIX}:${key}`;
+            }
+
+            function migrateRemovedTroubleshootStage() {
+                const migrationKey = storageKey('stage-layout-v2-migrated');
+                if (localStorage.getItem(migrationKey) === 'true') return;
+
+                const removedStage = 7;
+                const oldReflectStage = 8;
+                const newReflectStage = 7;
+                const oldReflectComplete = localStorage.getItem(storageKey(`stage-${oldReflectStage}-complete`)) === 'true';
+                const oldReflectConfirmedKey = 'smrttech:stage-confirmed:v1:lab-02:8';
+                const newReflectConfirmedKey = 'smrttech:stage-confirmed:v1:lab-02:7';
+                const oldReflectConfirmed = localStorage.getItem(oldReflectConfirmedKey) === 'true';
+                const currentStage = Number(localStorage.getItem(storageKey('current-stage')));
+
+                localStorage.removeItem(storageKey(`stage-${newReflectStage}-complete`));
+                localStorage.removeItem(storageKey(`stage-${oldReflectStage}-complete`));
+                if (oldReflectComplete) {
+                    localStorage.setItem(storageKey(`stage-${newReflectStage}-complete`), 'true');
+                }
+
+                localStorage.removeItem(newReflectConfirmedKey);
+                localStorage.removeItem(oldReflectConfirmedKey);
+                if (oldReflectConfirmed) localStorage.setItem(newReflectConfirmedKey, 'true');
+
+                if (Number.isFinite(currentStage) && currentStage >= removedStage) {
+                    const migratedStage = Math.min(STAGE_COUNT - 1, currentStage > removedStage ? currentStage - 1 : currentStage);
+                    localStorage.setItem(storageKey('current-stage'), String(migratedStage));
+                }
+                localStorage.setItem(migrationKey, 'true');
             }
 
             function setStage(stage) {
@@ -1567,7 +1553,7 @@
             }
 
             function buildStageFooters() {
-                const stageNames = ['Prepare', 'Communicate', 'Convert', 'Modularize', 'Sense', 'Display', 'Extend', 'Troubleshoot', 'Reflect'];
+                const stageNames = ['Prepare', 'Communicate', 'Convert', 'Modularize', 'Sense', 'Display', 'Extend', 'Reflect'];
                 document.querySelectorAll('.stage-panel').forEach((panel, index) => {
                     if (panel.querySelector('.stage-footer')) return;
                     const footer = document.createElement('div');
@@ -1686,6 +1672,7 @@
                 location.reload();
             }
 
+            migrateRemovedTroubleshootStage();
             buildStageFooters();
             setupSidebars();
             document.querySelectorAll('[data-stage]').forEach(button => {

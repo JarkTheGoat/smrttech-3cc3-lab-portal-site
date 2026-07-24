@@ -923,22 +923,21 @@
 
         <div class="p-6 bg-[#7A003C] text-white shadow-md">
             <h3 class="font-bold text-xl tracking-wide">Tools & Access</h3>
-            <p class="text-sm text-white/75 mt-1">LinkedIn Learning, LabVIEW, Tinkercad, Arduino</p>
+            <p class="text-sm text-white/75 mt-1">Course knowledge resources, LabVIEW, Tinkercad, Arduino</p>
         </div>
 
         <div class="p-5 space-y-5 overflow-y-auto">
             <div class="card p-5">
                 <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Access Checklist</h4>
                 <ul class="compact-list text-sm text-gray-600 list-disc ml-5">
-                    <li>Use LinkedIn Learning through McMaster UTS and sign in with McMaster credentials.</li>
-                    <li>Watch sections 1, 2, 3, and 4 of the Learning LabVIEW course.</li>
+                    <li>Open the approved LabVIEW topics in the course Master Skill Tree.</li>
                     <li>Install LabVIEW using the Avenue to Learn installation guide.</li>
                     <li>Join the Tinkercad class and use your McMaster ID as your nickname.</li>
                 </ul>
             </div>
 
             <div class="card p-5 border-l-4 border-[#FDBF57]">
-                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Lab 2 Hardware Values</h4>
+                <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Sensor Hardware Values</h4>
                 <dl class="grid grid-cols-2 gap-y-3 text-sm">
                     <dt class="text-gray-500">Divider resistor</dt>
                     <dd class="font-semibold text-right">4.7 k&Omega;</dd>
@@ -980,7 +979,7 @@
                 <ul class="knowledge-skill-list text-sm">
                     <li><a href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW front panel and block diagram</a></li>
                     <li><a href="../../knowledge/skill-tree.html?topic=controls-indicators">Controls and indicators</a></li>
-                    <li><a href="../../knowledge/skill-tree.html?topic=while-loops">Loops and shift registers</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=while-loops">While Loops</a></li>
                     <li><a href="../../knowledge/skill-tree.html?topic=voltage-divider">Voltage divider</a></li>
                     <li><a href="../../knowledge/skill-tree.html?topic=photoresistor">Photoresistor</a></li>
                     <li><a href="../../knowledge/skill-tree.html?topic=multimeter">Multimeter modes</a></li>
@@ -1119,10 +1118,6 @@ void loop()
                     <h3 class="text-xl font-bold mb-4">Required Before Starting</h3>
                     <div class="space-y-3">
                         <label class="completion-box">
-                            <input type="checkbox" class="persist-check" data-key="setup-linkedin">
-                            <span>LinkedIn Learning opens through McMaster credentials.</span>
-                        </label>
-                        <label class="completion-box">
                             <input type="checkbox" class="persist-check" data-key="setup-labview">
                             <span>LabVIEW is installed using the Avenue to Learn guide.</span>
                         </label>
@@ -1174,7 +1169,7 @@ void loop()
                             <span class="quiz-points">1 point</span>
                         </legend>
                         <label class="quiz-option"><input type="radio" name="ready-labview-access" value="a"><span>A Tinkercad class link and a trainer board.</span></label>
-                        <label class="quiz-option"><input type="radio" name="ready-labview-access" value="b"><span>LinkedIn Learning access and LabVIEW installed on the machine.</span></label>
+                        <label class="quiz-option"><input type="radio" name="ready-labview-access" value="b"><span>The approved course knowledge resources and LabVIEW installed on the machine.</span></label>
                         <label class="quiz-option"><input type="radio" name="ready-labview-access" value="c"><span>An Arduino sketch and a 220 ohm resistor.</span></label>
                         <label class="quiz-option"><input type="radio" name="ready-labview-access" value="d"><span>A multimeter set to voltage and a real photoresistor.</span></label>
                         <div class="quiz-actions">
@@ -1218,7 +1213,7 @@ void loop()
                             <p class="text-xs font-bold uppercase tracking-widest text-[#7A003C] mb-1">Laboratory 1</p>
                             <h2 class="text-3xl font-bold">Introduction to LabVIEW</h2>
                         </div>
-                        <span class="time-badge">Learning LabVIEW sections 1-4</span>
+                        <span class="time-badge">LabVIEW foundations</span>
                     </div>
 
                     <div class="border border-gray-200 rounded-xl overflow-hidden">
@@ -1232,21 +1227,24 @@ void loop()
                         <div id="labview-course" class="tab-content active p-6">
                             <div class="grid lg:grid-cols-2 gap-5">
                                 <div class="briefing-card">
-                                    <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Watch and Focus</h4>
+                                    <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Approved Learning Resources</h4>
                                     <p class="text-gray-600 leading-relaxed">
-                                        Go to the Learning LabVIEW course on LinkedIn Learning and watch sections 1, 2, 3, and 4.
-                                        Use the videos to identify the difference between controls, indicators, the front panel,
-                                        and the block diagram.
+                                        Begin with the linked Master Skill Tree topics. They explain the LabVIEW workspace and
+                                        the reusable skills needed for this activity without relying on an external video service.
                                     </p>
-                                </div>
-                                <div class="card p-5 bg-gray-50">
-                                    <h4 class="font-bold mb-3">Key LabVIEW Terms</h4>
-                                    <ul class="compact-list text-gray-600 list-disc ml-5">
-                                        <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=vi-subvi">VI and SubVI</a></li>
+                                    <ul class="compact-list text-gray-600 list-disc ml-5 mt-3">
+                                        <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW interface</a></li>
+                                        <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=front-panel">Front panel</a> and <a class="concept-link" href="../../knowledge/skill-tree.html?topic=block-diagram">block diagram</a></li>
                                         <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=controls-indicators">Controls and indicators</a></li>
-                                        <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=data-types">Data types, arrays, and clusters</a></li>
-                                        <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=while-loops">While loops, for loops, and shift registers</a></li>
+                                        <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=while-loops">While Loops</a></li>
                                     </ul>
+                                </div>
+                                <div class="resource-placeholder" role="note" aria-label="Instructor replacement resource needed">
+                                    <h4 class="font-bold mb-2">Instructor resource needed</h4>
+                                    <p>
+                                        Provide a replacement course video or approved learning resource that explains the
+                                        LabVIEW front panel, block diagram, controls, indicators, and basic VI workflow.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -1261,15 +1259,15 @@ void loop()
                                     <div class="grid md:grid-cols-3 gap-3">
                                         <label class="block">
                                             <span class="font-semibold text-sm">Vin</span>
-                                            <input type="number" step="0.01" class="response-input persist-text mt-2 divider-input" data-key="lab1-vin" placeholder="12">
+                                            <input type="number" min="0" step="0.01" class="response-input persist-text mt-2 divider-input" data-key="lab1-vin" placeholder="e.g., 5.0">
                                         </label>
                                         <label class="block">
                                             <span class="font-semibold text-sm">R1</span>
-                                            <input type="number" step="0.01" class="response-input persist-text mt-2 divider-input" data-key="lab1-r1" placeholder="1">
+                                            <input type="number" min="0" step="0.01" class="response-input persist-text mt-2 divider-input" data-key="lab1-r1" placeholder="e.g., 4.7">
                                         </label>
                                         <label class="block">
                                             <span class="font-semibold text-sm">R2</span>
-                                            <input type="number" step="0.01" class="response-input persist-text mt-2 divider-input" data-key="lab1-r2" placeholder="5">
+                                            <input type="number" min="0" step="0.01" class="response-input persist-text mt-2 divider-input" data-key="lab1-r2" placeholder="e.g., 10">
                                         </label>
                                     </div>
                                     <div class="success-card mt-4">
@@ -1283,29 +1281,66 @@ void loop()
                         </div>
 
                         <div id="labview-build" class="tab-content p-6">
+                            <div class="briefing-card mb-5">
+                                <h3 class="text-xl font-bold mb-2">Build the Voltage-Divider VI</h3>
+                                <p>
+                                    Build a <a class="concept-link" href="../../knowledge/skill-tree.html?topic=vi-subvi">LabVIEW VI</a>
+                                    that represents and evaluates a
+                                    <a class="concept-link" href="../../knowledge/skill-tree.html?topic=voltage-divider">voltage-divider circuit</a>.
+                                    Create an appropriate <a class="concept-link" href="../../knowledge/skill-tree.html?topic=front-panel">front-panel interface</a>,
+                                    add the required <a class="concept-link" href="../../knowledge/skill-tree.html?topic=controls-indicators">controls and indicators</a>,
+                                    and construct the corresponding
+                                    <a class="concept-link" href="../../knowledge/skill-tree.html?topic=block-diagram">block-diagram logic</a>.
+                                </p>
+                            </div>
                             <div class="grid lg:grid-cols-2 gap-5">
-                                <div class="figure-frame">
-                                    <img src="../../assets/lab1-front-panel.png" alt="Example LabVIEW front panel for voltage divider VI">
-                                </div>
+                                <figure class="figure-frame">
+                                    <img
+                                        src="../../assets/lab1-front-panel.png"
+                                        alt="Completed LabVIEW voltage-divider front panel with Vin, R1, R2, Vout, Stop, student name, and student ID"
+                                    >
+                                    <figcaption class="text-sm text-gray-600 mt-3">
+                                        Example completed front panel. Keep controls, indicators, labels, and wiring guides arranged clearly.
+                                    </figcaption>
+                                </figure>
                                 <div class="card p-5">
-                                    <h4 class="font-bold mb-3">Your VI Must Include</h4>
-                                    <div class="space-y-3">
-                                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="lab1-watch-sections"><span>Sections 1, 2, 3, and 4 of Learning LabVIEW are complete.</span></label>
-                                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="lab1-while-loop"><span>The block diagram uses a while loop.</span></label>
-                                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="lab1-front-panel"><span>The front panel has controls for Vin, R1, R2 and an indicator for Vout.</span></label>
-                                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="lab1-name-id"><span>The front panel includes your student name and ID.</span></label>
-                                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="lab1-decoration"><span>Decorations add lines, boxes, and labels for a clear front panel.</span></label>
-                                    </div>
+                                    <h4 class="font-bold mb-3">Beginner Build Sequence</h4>
+                                    <ol class="list-decimal ml-5 space-y-2 text-gray-600">
+                                        <li>Start a blank VI. A VI is the LabVIEW program file; it has a front panel for the user interface and a block diagram for program logic.</li>
+                                        <li>On the front panel, place three <strong>numeric controls</strong> named <code>Vin</code>, <code>R1</code>, and <code>R2</code>. A control supplies a value to the program.</li>
+                                        <li>Place one <strong>numeric indicator</strong> named <code>Vout</code>. An indicator displays a value calculated by the program.</li>
+                                        <li>Open the block diagram and use <a class="concept-link" href="../../knowledge/skill-tree.html?topic=program-elements">arithmetic functions and wires</a> to implement <code>Vout = Vin × R2 ÷ (R1 + R2)</code>. Wires carry data from controls through functions to the indicator.</li>
+                                        <li>Place the calculation inside a <a class="concept-link" href="../../knowledge/skill-tree.html?topic=while-loops">While Loop</a>, add a Boolean <code>Stop</code> control, and wire it to the loop Stop terminal.</li>
+                                        <li>Run the VI, change the three inputs, and confirm that <code>Vout</code> updates. End the program with the Stop control, not the Abort button.</li>
+                                        <li>Add your name and student number to the front panel, then save the file with the <code>.vi</code> extension.</li>
+                                    </ol>
                                 </div>
                             </div>
+                            <div class="success-card mt-5">
+                                <h4 class="font-bold mb-2">Why the While Loop is used</h4>
+                                <p>
+                                    The While Loop repeatedly updates the voltage-divider calculation and keeps the front panel
+                                    responsive while the VI runs. It continues until the programmed Stop condition is met, so the
+                                    student can change inputs without pressing Run again. Stop the VI with its Stop control rather
+                                    than the Abort button.
+                                </p>
+                            </div>
+                            <figure class="screenshot-placeholder" role="group" aria-label="Instructor screenshot placeholder for a LabVIEW While Loop">
+                                <div class="screenshot-placeholder__box">
+                                    Provide a screenshot that shows how to place and configure a While Loop in the LabVIEW block diagram.
+                                </div>
+                                <figcaption>Instructor-provided screenshot required.</figcaption>
+                            </figure>
                         </div>
 
                         <div id="labview-submit" class="tab-content p-6">
                             <div class="grid lg:grid-cols-2 gap-5">
                                 <div class="success-card">
-                                    <h4 class="font-bold mb-2">Submission</h4>
+                                    <h3 class="font-bold mb-2">Submit the LabVIEW VI</h3>
                                     <ol class="list-decimal ml-5 space-y-2 text-sm">
-                                        <li>Submit your VI program file.</li>
+                                        <li>Select your completed <code>.vi</code> file in the HTML-page evidence dropbox below.</li>
+                                        <li>The portal records the filename locally in this browser and in the completion JSON; it does not upload or embed the VI contents.</li>
+                                        <li>Submit the actual <code>.vi</code> file through the Lab 1 Avenue to Learn submission location identified by your instructor.</li>
                                         <li>Complete the Lab 1 quiz on Avenue to Learn.</li>
                                     </ol>
                                 </div>
@@ -1313,35 +1348,41 @@ void loop()
                                     Your submitted VI front panel must contain your student name and ID.
                                 </div>
                             </div>
+
+                            <label class="response-field evidence-upload mt-6">
+                                <span>Completed LabVIEW VI evidence dropbox (accepted type: .vi)</span>
+                                <input class="persist-file" data-key="lab1-vi-file" type="file" accept=".vi" data-stage-required>
+                                <small class="file-name-preview" data-file-name-for="lab1-vi-file">No file selected.</small>
+                            </label>
+
+                            <div class="quiz-stack mt-6">
+                                <fieldset class="quiz-card auto-question" data-question-id="labview-divider-equation">
+                                    <legend class="quiz-title">Which formula should the VI implement?<span class="quiz-points">1 point</span></legend>
+                                    <label class="quiz-option"><input type="radio" name="labview-divider-equation" value="a"><span>Vout = Vin * R1 / (R1 + R2)</span></label>
+                                    <label class="quiz-option"><input type="radio" name="labview-divider-equation" value="b"><span>Vout = Vin * R2 / (R1 + R2)</span></label>
+                                    <label class="quiz-option"><input type="radio" name="labview-divider-equation" value="c"><span>Vout = R1 + R2 / Vin</span></label>
+                                    <label class="quiz-option"><input type="radio" name="labview-divider-equation" value="d"><span>Vout = Vin / (R1 * R2)</span></label>
+                                    <div class="quiz-actions">
+                                        <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
+                                        <span class="attempt-count" data-attempts-for="labview-divider-equation"></span>
+                                    </div>
+                                    <div class="quiz-feedback" data-feedback-for="labview-divider-equation" role="status" aria-live="polite"></div>
+                                </fieldset>
+
+                                <fieldset class="quiz-card auto-question" data-question-id="labview-front-panel-id">
+                                    <legend class="quiz-title">What information must appear on the VI front panel?<span class="quiz-points">1 point</span></legend>
+                                    <label class="quiz-option"><input type="radio" name="labview-front-panel-id" value="a"><span>The instructor's office hours.</span></label>
+                                    <label class="quiz-option"><input type="radio" name="labview-front-panel-id" value="b"><span>Your student name and ID.</span></label>
+                                    <label class="quiz-option"><input type="radio" name="labview-front-panel-id" value="c"><span>The Tinkercad class code.</span></label>
+                                    <label class="quiz-option"><input type="radio" name="labview-front-panel-id" value="d"><span>The Arduino serial monitor output.</span></label>
+                                    <div class="quiz-actions">
+                                        <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
+                                        <span class="attempt-count" data-attempts-for="labview-front-panel-id"></span>
+                                    </div>
+                                    <div class="quiz-feedback" data-feedback-for="labview-front-panel-id" role="status" aria-live="polite"></div>
+                                </fieldset>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="quiz-stack mt-6">
-                        <fieldset class="quiz-card auto-question" data-question-id="labview-divider-equation">
-                            <legend class="quiz-title">Which formula should the VI implement?<span class="quiz-points">1 point</span></legend>
-                            <label class="quiz-option"><input type="radio" name="labview-divider-equation" value="a"><span>Vout = Vin * R1 / (R1 + R2)</span></label>
-                            <label class="quiz-option"><input type="radio" name="labview-divider-equation" value="b"><span>Vout = Vin * R2 / (R1 + R2)</span></label>
-                            <label class="quiz-option"><input type="radio" name="labview-divider-equation" value="c"><span>Vout = R1 + R2 / Vin</span></label>
-                            <label class="quiz-option"><input type="radio" name="labview-divider-equation" value="d"><span>Vout = Vin / (R1 * R2)</span></label>
-                            <div class="quiz-actions">
-                                <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
-                                <span class="attempt-count" data-attempts-for="labview-divider-equation"></span>
-                            </div>
-                            <div class="quiz-feedback" data-feedback-for="labview-divider-equation" role="status" aria-live="polite"></div>
-                        </fieldset>
-
-                        <fieldset class="quiz-card auto-question" data-question-id="labview-front-panel-id">
-                            <legend class="quiz-title">What information must appear on the VI front panel?<span class="quiz-points">1 point</span></legend>
-                            <label class="quiz-option"><input type="radio" name="labview-front-panel-id" value="a"><span>The instructor's office hours.</span></label>
-                            <label class="quiz-option"><input type="radio" name="labview-front-panel-id" value="b"><span>Your student name and ID.</span></label>
-                            <label class="quiz-option"><input type="radio" name="labview-front-panel-id" value="c"><span>The Tinkercad class code.</span></label>
-                            <label class="quiz-option"><input type="radio" name="labview-front-panel-id" value="d"><span>The Arduino serial monitor output.</span></label>
-                            <div class="quiz-actions">
-                                <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
-                                <span class="attempt-count" data-attempts-for="labview-front-panel-id"></span>
-                            </div>
-                            <div class="quiz-feedback" data-feedback-for="labview-front-panel-id" role="status" aria-live="polite"></div>
-                        </fieldset>
                     </div>
 
                     <div class="stage-footer">
@@ -1387,7 +1428,7 @@ void loop()
                         <div class="overflow-x-auto">
                             <table class="metric-table lab-table w-full text-sm border-collapse">
                                 <thead><tr class="bg-gray-100"><th class="p-3 text-left border">Light</th><th class="p-3 border">0%</th><th class="p-3 border">25%</th><th class="p-3 border">50%</th><th class="p-3 border">75%</th><th class="p-3 border">100%</th></tr></thead>
-                                <tbody><tr><td class="p-3 border font-semibold">PR resistance</td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t1-r-0"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t1-r-25"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t1-r-50"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t1-r-75"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t1-r-100"></td></tr></tbody>
+                                <tbody><tr><td class="p-3 border font-semibold">PR resistance (&Omega;)</td><td class="p-2 border"><input type="number" min="100" max="2000000" step="0.01" class="persist-text" data-key="t1-r-0" placeholder="e.g., 200000"></td><td class="p-2 border"><input type="number" min="100" max="2000000" step="0.01" class="persist-text" data-key="t1-r-25" placeholder="e.g., 200000"></td><td class="p-2 border"><input type="number" min="100" max="2000000" step="0.01" class="persist-text" data-key="t1-r-50" placeholder="e.g., 200000"></td><td class="p-2 border"><input type="number" min="100" max="2000000" step="0.01" class="persist-text" data-key="t1-r-75" placeholder="e.g., 200000"></td><td class="p-2 border"><input type="number" min="100" max="2000000" step="0.01" class="persist-text" data-key="t1-r-100" placeholder="e.g., 200000"></td></tr></tbody>
                             </table>
                         </div>
                         <p class="measurement-caption">Record photoresistor resistance in ohms so the checkpoint validation can check for likely measurement-entry errors.</p>
@@ -1461,7 +1502,7 @@ void loop()
                                 <div class="formula-card">
                                     <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-2">Divider Rule</h4>
                                     <p class="font-mono text-xl text-center">Vout = Vin * R2 / (R1 + R2)</p>
-                                    <p class="text-sm text-gray-600 mt-3">In Lab 2, the fixed resistor is 4.7 k&Omega; and the photoresistor changes with light.</p>
+                                    <p class="text-sm text-gray-600 mt-3">In this sensor sequence, the fixed resistor is 4.7 k&Omega; and the photoresistor changes with light.</p>
                                 </div>
                             </div>
                         </div>
@@ -1490,7 +1531,7 @@ void loop()
                             <div class="overflow-x-auto">
                                 <table class="metric-table lab-table w-full text-sm border-collapse">
                                     <thead><tr class="bg-gray-100"><th class="p-3 text-left border">Light</th><th class="p-3 border">0%</th><th class="p-3 border">25%</th><th class="p-3 border">50%</th><th class="p-3 border">75%</th><th class="p-3 border">100%</th></tr></thead>
-                                    <tbody><tr><td class="p-3 border font-semibold">Voltage</td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t2-v-0"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t2-v-25"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t2-v-50"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t2-v-75"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t2-v-100"></td></tr></tbody>
+                                <tbody><tr><td class="p-3 border font-semibold">Voltage (V)</td><td class="p-2 border"><input type="number" min="0" max="5" step="0.01" class="persist-text" data-key="t2-v-0" placeholder="e.g., 3.20"></td><td class="p-2 border"><input type="number" min="0" max="5" step="0.01" class="persist-text" data-key="t2-v-25" placeholder="e.g., 3.20"></td><td class="p-2 border"><input type="number" min="0" max="5" step="0.01" class="persist-text" data-key="t2-v-50" placeholder="e.g., 3.20"></td><td class="p-2 border"><input type="number" min="0" max="5" step="0.01" class="persist-text" data-key="t2-v-75" placeholder="e.g., 3.20"></td><td class="p-2 border"><input type="number" min="0" max="5" step="0.01" class="persist-text" data-key="t2-v-100" placeholder="e.g., 3.20"></td></tr></tbody>
                                 </table>
                             </div>
                             <p class="measurement-caption">Record measured voltage at the same light levels used in Table 1.</p>
@@ -1533,14 +1574,14 @@ void loop()
             </div>
         </section>
 
-        <section class="stage-panel stage-4">
+        <section id="exercise-4-automatic-lighting" class="stage-panel stage-4">
             <div class="relative pl-8 border-l-2 border-gray-200">
                 <span class="checkpoint-marker">4</span>
 
                 <div class="card p-7">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                         <div>
-                            <p class="text-xs font-bold uppercase tracking-widest text-[#7A003C] mb-1">Lab 1 - Part 4</p>
+                            <p class="text-xs font-bold uppercase tracking-widest text-[#7A003C] mb-1">Checkpoint 4 &middot; Source Manual Exercise 4</p>
                             <h2 class="text-3xl font-bold">Connect and Program the Automatic Lighting System</h2>
                         </div>
                         <span class="time-badge">A0 sensor + D7 LED</span>
@@ -1605,9 +1646,9 @@ void loop()
                             </div>
 
                             <div class="grid md:grid-cols-3 gap-4 mt-6">
-                                <label class="block"><span class="font-semibold text-sm">Dark PR reading</span><input type="number" class="response-input persist-text mt-2" data-key="arduino-dark-reading"></label>
-                                <label class="block"><span class="font-semibold text-sm">Bright PR reading</span><input type="number" class="response-input persist-text mt-2" data-key="arduino-bright-reading"></label>
-                                <label class="block"><span class="font-semibold text-sm">LED turns on below 400?</span><select class="response-input persist-text mt-2" data-key="arduino-led-state"><option value="">Choose...</option><option>Yes</option><option>No</option></select></label>
+                                        <label class="block"><span class="font-semibold text-sm">Dark PR reading (0-1023)</span><input type="number" min="0" max="1023" step="1" class="response-input persist-text mt-2" data-key="arduino-dark-reading" placeholder="e.g., 250"></label>
+                                        <label class="block"><span class="font-semibold text-sm">Bright PR reading (0-1023)</span><input type="number" min="0" max="1023" step="1" class="response-input persist-text mt-2" data-key="arduino-bright-reading" placeholder="e.g., 800"></label>
+                                        <label class="block"><span class="font-semibold text-sm">LED turns on below 400?</span><select class="response-input persist-text mt-2" data-key="arduino-led-state" data-stage-required-value="Yes"><option value="">Choose...</option><option>Yes</option><option>No</option></select></label>
                             </div>
                         </div>
                     </div>
@@ -1648,14 +1689,13 @@ void loop()
             </div>
         </section>
 
-        <section class="stage-panel stage-5 space-y-8">
+        <section id="exercise-5-real-photoresistor-divider" class="stage-panel stage-5 space-y-8">
             <div class="card overflow-hidden shadow-2xl">
                 <div class="gradient-bg p-8 text-white">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
                         <div>
-                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-white/75 mb-2">Lab 1 - Part 5</p>
+                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-white/75 mb-2">Checkpoint 5 &middot; Source Manual Exercise 5</p>
                             <h2 class="text-4xl font-extrabold uppercase tracking-wide">Real Photoresistor Divider</h2>
-                            <p class="mt-2 text-white/80">Build the real circuit, compare calculated and measured voltage, then show the required demonstrations.</p>
                         </div>
                         <div class="rounded-xl bg-white/20 border border-white/30 px-5 py-4">
                             <span class="block text-[10px] font-bold uppercase tracking-widest text-white/70">Submission</span>
@@ -1665,6 +1705,7 @@ void loop()
                 </div>
 
                 <div class="p-7 bg-gray-50 border-b">
+                    <h3 class="task-banner-heading">Build the real circuit, compare calculated and measured voltage, then show the required demonstrations.</h3>
                     <div class="mini-flow">
                         <span>Trainer 5 V</span>
                         <span>Photoresistor</span>
@@ -1699,44 +1740,53 @@ void loop()
                     <div class="overflow-x-auto mb-6">
                         <table class="metric-table lab-table w-full text-sm border-collapse">
                             <thead><tr class="bg-gray-100"><th class="p-3 text-left border">Light</th><th class="p-3 border">Dark</th><th class="p-3 border">Normal</th><th class="p-3 border">Flashlight</th></tr></thead>
-                            <tbody><tr><td class="p-3 border font-semibold">Total resistance (k&Omega;)</td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t3-r-dark"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t3-r-normal"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t3-r-flash"></td></tr></tbody>
+                            <tbody><tr><td class="p-3 border font-semibold">Total resistance (k&Omega;)</td><td class="p-2 border"><input type="number" min="0" step="0.01" class="persist-text" data-key="t3-r-dark" placeholder="e.g., 200"></td><td class="p-2 border"><input type="number" min="0" step="0.01" class="persist-text" data-key="t3-r-normal" placeholder="e.g., 200"></td><td class="p-2 border"><input type="number" min="0" step="0.01" class="persist-text" data-key="t3-r-flash" placeholder="e.g., 200"></td></tr></tbody>
                         </table>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="metric-table lab-table w-full text-sm border-collapse">
                             <thead><tr class="bg-gray-100"><th class="p-3 text-left border">Light</th><th class="p-3 border">Dark</th><th class="p-3 border">Normal</th><th class="p-3 border">Flashlight</th></tr></thead>
                             <tbody>
-                                <tr><td class="p-3 border font-semibold">Voltage (V) calculated</td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t4-vcalc-dark"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t4-vcalc-normal"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t4-vcalc-flash"></td></tr>
-                                <tr><td class="p-3 border font-semibold">Voltage (V) measured</td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t4-vmeas-dark"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t4-vmeas-normal"></td><td class="p-2 border"><input type="number" step="0.01" class="persist-text" data-key="t4-vmeas-flash"></td></tr>
+                                <tr><td class="p-3 border font-semibold">Voltage (V) calculated</td><td class="p-2 border"><input type="number" min="0" max="5" step="0.01" class="persist-text" data-key="t4-vcalc-dark" placeholder="e.g., 3.20"></td><td class="p-2 border"><input type="number" min="0" max="5" step="0.01" class="persist-text" data-key="t4-vcalc-normal" placeholder="e.g., 3.20"></td><td class="p-2 border"><input type="number" min="0" max="5" step="0.01" class="persist-text" data-key="t4-vcalc-flash" placeholder="e.g., 3.20"></td></tr>
+                                <tr><td class="p-3 border font-semibold">Voltage (V) measured</td><td class="p-2 border"><input type="number" min="0" max="5" step="0.01" class="persist-text" data-key="t4-vmeas-dark" placeholder="e.g., 3.20"></td><td class="p-2 border"><input type="number" min="0" max="5" step="0.01" class="persist-text" data-key="t4-vmeas-normal" placeholder="e.g., 3.20"></td><td class="p-2 border"><input type="number" min="0" max="5" step="0.01" class="persist-text" data-key="t4-vmeas-flash" placeholder="e.g., 3.20"></td></tr>
                             </tbody>
                         </table>
                     </div>
-                    <p class="measurement-caption">Use the <a class="concept-link" href="../../knowledge/skill-tree.html?topic=experimental-evidence">voltage-divider rule for calculated values</a>, then use a voltmeter to measure sensor voltage under the same conditions.</p>
+                    <p class="measurement-caption">Use the <a class="concept-link" href="../../knowledge/skill-tree.html?topic=voltage-divider">voltage-divider rule</a> for calculated values, then use a <a class="concept-link" href="../../knowledge/skill-tree.html?topic=multimeter">voltmeter</a> to measure sensor voltage under the same conditions and compare the evidence.</p>
                 </div>
             </div>
 
             <div class="grid lg:grid-cols-2 gap-6">
                 <div class="card p-7 border-t-4 border-[#7A003C]">
-                    <h3 class="text-xl font-bold mb-4">Demonstration Checklist</h3>
+                    <h3 class="text-xl font-bold mb-4">Final External Confirmations</h3>
+                    <p class="text-gray-600 mb-4">Use these only for requirements the portal cannot verify automatically.</p>
                     <div class="space-y-3">
-                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="submit-lab1-vi"><span>Lab 1 VI program file is ready for submission.</span></label>
                         <label class="completion-box"><input type="checkbox" class="persist-check" data-key="submit-lab1-quiz"><span>Lab 1 quiz is complete on Avenue to Learn.</span></label>
-                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="submit-tables"><span>Results of Tables 1-4 are ready to show the instructor.</span></label>
-                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="submit-ex4-demo"><span>Exercise 4 automatic lighting circuit is ready to demonstrate.</span></label>
-                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="submit-ex5-demo"><span>Exercise 5 real photoresistor divider is ready to demonstrate.</span></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="submit-ex4-demo"><span>I demonstrated Checkpoint 4: Automatic Lighting System (source Exercise 4) to the lab instructor or TA.</span></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="submit-ex5-demo"><span>I demonstrated Checkpoint 5: Real Photoresistor Divider (source Exercise 5) and showed Tables 1-4 to the lab instructor or TA.</span></label>
                     </div>
                 </div>
 
                 <div class="success-card">
                     <h3 class="text-xl font-bold mb-4">Submission Rules From the PDFs</h3>
                     <ol class="list-decimal ml-5 space-y-3">
-                        <li>Laboratory 1: submit the VI program file and complete the Lab 1 quiz.</li>
+                        <li>Laboratory 1: select the <code>.vi</code> evidence on the <a href="#labview-submit">Submission subpage</a>, submit the actual VI through the instructor-identified Avenue to Learn location, and complete the Lab 1 quiz.</li>
                         <li>No separate report is required for the photoresistor demonstration sequence unless your instructor requests one.</li>
                         <li>Show Tables 1-4 to the lab instructor.</li>
-                        <li>Demonstrate Exercise 4 and Exercise 5 functionality to the lab instructor.</li>
+                        <li>Demonstrate <a href="#exercise-4-automatic-lighting">Checkpoint 4: Automatic Lighting System</a> and <a href="#exercise-5-real-photoresistor-divider">Checkpoint 5: Real Photoresistor Divider</a> to the lab instructor.</li>
                     </ol>
                 </div>
             </div>
+
+            <section class="learning-outcomes-achieved" aria-labelledby="lab1-outcomes-achieved">
+                <h2 id="lab1-outcomes-achieved" class="text-2xl font-bold mb-3">Learning Outcomes Achieved</h2>
+                <ul class="compact-list list-disc ml-5 text-gray-700">
+                    <li>Built and tested a LabVIEW VI with front-panel controls, an indicator, block-diagram arithmetic, and a responsive While Loop.</li>
+                    <li>Measured photoresistor resistance and used a voltage divider to convert changing resistance into a measurable voltage.</li>
+                    <li>Connected Arduino analog input A0 and digital output D7, then tested threshold-based automatic lighting.</li>
+                    <li>Compared calculated and measured real-circuit values and presented traceable evidence for instructor review.</li>
+                </ul>
+            </section>
 
             <div class="stage-footer">
                 <button class="nav-button secondary" onclick="setStage(4)">Back to Arduino</button>
@@ -1767,7 +1817,7 @@ void loop()
             'ready-labview-access': {
                 correct: 'b',
                 hint: 'Laboratory 1 starts with the LabVIEW learning material and requires the software locally.',
-                explanation: 'Correct. Laboratory 1 requires LinkedIn Learning access and LabVIEW installed on the machine.'
+                explanation: 'Correct. Laboratory 1 uses the approved course knowledge resources and requires LabVIEW to be installed on the machine.'
             },
             'ready-tinkercad-nickname': {
                 correct: 'c',
@@ -1838,20 +1888,32 @@ void loop()
         }
 
         function setStage(stage) {
+            stage = Math.max(0, Math.min(TOTAL_STAGES - 1, Number(stage) || 0));
             document.body.className = `pb-24 pt-24 stage-${stage}`;
 
             document.querySelectorAll('.stage-btn').forEach(button => {
                 button.classList.remove('active');
+                button.removeAttribute('aria-current');
             });
 
             const activeButton = document.getElementById(`btn-stage-${stage}`);
-            if (activeButton) activeButton.classList.add('active');
+            if (activeButton) {
+                activeButton.classList.add('active');
+                activeButton.setAttribute('aria-current', 'page');
+            }
 
             localStorage.setItem(storageKey('current-stage'), String(stage));
 
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
+            const panel = document.querySelector(`.stage-panel.stage-${stage}`);
+            window.requestAnimationFrame(() => {
+                if (panel) {
+                    panel.tabIndex = -1;
+                    panel.focus({ preventScroll: true });
+                }
+                window.scrollTo({
+                    top: 0,
+                    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+                });
             });
         }
 
@@ -2106,20 +2168,85 @@ void loop()
                 : '';
         }
 
-        function switchTab(button) {
+        function switchTab(button, options = {}) {
             const group = button.dataset.tabs;
             const targetId = button.dataset.target;
+            const tabs = [...document.querySelectorAll(`.code-tab[data-tabs="${group}"]`)];
+            const panels = [...document.querySelectorAll(`.tab-content[data-tabs="${group}"], .tab-content[id^="${group}-"]`)];
 
-            document.querySelectorAll(`.code-tab[data-tabs="${group}"]`)
-                .forEach(tab => tab.classList.remove('active'));
+            tabs.forEach(tab => {
+                const active = tab === button;
+                tab.classList.toggle('active', active);
+                tab.setAttribute('aria-selected', String(active));
+                tab.tabIndex = active ? 0 : -1;
+            });
 
-            document.querySelectorAll(`.tab-content[data-tabs="${group}"], .tab-content[id^="${group}-"]`)
-                .forEach(panel => panel.classList.remove('active'));
-
-            button.classList.add('active');
+            panels.forEach(panel => {
+                const active = panel.id === targetId;
+                panel.classList.toggle('active', active);
+                panel.hidden = !active;
+                panel.inert = !active;
+            });
 
             const target = document.getElementById(targetId);
-            if (target) target.classList.add('active');
+            if (!target) return;
+            if (options.persist !== false) localStorage.setItem(storageKey(`tab-${group}`), targetId);
+            if (options.moveFocus === false) return;
+
+            window.requestAnimationFrame(() => {
+                if (options.keepTabFocus !== true) {
+                    target.tabIndex = -1;
+                    target.focus({ preventScroll: true });
+                }
+                target.scrollIntoView({
+                    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                    block: 'start'
+                });
+            });
+        }
+
+        function setupTabs() {
+            const groups = [...new Set(
+                [...document.querySelectorAll('.code-tab[data-tabs]')].map(tab => tab.dataset.tabs)
+            )];
+
+            groups.forEach(group => {
+                const tabs = [...document.querySelectorAll(`.code-tab[data-tabs="${group}"]`)];
+                if (!tabs.length) return;
+                const tabList = tabs[0].parentElement;
+                tabList?.setAttribute('role', 'tablist');
+                tabList?.setAttribute('aria-label', `${group} subpages`);
+
+                tabs.forEach((tab, index) => {
+                    const target = document.getElementById(tab.dataset.target);
+                    tab.type = 'button';
+                    tab.id ||= `${group}-tab-${index + 1}`;
+                    tab.setAttribute('role', 'tab');
+                    tab.setAttribute('aria-controls', tab.dataset.target);
+                    if (target) {
+                        target.setAttribute('role', 'tabpanel');
+                        target.setAttribute('aria-labelledby', tab.id);
+                    }
+                    tab.addEventListener('keydown', event => {
+                        const current = tabs.indexOf(tab);
+                        let next = current;
+                        if (event.key === 'ArrowRight') next = (current + 1) % tabs.length;
+                        else if (event.key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
+                        else if (event.key === 'Home') next = 0;
+                        else if (event.key === 'End') next = tabs.length - 1;
+                        else return;
+                        event.preventDefault();
+                        tabs[next].focus();
+                        switchTab(tabs[next], { keepTabFocus: true });
+                    });
+                });
+
+                const savedTarget = localStorage.getItem(storageKey(`tab-${group}`));
+                const initial = tabs.find(tab => tab.dataset.target === savedTarget) ||
+                    tabs.find(tab => tab.classList.contains('active')) ||
+                    tabs[0];
+                switchTab(initial, { moveFocus: false, persist: false });
+            });
         }
 
         function toggleSidebar(id) {
@@ -2189,6 +2316,7 @@ void loop()
             updateCompletionUI();
             restorePersistentInputs();
             restoreQuizState();
+            setupTabs();
 
             const savedStage = Number(
                 localStorage.getItem(storageKey('current-stage')) ?? 0

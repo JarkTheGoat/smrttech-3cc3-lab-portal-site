@@ -3512,9 +3512,9 @@
           "id": "while-loops",
           "type": "skill",
           "name": "While loops",
-          "title": "How does while loops support the 3CC3 lab workflow",
+          "title": "How do While Loops support the 3CC3 lab workflow?",
           "asset": "LabVIEW_BlockDiagram.png",
-          "summary": "Repeat logic until a condition such as a Stop button is met.",
+          "summary": "Repeat LabVIEW calculations or measurements while the interface remains responsive, then stop through a defined condition.",
           "keywords": [
             "LabVIEW",
             "program flow",
@@ -3531,14 +3531,14 @@
           "sections": [
             {
               "heading": "Core idea",
-              "body": "Repeat logic until a condition such as a Stop button is met."
+              "body": "A While Loop repeatedly runs the code inside its border. In a LabVIEW VI, this lets indicators update as controls or measurements change and keeps the front panel responsive until the wired Stop condition becomes true."
             },
             {
               "heading": "Where it is used",
               "body": "Used in Lab 1, Lab 2, Lab 4, Lab 5, Lab 6, Lab 7, Lab 8. Prerequisites: block-diagram."
             }
           ],
-          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Repeat logic until a condition such as a Stop button is met.",
+          "hint": "Place the calculation or measurement inside the loop, wire a front-panel Stop control to the loop condition, and use that control instead of repeatedly pressing Run or stopping with Abort.",
           "related": [
             "shift-registers",
             "block-diagram"

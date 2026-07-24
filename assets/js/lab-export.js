@@ -9,6 +9,12 @@
     const DETAILS_PREFIX = 'smrttech:completion-details:v1';
     const CHECKPOINT_PREFIX = 'smrttech:completion-record:v1';
     const STAGE_CONFIRM_PREFIX = 'smrttech:stage-confirmed:v1';
+    const REQUIRED_STUDENT_DETAILS = [
+        { key: 'name_or_team', label: 'Name' },
+        { key: 'student_numbers', label: 'Student Number' },
+        { key: 'lab_section', label: 'Lab Section' },
+        { key: 'instructor_or_ta', label: 'Lab Instructor or TA' }
+    ];
 
     function text(value) {
         return String(value || '').replace(/\s+/g, ' ').trim();
@@ -77,6 +83,9 @@
             return text(titledChild?.textContent) || removeControlText(wrappingLabel);
         }
 
+        const ariaLabel = text(control.getAttribute('aria-label'));
+        if (ariaLabel) return ariaLabel;
+
         const cell = control.closest('td, th');
         const row = control.closest('tr');
         if (cell && row) {
@@ -89,7 +98,7 @@
             return [rowLabel, columnLabel].filter(Boolean).join(' - ');
         }
 
-        return text(control.getAttribute('aria-label')) || text(control.placeholder) || control.dataset.key || control.name || control.id || 'Unlabelled response';
+        return text(control.placeholder) || control.dataset.key || control.name || control.id || 'Unlabelled response';
     }
 
     function unitFor(label) {
@@ -107,6 +116,28 @@
 
     function evidenceFileStorageKey(input) {
         return `smrttech:evidence-file:${window.location.pathname}:${input.dataset.key}`;
+    }
+
+    function evidenceFileIsAccepted(input, fileOrName) {
+        const tokens = String(input.accept || '')
+            .split(',')
+            .map(token => token.trim().toLowerCase())
+            .filter(Boolean);
+        if (!tokens.length) return true;
+
+        const name = String(fileOrName?.name || fileOrName || '').trim().toLowerCase();
+        const type = String(fileOrName?.type || '').trim().toLowerCase();
+        if (!name) return false;
+
+        return tokens.some(token => {
+            if (token.startsWith('.')) return name.endsWith(token);
+            if (token === 'image/*') {
+                return (Boolean(type) && type.startsWith('image/')) ||
+                    /\.(?:avif|bmp|gif|heic|heif|jpe?g|png|svg|webp)$/i.test(name);
+            }
+            if (token.endsWith('/*')) return Boolean(type) && type.startsWith(token.slice(0, -1));
+            return Boolean(type) && type === token;
+        });
     }
 
     function stageConfirmationKey(stage) {
@@ -180,7 +211,10 @@
 
     function hasRequiredValue(control) {
         if (control.matches('input[type="file"]')) {
-            return Boolean(control.files?.[0]?.name || localStorage.getItem(evidenceFileStorageKey(control)));
+            const file = control.files?.[0];
+            const saved = localStorage.getItem(evidenceFileStorageKey(control)) || '';
+            const candidate = file || saved;
+            return Boolean(file?.name || saved) && evidenceFileIsAccepted(control, candidate) && control.validity.valid;
         }
         if (control.matches('input[type="checkbox"], input[type="radio"]')) return control.checked;
         const value = String(control.value || '').trim();
@@ -207,10 +241,10 @@
 
     function knownMeasurementValidation(control, value) {
         if (!/^t1-r-/.test(control.dataset.key || '') || value === null) return null;
-        const inRange = value >= 100 && value <= 1000000;
+        const inRange = value >= 100 && value <= 2000000;
         return {
             status: inRange ? 'pass' : 'warning',
-            rule: 'Photoresistor resistance should be between 100 ohm and 1,000,000 ohm.',
+            rule: 'Photoresistor resistance should be between 100 ohm and 2,000,000 ohm.',
             message: inRange
                 ? 'Value is within the Lab 1 photoresistor measurement range.'
                 : 'Value is outside the Lab 1 photoresistor measurement range and should be reviewed.'
@@ -318,6 +352,7 @@
             const filename = file?.name || storedName;
             const required = isIndividuallyRequired(input);
             const valid = hasRequiredValue(input);
+            const accepted = Boolean(filename) && evidenceFileIsAccepted(input, file || storedName);
             return {
                 id: input.dataset.key,
                 label,
@@ -326,19 +361,19 @@
                 mime_type: file?.type || '',
                 size_bytes: file?.size ?? null,
                 last_modified: file?.lastModified ? new Date(file.lastModified).toISOString() : null,
-                provided: Boolean(filename),
+                provided: accepted,
                 required,
                 required_group: input.dataset.stageRequiredGroup || null,
                 validation: {
-                    status: required ? (valid ? 'pass' : 'fail') : 'not_checked',
-                    rule: required ? 'Required evidence filename must be recorded.' : 'Optional evidence.',
+                    status: required ? (valid ? 'pass' : 'fail') : accepted ? 'pass' : 'not_checked',
+                    rule: required ? 'An accepted required evidence filename must be recorded.' : 'Optional evidence.',
                     message: required
-                        ? (valid ? 'Required evidence was selected in the browser.' : 'Required evidence was not selected in the browser.')
-                        : (filename ? 'Optional evidence was selected in the browser.' : 'No optional evidence was selected.')
+                        ? (valid ? 'Required evidence was selected in the browser.' : 'Required evidence is missing or has an unsupported file type.')
+                        : (accepted ? 'Optional evidence was selected in the browser.' : filename ? 'Optional evidence has an unsupported file type.' : 'No optional evidence was selected.')
                 },
                 included_in_export: false,
                 message: filename
-                    ? 'A file was selected in the browser. File contents are not embedded in this JSON.'
+                    ? 'The selected filename is recorded locally. File contents are not uploaded or embedded in this JSON.'
                     : 'No file was selected in the browser.'
             };
         });
@@ -527,17 +562,23 @@
         };
     }
 
+    function missingStudentDetails(details) {
+        return REQUIRED_STUDENT_DETAILS.filter(field => !text(details[field.key]));
+    }
+
     function buildStatus(trackTimestamp = false) {
         const checkpoints = stagePanels().map((item, index) => checkpointState(item, index, trackTimestamp));
         const requiredCheckpoints = checkpoints.filter(checkpoint => checkpoint.required);
         const missing = requiredCheckpoints.filter(checkpoint => checkpoint.status !== 'complete');
         const details = readStudentDetails();
-        const studentComplete = Boolean(details.name_or_team) && Boolean(details.student_numbers || details.group_number);
+        const missingDetails = missingStudentDetails(details);
+        const studentComplete = missingDetails.length === 0;
         return {
             checkpoints,
             totalRequired: requiredCheckpoints.length,
             completedRequired: requiredCheckpoints.length - missing.length,
             missing,
+            missingDetails,
             labComplete: requiredCheckpoints.length > 0 && missing.length === 0,
             studentComplete,
             ready: requiredCheckpoints.length > 0 && missing.length === 0 && studentComplete
@@ -569,21 +610,60 @@
         return element;
     }
 
-    function addDetailField(grid, labelText, key, helper) {
+    function addDetailField(grid, { labelText, key, helper, placeholder = '', required = false }) {
         const label = createElement('label', 'completion-detail-field');
         const title = createElement('span', 'completion-detail-label', labelText);
         const input = document.createElement('input');
         input.type = 'text';
         input.autocomplete = key === 'name_or_team' ? 'name' : 'off';
         input.dataset.completionDetail = key;
+        input.id = `completion-detail-${labKey()}-${key}`;
+        input.placeholder = placeholder;
+        input.required = required;
+        input.setAttribute('aria-required', String(required));
         input.value = localStorage.getItem(`${storageKey(DETAILS_PREFIX)}:${key}`) || '';
         input.addEventListener('input', () => {
             saveStudentDetail(input);
             scheduleSync();
         });
         label.append(title, input);
-        if (helper) label.append(createElement('small', 'completion-detail-help', helper));
+        const describedBy = [];
+        if (required) {
+            const error = createElement('small', 'completion-detail-error', `${labelText} is required.`);
+            error.id = `${input.id}-error`;
+            error.hidden = true;
+            error.setAttribute('role', 'alert');
+            describedBy.push(error.id);
+            label.append(error);
+        }
+        if (helper) {
+            const help = createElement('small', 'completion-detail-help', helper);
+            help.id = `${input.id}-help`;
+            describedBy.push(help.id);
+            label.append(help);
+        }
+        if (describedBy.length) input.setAttribute('aria-describedby', describedBy.join(' '));
         grid.appendChild(label);
+    }
+
+    function renderStudentDetailValidation(status, { focusFirst = false, showErrors = status.labComplete } = {}) {
+        const missingKeys = new Set(status.missingDetails.map(field => field.key));
+        REQUIRED_STUDENT_DETAILS.forEach(field => {
+            const input = document.querySelector(`[data-completion-detail="${field.key}"]`);
+            if (!input) return;
+            const missing = showErrors && missingKeys.has(field.key);
+            input.setAttribute('aria-invalid', String(missing));
+            input.closest('.completion-detail-field')?.classList.toggle('is-invalid', missing);
+            const error = document.getElementById(`${input.id}-error`);
+            if (error) error.hidden = !missing;
+        });
+
+        if (focusFirst && status.missingDetails.length) {
+            const firstKey = status.missingDetails[0].key;
+            const firstInput = document.querySelector(`[data-completion-detail="${firstKey}"]`);
+            firstInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            window.setTimeout(() => firstInput?.focus({ preventScroll: true }), 250);
+        }
     }
 
     function addCompletionCard() {
@@ -599,17 +679,46 @@
         const heading = createElement('h2', 'completion-export-title', 'Lab Completion File');
         heading.id = 'completion-file-title';
         card.append(heading);
-        card.append(createElement('p', 'completion-export-copy', 'After the required checkpoints are complete, download this completion file and submit it as instructed by your instructor. It records your responses, recorded values, validation results, and evidence summary for grading.'));
+        card.append(createElement('p', 'completion-export-copy', 'After the required checkpoints are complete, download this completion JSON and submit it as instructed by your instructor. Evidence choosers on the page store filenames only; they do not upload or embed the selected files. Submit the actual VI, report, code, and evidence artifacts through the Avenue to Learn location or other instructor-approved channel specified for your lab section.'));
 
         const details = createElement('div', 'completion-details');
         details.append(createElement('h3', 'completion-details-title', 'Submission Details'));
-        details.append(createElement('p', 'completion-details-copy', 'Enter a name or team name, plus student number(s) or a group number, before downloading the file.'));
+        details.append(createElement('p', 'completion-details-copy', 'Enter all four required details before downloading: Name, Student Number, Lab Section, and Lab Instructor or TA.'));
         const grid = createElement('div', 'completion-details-grid');
-        addDetailField(grid, 'Student or team name', 'name_or_team', 'Required for download.');
-        addDetailField(grid, 'Student number(s)', 'student_numbers', 'Use comma-separated IDs when submitting as a team.');
-        addDetailField(grid, 'Group number', 'group_number', 'Use this when a group number identifies the submission.');
-        addDetailField(grid, 'Lab section', 'lab_section');
-        addDetailField(grid, 'Instructor or TA', 'instructor_or_ta');
+        addDetailField(grid, {
+            labelText: 'Name',
+            key: 'name_or_team',
+            placeholder: 'e.g., Alex Chen',
+            helper: 'Required. Enter the name used for this submission.',
+            required: true
+        });
+        addDetailField(grid, {
+            labelText: 'Student Number',
+            key: 'student_numbers',
+            placeholder: 'e.g., 400123456',
+            helper: 'Required. Use comma-separated student numbers for an approved team submission.',
+            required: true
+        });
+        addDetailField(grid, {
+            labelText: 'Group Number',
+            key: 'group_number',
+            placeholder: 'e.g., Group 3',
+            helper: 'Optional. Enter this only when your lab uses group numbers.'
+        });
+        addDetailField(grid, {
+            labelText: 'Lab Section',
+            key: 'lab_section',
+            placeholder: 'e.g., L01',
+            helper: 'Required.',
+            required: true
+        });
+        addDetailField(grid, {
+            labelText: 'Lab Instructor or TA',
+            key: 'instructor_or_ta',
+            placeholder: 'e.g., Dr. Chen or Sam Lee',
+            helper: 'Required.',
+            required: true
+        });
         details.append(grid);
         card.append(details);
 
@@ -673,8 +782,9 @@
         if (!status.studentComplete) {
             statusMessage.textContent = 'Lab checks are complete. Enter your submission details to unlock the completion file.';
             statusMessage.className = 'completion-export-status is-details-needed';
-            remaining.appendChild(createElement('li', '', 'Student or team name'));
-            remaining.appendChild(createElement('li', '', 'Student number(s) or group number'));
+            status.missingDetails.forEach(field => {
+                remaining.appendChild(createElement('li', '', `${field.label} is required.`));
+            });
             remaining.hidden = false;
             return;
         }
@@ -688,6 +798,7 @@
         const status = buildStatus(true);
         updateExportButtons(status);
         updateCompletionCard(status);
+        renderStudentDetailValidation(status);
         return status;
     }
 
@@ -697,8 +808,9 @@
 
     function collectPotentialMarkLossFlags(checkpoints, student, status) {
         const flags = [];
-        if (!student.name_or_team) flags.push(flag('submission-details', 'name_or_team', 'warning', 'Student or team identifier was not entered.'));
-        if (!student.student_numbers && !student.group_number) flags.push(flag('submission-details', 'student_numbers', 'warning', 'Student number(s) or group number was not entered.'));
+        missingStudentDetails(student).forEach(field => {
+            flags.push(flag('submission-details', field.key, 'warning', `${field.label} was not entered.`));
+        });
 
         status.missing.forEach(checkpoint => {
             flags.push(flag(checkpoint.id, '', 'warning', `Required checkpoint is incomplete: ${checkpoint.title}.`));
@@ -797,7 +909,11 @@
     async function download() {
         const status = syncCompletionUI();
         if (!status.ready) {
-            document.querySelector('[data-completion-export-card]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (status.labComplete && status.missingDetails.length) {
+                renderStudentDetailValidation(status, { focusFirst: true, showErrors: true });
+            } else {
+                document.querySelector('[data-completion-export-card]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
             return false;
         }
 
@@ -836,8 +952,13 @@
         });
         document.querySelectorAll('input[type="file"][data-key]').forEach(input => {
             input.value = '';
+            input.setCustomValidity('');
+            input.setAttribute('aria-invalid', 'false');
             const preview = document.querySelector(`[data-file-name-for="${input.dataset.key}"]`);
-            if (preview) preview.textContent = 'No file selected.';
+            if (preview) {
+                preview.textContent = 'No file selected.';
+                preview.classList.remove('is-success', 'is-error');
+            }
         });
     }
 

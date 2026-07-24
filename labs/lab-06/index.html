@@ -44,7 +44,7 @@
         .stage-btn:hover { background: var(--mac-grey-20); }
         .stage-btn:focus-visible, .utility-button:focus-visible, .nav-button:focus-visible, details summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--mac-gold); outline-offset: 3px; }
         .stage-btn.active, .stage-btn.page-current { color: white; background: var(--mac-maroon); box-shadow: 0 5px 13px rgba(122,0,60,0.28); }
-        .stage-btn.completed:not(.active)::after { content: "âœ“"; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 6px; border-radius: 50%; color: white; background: var(--success); font-size: 0.68rem; font-weight: 700; }
+        .stage-btn.completed:not(.active)::after { content: "\2713"; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 6px; border-radius: 50%; color: white; background: var(--success); font-size: 0.68rem; font-weight: 700; }
         .lab-stage-label { margin-left: 0.65rem; padding-left: 0.85rem; border-left: 1px solid rgba(73,89,101,0.18); }
         .auto-score-chip { flex: 0 0 auto; margin-left: auto; padding: 0.45rem 0.7rem; border-radius: 999px; border: 1px solid var(--mac-gold-60); background: var(--mac-gold-20); color: #5B3900; font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
         .page-header { padding: 0 0 2.2rem; }
@@ -67,8 +67,7 @@
         .js-enabled.stage-6 .stage-panel.stage-6,
         .js-enabled.stage-7 .stage-panel.stage-7,
         .js-enabled.stage-8 .stage-panel.stage-8,
-        .js-enabled.stage-9 .stage-panel.stage-9,
-        .js-enabled.stage-10 .stage-panel.stage-10 { display: block; }
+        .js-enabled.stage-9 .stage-panel.stage-9 { display: block; }
         .grid-layout { display: grid; gap: 1rem; }
         .grid-layout.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .grid-layout.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -162,9 +161,8 @@
             <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">LabVIEW HMI</button>
             <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">VISA Write</button>
             <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Extend</button>
-            <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Troubleshoot</button>
-            <button class="stage-btn" id="btn-stage-10" type="button" data-stage="10">Reflect</button>
-            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/11</strong></div>
+            <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Reflect</button>
+            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/10</strong></div>
         </div>
     </nav>
 
@@ -366,6 +364,7 @@
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-board-on"><span>Power board is ON only after wiring is checked.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-heat"><span>I will treat the motor as potentially hot after operation.</span></label>
                 </div>
+                <p class="danger-card mt-block"><strong>If power or motion is abnormal:</strong> switch off the external supply before touching wiring. Recheck 9 V adaptor selection, power-board polarity, regulated rails, common ground, and the D8-D11 to IN1-IN4 mapping before powering again.</p>
             </article>
         </section>
 
@@ -426,12 +425,13 @@ void loop() {
                     <table>
                         <thead><tr><th>Command sent</th><th>Expected motion</th><th>Actual observation</th><th>Motor heat or lock-up?</th></tr></thead>
                         <tbody>
-                            <tr><td><input class="persist-text" data-key="serial-cmd-1" value="10,1.5,1"></td><td><input class="persist-text" data-key="serial-exp-1"></td><td><input class="persist-text" data-key="serial-act-1" data-stage-required></td><td><input class="persist-text" data-key="serial-heat-1"></td></tr>
-                            <tr><td><input class="persist-text" data-key="serial-cmd-2"></td><td><input class="persist-text" data-key="serial-exp-2"></td><td><input class="persist-text" data-key="serial-act-2"></td><td><input class="persist-text" data-key="serial-heat-2"></td></tr>
-                            <tr><td><input class="persist-text" data-key="serial-cmd-3"></td><td><input class="persist-text" data-key="serial-exp-3"></td><td><input class="persist-text" data-key="serial-act-3"></td><td><input class="persist-text" data-key="serial-heat-3"></td></tr>
+                            <tr><td><input class="persist-text" data-key="serial-cmd-1" value="10,1.5,1" aria-label="Serial test 1 command sent"></td><td><input class="persist-text" data-key="serial-exp-1" aria-label="Serial test 1 expected motion"></td><td><input class="persist-text" data-key="serial-act-1" data-stage-required aria-label="Serial test 1 actual observation"></td><td><input class="persist-text" data-key="serial-heat-1" aria-label="Serial test 1 motor heat or lock-up observation"></td></tr>
+                            <tr><td><input class="persist-text" data-key="serial-cmd-2" aria-label="Serial test 2 command sent"></td><td><input class="persist-text" data-key="serial-exp-2" aria-label="Serial test 2 expected motion"></td><td><input class="persist-text" data-key="serial-act-2" aria-label="Serial test 2 actual observation"></td><td><input class="persist-text" data-key="serial-heat-2" aria-label="Serial test 2 motor heat or lock-up observation"></td></tr>
+                            <tr><td><input class="persist-text" data-key="serial-cmd-3" aria-label="Serial test 3 command sent"></td><td><input class="persist-text" data-key="serial-exp-3" aria-label="Serial test 3 expected motion"></td><td><input class="persist-text" data-key="serial-act-3" aria-label="Serial test 3 actual observation"></td><td><input class="persist-text" data-key="serial-heat-3" aria-label="Serial test 3 motor heat or lock-up observation"></td></tr>
                         </tbody>
                     </table>
                 </div>
+                <details><summary>If a Serial Monitor command does not produce safe motion</summary><div>Stop sending commands and switch off motor power if the motor stalls, locks, or becomes hot. Verify 9600 baud, two comma delimiters, the newline setting, direction as 1 or -1, and a conservative RPM before changing one item and retesting.</div></details>
             </article>
         </section>
 
@@ -444,7 +444,7 @@ void loop() {
                     <div class="mini-card"><h3>Front-panel elements</h3><ul><li>OK Button named <code>Message Arduino</code>.</li><li>Stop button.</li><li>String control named <code>Revolutions</code>.</li><li>Vertical toggle named <code>Direction</code> with Clockwise and Counter clockwise labels.</li><li>RPM meter with scale 5 to 20.</li><li>Sent Msg indicator for the exact command string.</li></ul></div>
                     <div class="mini-card"><h3>Reasoning prompts</h3><ul><li>Why should students see the exact string sent to Arduino?</li><li>Why is direction represented as 1 or -1?</li><li>Why does RPM have a practical range?</li><li>What might happen if RPM is too low or too high?</li></ul></div>
                 </div>
-                <label class="response-field evidence-upload mt-block"><span>Front panel screenshot/export</span><input class="persist-file" data-key="hmi-front-evidence" data-stage-required type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="hmi-front-evidence">No file selected.</small></label>
+                <label class="response-field evidence-upload mt-block"><span>Front panel evidence file</span><input class="persist-file" data-key="hmi-front-evidence" data-stage-required type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.pdf"><small class="file-name-preview" data-file-name-for="hmi-front-evidence">No file selected.</small><small class="text-gray-500">Accepted: PNG, JPG/JPEG, WebP, GIF, or PDF. The completion record stores only the filename; it does not upload or embed the file.</small></label>
             </article>
         </section>
 
@@ -468,12 +468,13 @@ void loop() {
                     <table>
                         <thead><tr><th>RPM</th><th>Revolutions</th><th>Direction</th><th>Expected sent string</th><th>Actual sent string</th><th>Observed motion</th></tr></thead>
                         <tbody>
-                            <tr><td><input class="persist-text" data-key="visa-rpm-1"></td><td><input class="persist-text" data-key="visa-rev-1"></td><td><input class="persist-text" data-key="visa-dir-1"></td><td><input class="persist-text" data-key="visa-exp-1"></td><td><input class="persist-text" data-key="visa-msg-1"></td><td><input class="persist-text" data-key="visa-motion-1"></td></tr>
-                            <tr><td><input class="persist-text" data-key="visa-rpm-2"></td><td><input class="persist-text" data-key="visa-rev-2"></td><td><input class="persist-text" data-key="visa-dir-2"></td><td><input class="persist-text" data-key="visa-exp-2"></td><td><input class="persist-text" data-key="visa-msg-2"></td><td><input class="persist-text" data-key="visa-motion-2"></td></tr>
+                            <tr><td><input class="persist-text" data-key="visa-rpm-1" aria-label="VISA test 1 RPM"></td><td><input class="persist-text" data-key="visa-rev-1" aria-label="VISA test 1 revolutions"></td><td><input class="persist-text" data-key="visa-dir-1" aria-label="VISA test 1 direction"></td><td><input class="persist-text" data-key="visa-exp-1" aria-label="VISA test 1 expected sent string"></td><td><input class="persist-text" data-key="visa-msg-1" aria-label="VISA test 1 actual sent string"></td><td><input class="persist-text" data-key="visa-motion-1" aria-label="VISA test 1 observed motion"></td></tr>
+                            <tr><td><input class="persist-text" data-key="visa-rpm-2" aria-label="VISA test 2 RPM"></td><td><input class="persist-text" data-key="visa-rev-2" aria-label="VISA test 2 revolutions"></td><td><input class="persist-text" data-key="visa-dir-2" aria-label="VISA test 2 direction"></td><td><input class="persist-text" data-key="visa-exp-2" aria-label="VISA test 2 expected sent string"></td><td><input class="persist-text" data-key="visa-msg-2" aria-label="VISA test 2 actual sent string"></td><td><input class="persist-text" data-key="visa-motion-2" aria-label="VISA test 2 observed motion"></td></tr>
                         </tbody>
                     </table>
                 </div>
-                <label class="response-field evidence-upload mt-block"><span>Block diagram screenshot/export</span><input class="persist-file" data-key="visa-block-evidence" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="visa-block-evidence">No file selected.</small></label>
+                <details><summary>If Serial Monitor works but LabVIEW VISA does not</summary><div>Close Serial Monitor, verify the VISA Resource Name, confirm the command contains both commas and the required line ending, and check that VISA Write is in the True case. Keep the proven firmware and hardware unchanged while testing one LabVIEW correction at a time.</div></details>
+                <label class="response-field evidence-upload mt-block"><span>Block diagram evidence file</span><input class="persist-file" data-key="visa-block-evidence" type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="visa-block-evidence">No file selected.</small><small class="text-gray-500">Accepted: PNG, JPG/JPEG, WebP, GIF, or PDF. The completion record stores only the filename; it does not upload or embed the file.</small></label>
             </article>
         </section>
 
@@ -504,30 +505,7 @@ void loop() {
             </article>
         </section>
 
-        <section class="stage-panel stage-9" id="troubleshoot" tabindex="-1">
-            <article class="section-card card border-maroon">
-                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Troubleshoot</p>
-                <h2>Observation, hypothesis, test, evidence, decision</h2>
-                <p class="danger-card"><strong>Before rewiring, uploading again, or changing LabVIEW, write one hypothesis and one test that could support or reject it.</strong></p>
-                <div class="table-wrap mt-block">
-                    <table>
-                        <thead><tr><th>Observation</th><th>Possible cause</th><th>Test</th><th>Expected result if correct</th><th>Actual result</th><th>Decision</th></tr></thead>
-                        <tbody>
-                            <tr><td><input class="persist-text" data-key="tr-obs-1" data-stage-required></td><td><input class="persist-text" data-key="tr-cause-1" data-stage-required></td><td><input class="persist-text" data-key="tr-test-1" data-stage-required></td><td><input class="persist-text" data-key="tr-exp-1" data-stage-required></td><td><input class="persist-text" data-key="tr-act-1" data-stage-required></td><td><input class="persist-text" data-key="tr-dec-1" data-stage-required></td></tr>
-                            <tr><td><input class="persist-text" data-key="tr-obs-2"></td><td><input class="persist-text" data-key="tr-cause-2"></td><td><input class="persist-text" data-key="tr-test-2"></td><td><input class="persist-text" data-key="tr-exp-2"></td><td><input class="persist-text" data-key="tr-act-2"></td><td><input class="persist-text" data-key="tr-dec-2"></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="grid-layout three mt-block">
-                    <div class="mini-card"><h3>Power and hardware faults</h3><ul><li>Power adaptor not set to 9 V.</li><li>Breadboard supply board reversed.</li><li>Power board not turned on.</li><li>Arduino 5 V used for motor power.</li><li>Common ground missing.</li><li>Driver + and - rails reversed.</li><li>Motor driver input pins mismatched.</li><li>Motor overheated or stalled.</li></ul></div>
-                    <div class="mini-card"><h3>Arduino faults</h3><ul><li>Wrong board or port selected.</li><li>Compilation error.</li><li>Firmware not uploaded.</li><li>Serial baud rate mismatch.</li><li>Serial Monitor still open while LabVIEW tries to connect.</li><li>Command missing commas or newline.</li><li>RPM too high, causing lock-up.</li></ul></div>
-                    <div class="mini-card"><h3>LabVIEW faults</h3><ul><li>Wrong VISA Resource Name.</li><li>VISA Write not inside the True case.</li><li>RPM not converted to string.</li><li>Direction Select outputs wrong string.</li><li>Comma delimiters missing.</li><li>Close function missing.</li><li>Stop button not wired to the loop.</li></ul></div>
-                </div>
-                <div class="briefing-card mt-block"><h3>Troubleshooting discussion</h3><p>Use your observation, possible cause, proposed test, actual evidence, and next action. Confirm Serial Monitor behavior before changing LabVIEW serial logic.</p></div>
-            </article>
-        </section>
-
-        <section class="stage-panel stage-10" id="reflect" tabindex="-1">
+        <section class="stage-panel stage-9" id="reflect" tabindex="-1">
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Reflect</p>
                 <h2>Deliverables and assessment</h2>
@@ -535,6 +513,16 @@ void loop() {
                     <div class="mini-card"><h3>Submit</h3><ol><li>Completed stepper motor, driver, power supply, and Arduino circuit.</li><li>Arduino IDE sketch with provided firmware uploaded.</li><li>Serial Monitor tests using several command strings.</li><li>LabVIEW front panel screenshot/export.</li><li>LabVIEW block diagram screenshot/export.</li><li>Evidence of VISA serial command sent to Arduino.</li><li>Explanation of Arduino code and parsing logic.</li><li>Extension showing revolutions replaced by angle control.</li><li>Answers to report questions from the PDF.</li></ol></div>
                     <div class="mini-card"><h3>Suggested weighting</h3><table><tbody><tr><td>Power and hardware setup</td><td>15%</td></tr><tr><td>Arduino firmware upload and explanation</td><td>20%</td></tr><tr><td>Serial Monitor testing</td><td>10%</td></tr><tr><td>LabVIEW HMI and VISA Write</td><td>25%</td></tr><tr><td>Extension</td><td>15%</td></tr><tr><td>Troubleshooting and reflection</td><td>15%</td></tr></tbody></table></div>
                 </div>
+            </article>
+
+            <article class="section-card card border-success" aria-labelledby="lab6-outcomes-achieved">
+                <h2 id="lab6-outcomes-achieved">Learning Outcomes Achieved</h2>
+                <ul class="list-disc ml-5 space-y-2">
+                    <li>Power a stepper motor safely through its driver using an external supply and common ground.</li>
+                    <li>Upload Arduino firmware and verify comma-delimited motion commands through Serial Monitor.</li>
+                    <li>Build a LabVIEW HMI that formats and sends motor commands with VISA Serial.</li>
+                    <li>Convert angle requests into motion commands and evaluate speed, direction, holding, and recovery evidence.</li>
+                </ul>
             </article>
 
             <article class="section-card card border-gold">
@@ -574,13 +562,42 @@ void loop() {
     <script>
         (() => {
             const STORAGE_PREFIX = 'smrttech-lab6-stepper-motor';
-            const STAGE_COUNT = 11;
-            const STAGE_NAMES = ['Prepare', 'Predict', 'Power Setup', 'Build Circuit', 'Arduino IDE', 'Serial Test', 'LabVIEW HMI', 'VISA Write', 'Extend', 'Troubleshoot', 'Reflect'];
+            const STAGE_COUNT = 10;
+            const STAGE_NAMES = ['Prepare', 'Predict', 'Power Setup', 'Build Circuit', 'Arduino IDE', 'Serial Test', 'LabVIEW HMI', 'VISA Write', 'Extend', 'Reflect'];
             const ORDER_KEYS = ['chain-hmi','chain-string','chain-visa','chain-parse','chain-steps','chain-driver','chain-motion'];
             const CORRECT_ORDER = ['1','2','3','4','5','6','7'];
             document.body.classList.add('js-enabled');
 
             function storageKey(key) { return `${STORAGE_PREFIX}:${key}`; }
+
+            function migrateRemovedTroubleshootStage() {
+                const migrationKey = storageKey('stage-layout-migration');
+                const migrationVersion = 'troubleshoot-removed-v1';
+                if (localStorage.getItem(migrationKey) === migrationVersion) return;
+
+                const oldCurrentStage = Number(localStorage.getItem(storageKey('current-stage')));
+                if (Number.isFinite(oldCurrentStage) && oldCurrentStage >= 9) {
+                    localStorage.setItem(storageKey('current-stage'), '9');
+                }
+
+                const oldReflectComplete = localStorage.getItem(storageKey('stage-10-complete')) === 'true';
+                if (oldReflectComplete) {
+                    localStorage.setItem(storageKey('stage-9-complete'), 'true');
+                } else {
+                    localStorage.removeItem(storageKey('stage-9-complete'));
+                }
+                localStorage.removeItem(storageKey('stage-10-complete'));
+
+                const sharedConfirmationPrefix = 'smrttech:stage-confirmed:v1:lab-06:';
+                const oldReflectConfirmed = localStorage.getItem(`${sharedConfirmationPrefix}10`) === 'true';
+                if (oldReflectConfirmed) {
+                    localStorage.setItem(`${sharedConfirmationPrefix}9`, 'true');
+                } else {
+                    localStorage.removeItem(`${sharedConfirmationPrefix}9`);
+                }
+                localStorage.removeItem(`${sharedConfirmationPrefix}10`);
+                localStorage.setItem(migrationKey, migrationVersion);
+            }
 
             function setStage(stage) {
                 const safeStage = Math.max(0, Math.min(STAGE_COUNT - 1, Number(stage) || 0));
@@ -751,6 +768,7 @@ void loop() {
                 });
             }
 
+            migrateRemovedTroubleshootStage();
             buildStageFooters();
             setupSidebars();
             setupOrderOptions();

@@ -48,7 +48,7 @@
         .stage-btn:hover { background: var(--mac-grey-20); }
         .stage-btn:focus-visible, .utility-button:focus-visible, .nav-button:focus-visible, details summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--mac-gold); outline-offset: 3px; }
         .stage-btn.active, .stage-btn.page-current { color: white; background: var(--mac-maroon); box-shadow: 0 5px 13px rgba(122,0,60,0.28); }
-        .stage-btn.completed:not(.active)::after { content: "âœ“"; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 6px; border-radius: 50%; color: white; background: var(--success); font-size: 0.68rem; font-weight: 700; }
+        .stage-btn.completed:not(.active)::after { content: "\2713"; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 6px; border-radius: 50%; color: white; background: var(--success); font-size: 0.68rem; font-weight: 700; }
         .lab-stage-label { margin-left: 0.65rem; padding-left: 0.85rem; border-left: 1px solid rgba(73,89,101,0.18); }
         .auto-score-chip { flex: 0 0 auto; margin-left: auto; padding: 0.45rem 0.7rem; border-radius: 999px; border: 1px solid var(--mac-gold-60); background: var(--mac-gold-20); color: #5B3900; font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
         .page-header { padding: 0 0 2.2rem; }
@@ -71,8 +71,7 @@
         .js-enabled.stage-5 .stage-panel.stage-5,
         .js-enabled.stage-6 .stage-panel.stage-6,
         .js-enabled.stage-7 .stage-panel.stage-7,
-        .js-enabled.stage-8 .stage-panel.stage-8,
-        .js-enabled.stage-9 .stage-panel.stage-9 { display: block; }
+        .js-enabled.stage-8 .stage-panel.stage-8 { display: block; }
         .grid-layout { display: grid; gap: 1rem; }
         .grid-layout.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .grid-layout.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -165,13 +164,12 @@
             <button class="stage-btn" id="btn-stage-1" type="button" data-stage="1">Predict</button>
             <button class="stage-btn" id="btn-stage-2" type="button" data-stage="2">Build Load Cell</button>
             <button class="stage-btn" id="btn-stage-3" type="button" data-stage="3">Raw Signal</button>
-            <button class="stage-btn" id="btn-stage-4" type="button" data-stage="4">Stage 1 Amp</button>
-            <button class="stage-btn" id="btn-stage-5" type="button" data-stage="5">Stage 2 Amp</button>
+            <button class="stage-btn" id="btn-stage-4" type="button" data-stage="4">First Amplifier</button>
+            <button class="stage-btn" id="btn-stage-5" type="button" data-stage="5">Second Amplifier</button>
             <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">LabVIEW</button>
             <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Extend</button>
-            <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Troubleshoot</button>
-            <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Reflect</button>
-            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/10</strong></div>
+            <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Reflect</button>
+            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/9</strong></div>
         </div>
     </nav>
 
@@ -352,7 +350,7 @@
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-opamp"><span>LMC6484 op-amp datasheet reviewed or confirmed with instructor.</span></label>
                 </div>
 
-                <h3>Activity B: Build the measurement chain</h3>
+                <h3>Activity B: Arrange the measurement chain</h3>
                 <p>Drag the events into order, or use the numbered selects if you prefer keyboard entry.</p>
                 <div class="order-grid" data-dnd-order>
                     <label class="order-item"><select class="persist-text order-select" data-key="chain-force"></select><span>Force is applied</span></label>
@@ -464,6 +462,10 @@
                     <figcaption>Source PDF first-stage amplifier: R3/R1 sets the ideal gain of 100 for the V2 output.</figcaption>
                 </figure>
                 <div class="danger-card"><strong>Before connecting V2 to Arduino A0, verify that V2 remains within the Arduino analog input range.</strong></div>
+                <div class="briefing-card mt-block">
+                    <h3>Safe recovery sequence</h3>
+                    <p>Disconnect power before changing the circuit. Confirm the LMC6484 orientation and pin numbers, common ground, feedback path, and 10 k&Omega;/100 k&Omega;/1 M&Omega; resistor identities. Measure the output before reconnecting A0, and change one suspected fault at a time.</p>
+                </div>
                 <div class="table-wrap mt-block">
                     <table>
                         <thead><tr><th>Condition</th><th>Measurement point</th><th>Expected relationship</th><th>Voltage</th><th>Notes</th></tr></thead>
@@ -541,8 +543,8 @@
                 <div class="grid-layout two mt-block">
                     <div class="mini-card">
                         <h3>Required evidence</h3>
-                        <label class="response-field evidence-upload"><span>Front panel screenshot</span><input class="persist-file" data-key="lv-front" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="lv-front">No file selected.</small></label>
-                        <label class="response-field evidence-upload"><span>Block diagram screenshot</span><input class="persist-file" data-key="lv-block" type="file" accept="image/*,.pdf"><small class="file-name-preview" data-file-name-for="lv-block">No file selected.</small></label>
+                        <label class="response-field evidence-upload"><span>Front panel evidence (PNG, JPG, or PDF)</span><input class="persist-file" data-key="lv-front" type="file" accept=".png,.jpg,.jpeg,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="lv-front">No file selected.</small></label>
+                        <label class="response-field evidence-upload"><span>Block diagram evidence (PNG, JPG, or PDF)</span><input class="persist-file" data-key="lv-block" type="file" accept=".png,.jpg,.jpeg,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="lv-block">No file selected.</small></label>
                         <label class="response-field"><span>Voltmeter V3 range</span><input class="persist-text" data-key="lv-meter-range"></label>
                         <label class="response-field"><span>LabVIEW displayed range</span><input class="persist-text" data-key="lv-display-range"></label>
                         <label class="response-field"><span>Difference and possible causes</span><textarea class="persist-text" data-key="lv-difference"></textarea></label>
@@ -559,6 +561,7 @@
                         </ul>
                     </div>
                 </div>
+                <p class="briefing-card mt-block">The chooser records the selected filename as local evidence in this browser. It does not upload or submit your VI or report. Accepted formats are PNG, JPG, and PDF.</p>
             </article>
         </section>
 
@@ -616,34 +619,7 @@
             </article>
         </section>
 
-        <section class="stage-panel stage-8" id="troubleshoot" tabindex="-1">
-            <article class="section-card card border-warning">
-                <p class="eyebrow">Troubleshooting Challenge</p>
-                <h2>Use evidence before changing the system</h2>
-                <div class="danger-card"><strong>Before changing the circuit or LabVIEW block diagram, write one hypothesis and one measurement or inspection that could support or reject it.</strong></div>
-                <div class="table-wrap mt-block">
-                    <table>
-                        <thead><tr><th>Observation</th><th>Possible cause</th><th>Test</th><th>Expected evidence</th><th>Actual evidence</th><th>Decision</th></tr></thead>
-                        <tbody><tr>
-                            <td><textarea class="persist-text" data-key="trouble-observation"></textarea></td>
-                            <td><textarea class="persist-text" data-key="trouble-cause"></textarea></td>
-                            <td><textarea class="persist-text" data-key="trouble-test"></textarea></td>
-                            <td><textarea class="persist-text" data-key="trouble-expected"></textarea></td>
-                            <td><textarea class="persist-text" data-key="trouble-actual"></textarea></td>
-                            <td><textarea class="persist-text" data-key="trouble-decision" data-stage-required></textarea></td>
-                        </tr></tbody>
-                    </table>
-                </div>
-                <div class="grid-layout three mt-block">
-                    <div class="mini-card"><h3>Load-cell and wiring faults</h3><ul><li>Excitation not connected</li><li>SIG+ and SIG- swapped</li><li>Loose screw-terminal connection</li><li>Load applied in wrong direction</li><li>Missing ground reference</li><li>Breadboard row mistake</li></ul></div>
-                    <div class="mini-card"><h3>Op-amp faults</h3><ul><li>LMC6484 inserted backwards</li><li>Wrong pins used</li><li>10 kOhm and 100 kOhm confused</li><li>100 kOhm and 1 MOhm confused</li><li>Feedback resistor missing</li><li>Output saturated</li><li>V2 or V3 outside Arduino input range</li></ul></div>
-                    <div class="mini-card"><h3>LabVIEW and interpretation faults</h3><ul><li>LINX firmware not loaded</li><li>Analog channel not set to 0</li><li>Numeric indicator not wired</li><li>A0 connected to V2 when student thinks it is V3</li><li>Assuming LabVIEW displays force directly</li><li>Ignoring no-load offset</li><li>Assuming larger gain is always better</li></ul></div>
-                </div>
-                <div class="briefing-card mt-block"><h3>Troubleshooting discussion</h3><p>Use evidence before changing the system: identify the observation, choose one possible cause, test it, record evidence, and decide the next safe change.</p></div>
-            </article>
-        </section>
-
-        <section class="stage-panel stage-9" id="reflect" tabindex="-1">
+        <section class="stage-panel stage-8" id="reflect" tabindex="-1">
             <article class="section-card card border-maroon">
                 <p class="eyebrow">Deliverables</p>
                 <h2>Submission checklist</h2>
@@ -652,7 +628,7 @@
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-stage1"><span>Completed first-stage amplifier measurement table.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-stage2"><span>Completed second-stage amplifier measurement table.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-vi"><span>LabVIEW VI displays voltage reading from Arduino A0.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-screens"><span>Front panel and block diagram screenshots included.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-screens"><span>Front-panel and block-diagram evidence prepared in PNG, JPG, or PDF format.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-gain"><span>First-stage, second-stage, and total gain calculations included.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-bridge"><span>Wheatstone Bridge and load-cell explanations included.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-opamp"><span>Role of op-amps and pressure transducer strain-gauge explanation included.</span></label>
@@ -694,6 +670,21 @@
                 <label class="response-field"><span>13. Is larger amplification always better? Explain.</span><textarea class="persist-text" data-key="reflect-13"></textarea></label>
                 <label class="response-field"><span>14. Does this lab create a complete IoT system? If not, which IoT layer has been completed and what still needs to be added?</span><textarea class="persist-text" data-key="reflect-14"></textarea></label>
                 <label class="response-field"><span>15. What did you initially believe about force measurement that this lab changed or clarified?</span><textarea class="persist-text" data-key="reflect-15"></textarea></label>
+            </article>
+
+            <article class="section-card card border-success">
+                <h2>Learning Outcomes Achieved</h2>
+                <p>What you can now demonstrate after completing this lab:</p>
+                <div class="learning-outcome-grid">
+                    <div class="learning-outcome-card"><strong>Load-cell behavior</strong><span>Explain how applied force produces strain.</span></div>
+                    <div class="learning-outcome-card"><strong>Strain gauges</strong><span>Trace deformation to a resistance change.</span></div>
+                    <div class="learning-outcome-card"><strong>Bridge output</strong><span>Explain the load cell's small differential voltage.</span></div>
+                    <div class="learning-outcome-card"><strong>Measurement</strong><span>Measure SIG+ to SIG- across controlled load conditions.</span></div>
+                    <div class="learning-outcome-card"><strong>Amplification</strong><span>Build and verify both LMC6484 amplifier stages.</span></div>
+                    <div class="learning-outcome-card"><strong>Gain math</strong><span>Calculate and compare first-stage, second-stage, and total gain.</span></div>
+                    <div class="learning-outcome-card"><strong>LabVIEW readout</strong><span>Read the safe amplified voltage through Arduino A0 and LINX.</span></div>
+                    <div class="learning-outcome-card"><strong>Design revision</strong><span>Propose and justify a circuit revision that halves total gain.</span></div>
+                </div>
             </article>
 
             <article class="section-card card border-maroon">
@@ -746,13 +737,43 @@
     <script>
         (() => {
             const STORAGE_PREFIX = 'smrttech-lab4-load-cell';
-            const STAGE_COUNT = 10;
-            const STAGE_NAMES = ['Prepare', 'Predict', 'Build Load Cell', 'Raw Signal', 'Stage 1 Amp', 'Stage 2 Amp', 'LabVIEW', 'Extend', 'Troubleshoot', 'Reflect'];
+            const STAGE_COUNT = 9;
+            const STAGE_NAMES = ['Prepare', 'Predict', 'Build Load Cell', 'Raw Signal', 'First Amplifier', 'Second Amplifier', 'LabVIEW', 'Extend', 'Reflect'];
             const ORDER_KEYS = ['chain-force','chain-bend','chain-strain','chain-bridge','chain-meter','chain-stage1','chain-stage2','chain-a0','chain-linx','chain-display'];
             const CORRECT_ORDER = ['1','2','3','4','5','6','7','8','9','10'];
             document.body.classList.add('js-enabled');
 
             function storageKey(key) { return `${STORAGE_PREFIX}:${key}`; }
+
+            function migrateRemovedTroubleshootStage() {
+                const migrationKey = storageKey('stage-layout-v2-migrated');
+                if (localStorage.getItem(migrationKey) === 'true') return;
+
+                const removedStage = 8;
+                const oldReflectStage = 9;
+                const newReflectStage = 8;
+                const oldReflectComplete = localStorage.getItem(storageKey(`stage-${oldReflectStage}-complete`)) === 'true';
+                const oldReflectConfirmedKey = 'smrttech:stage-confirmed:v1:lab-04:9';
+                const newReflectConfirmedKey = 'smrttech:stage-confirmed:v1:lab-04:8';
+                const oldReflectConfirmed = localStorage.getItem(oldReflectConfirmedKey) === 'true';
+                const currentStage = Number(localStorage.getItem(storageKey('current-stage')));
+
+                localStorage.removeItem(storageKey(`stage-${newReflectStage}-complete`));
+                localStorage.removeItem(storageKey(`stage-${oldReflectStage}-complete`));
+                if (oldReflectComplete) {
+                    localStorage.setItem(storageKey(`stage-${newReflectStage}-complete`), 'true');
+                }
+
+                localStorage.removeItem(newReflectConfirmedKey);
+                localStorage.removeItem(oldReflectConfirmedKey);
+                if (oldReflectConfirmed) localStorage.setItem(newReflectConfirmedKey, 'true');
+
+                if (Number.isFinite(currentStage) && currentStage >= removedStage) {
+                    const migratedStage = Math.min(STAGE_COUNT - 1, currentStage > removedStage ? currentStage - 1 : currentStage);
+                    localStorage.setItem(storageKey('current-stage'), String(migratedStage));
+                }
+                localStorage.setItem(migrationKey, 'true');
+            }
 
             function setStage(stage) {
                 const safeStage = Math.max(0, Math.min(STAGE_COUNT - 1, Number(stage) || 0));
@@ -923,6 +944,7 @@
                 });
             }
 
+            migrateRemovedTroubleshootStage();
             buildStageFooters();
             setupSidebars();
             setupOrderOptions();

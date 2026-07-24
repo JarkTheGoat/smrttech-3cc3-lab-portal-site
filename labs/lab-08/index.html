@@ -69,8 +69,7 @@
         .js-enabled.stage-9 .stage-panel.stage-9,
         .js-enabled.stage-10 .stage-panel.stage-10,
         .js-enabled.stage-11 .stage-panel.stage-11,
-        .js-enabled.stage-12 .stage-panel.stage-12,
-        .js-enabled.stage-13 .stage-panel.stage-13 { display: block; }
+        .js-enabled.stage-12 .stage-panel.stage-12 { display: block; }
         .grid-layout { display: grid; gap: 1rem; }
         .grid-layout.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .grid-layout.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -169,9 +168,8 @@
             <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Dashboard</button>
             <button class="stage-btn" id="btn-stage-10" type="button" data-stage="10">Reliability</button>
             <button class="stage-btn" id="btn-stage-11" type="button" data-stage="11">Analytics</button>
-            <button class="stage-btn" id="btn-stage-12" type="button" data-stage="12">Troubleshoot</button>
-            <button class="stage-btn" id="btn-stage-13" type="button" data-stage="13">Reflect</button>
-            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/14</strong></div>
+            <button class="stage-btn" id="btn-stage-12" type="button" data-stage="12">Reflect</button>
+            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/13</strong></div>
         </div>
     </nav>
 
@@ -220,9 +218,12 @@
             <div class="card p-5">
                 <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Knowledge Links</h4>
                 <ul class="knowledge-skill-list">
-                    <li><a href="../../knowledge/skill-tree.html?topic=soil-moisture-sensor">Arduino and sensor I/O</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=soil-moisture-sensor">Capacitive sensor and Arduino A0</a></li>
                     <li><a href="../../knowledge/skill-tree.html?topic=moisture-calibration">Measurement and calibration</a></li>
-                    <li><a href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW interface</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=labview-linx">LabVIEW LINX</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=mqtt-topics">ThingsBoard MQTT topics</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=shared-attributes">ThingsBoard shared attributes</a></li>
+                    <li><a href="../../knowledge/skill-tree.html?topic=cloud-dashboard">Cloud dashboard widgets</a></li>
                     <li><a href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Troubleshooting sequence</a></li>
                 </ul>
             </div>
@@ -359,17 +360,17 @@
                 </ol>
                 <div class="warning-card mt-block"><strong>One physical project normally equals one ThingsBoard device.</strong> Do not create a separate device for every sensor or actuator. Never paste the real token into this page. Use <code>YOUR_DEVICE_ACCESS_TOKEN</code> in examples and redact credentials from evidence.</div>
                 <div class="grid-layout four mt-block">
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Cloud account registration screenshot"><strong>Screenshot required</strong><span>ThingsBoard Cloud account registration</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Devices page screenshot"><strong>Screenshot required</strong><span>Entities &rarr; Devices page</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Add Device dialog screenshot"><strong>Screenshot required</strong><span>Add Device dialog</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard device access-token screen screenshot"><strong>Screenshot required</strong><span>Device credential/access-token screen</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Cloud account registration screenshot"><span>Provide a screenshot that shows ThingsBoard Cloud account registration.</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Devices page screenshot"><span>Provide a screenshot that shows the Entities &rarr; Devices page.</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Add Device dialog screenshot"><span>Provide a screenshot that shows the Add Device dialog.</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard device access-token screen screenshot"><span>Provide a screenshot that shows the device credential/access-token screen.</span></figure>
                 </div>
                 <div class="grid-layout two mt-block">
                     <label class="response-field"><span>ThingsBoard device name</span><input class="persist-text" data-key="thingsboard-device-name" placeholder="Lab8-Soil-Moisture-StudentName" data-stage-required></label>
                     <label class="response-field"><span>How did you verify this is your own tenant?</span><input class="persist-text" data-key="thingsboard-tenant-check" placeholder="Describe the account/device check" data-stage-required></label>
                 </div>
                 <label class="completion-box"><input type="checkbox" class="persist-check" data-key="thingsboard-token-private"><span>The device token is stored in a private local location, ready for the next MQTT stage, and is absent from screenshots, reports, HTML, repositories, and completion exports.</span></label>
-                <label class="response-field evidence-upload mt-block"><span>Device page screenshot with the access token hidden</span><input class="persist-file" data-key="thingsboard-device-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="thingsboard-device-screenshot">No file selected.</small></label>
+                <label class="response-field evidence-upload mt-block"><span>Local evidence reference: device page with the access token hidden (image or PDF)</span><input class="persist-file" data-key="thingsboard-device-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="thingsboard-device-screenshot">No local evidence file selected.</small><small>Accepted: image file or PDF. This chooser records only the filename; it does not upload or submit the artifact.</small></label>
             </article>
             <article class="section-card card border-gold">
                 <h2>ThingsBoard data model for this lab</h2>
@@ -387,7 +388,7 @@
                 <h2>Configure and test LabVIEW MQTT with ThingsBoard</h2>
                 <p>Download <code>Lab8.zip</code> from Avenue to Learn, extract it, and open <code>Lab8_init.vi</code>. Configure the existing MQTT tab without changing the portal's LabVIEW/LINX architecture.</p>
                 <div class="grid-layout two">
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for revised LabVIEW ThingsBoard MQTT configuration screenshot"><strong>Screenshot required</strong><span>LabVIEW MQTT tab configured for ThingsBoard Cloud with the access token redacted</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for revised LabVIEW ThingsBoard MQTT configuration screenshot"><span>Provide a screenshot that shows the LabVIEW MQTT tab configured for ThingsBoard Cloud with the access token redacted.</span></figure>
                     <div class="mini-card">
                         <h3>Initial classroom configuration</h3>
                         <ul>
@@ -401,13 +402,14 @@
                     </div>
                 </div>
                 <div class="warning-card mt-block"><strong>Transport security:</strong> port 1883 is unencrypted and is only for the controlled laboratory setup or initial connectivity testing. Use port 8883 only when the MQTT library explicitly supports TLS and certificate verification; entering 8883 alone does not enable TLS. Every simultaneously connected client must use a unique client ID.</div>
+                <details><summary>If the MQTT connection or first publish fails</summary><div><ul><li>Confirm <code>mqtt.thingsboard.cloud</code>, the intended port, a unique client ID, the device token as Username, and a blank password.</li><li>Use the exact topic <code>v1/devices/me/telemetry</code> with no leading slash and validate the labelled JSON payload.</li><li>Confirm the token belongs to the same ThingsBoard device whose Latest Telemetry tab you are viewing; check whether the network blocks MQTT.</li></ul></div></details>
                 <h3 class="mt-block">Send a labelled JSON test</h3>
                 <pre><code>{"raw_voltage":2.81,"moisture_percent":34.6,"low_moisture_alarm":true}</code></pre>
                 <p>Use LabVIEW <strong>Format Into String</strong> or the existing course JSON utility. Do not publish an unlabelled number such as <code>42</code>. Connect, publish once, subscribe, and confirm the JSON keys appear in the device's <strong>Latest Telemetry</strong> tab.</p>
-                <figure class="diagram-card screenshot-placeholder mt-block" role="img" aria-label="Placeholder for ThingsBoard Latest Telemetry tab screenshot"><strong>Screenshot required</strong><span>Device &rarr; Latest Telemetry showing raw_voltage, moisture_percent, and low_moisture_alarm</span></figure>
+                <figure class="diagram-card screenshot-placeholder mt-block" role="img" aria-label="Placeholder for ThingsBoard Latest Telemetry tab screenshot"><span>Provide a screenshot that shows Device &rarr; Latest Telemetry with raw_voltage, moisture_percent, and low_moisture_alarm.</span></figure>
                 <div class="grid-layout two mt-block">
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="mqtt-test-confirmed"><span>MQTT connection, JSON telemetry publish, and both subscriptions were tested successfully.</span></label>
-                    <label class="response-field evidence-upload"><span>Latest Telemetry screenshot with no credential visible</span><input class="persist-file" data-key="latest-telemetry-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="latest-telemetry-screenshot">No file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>Local evidence reference: Latest Telemetry with no credential visible (image or PDF)</span><input class="persist-file" data-key="latest-telemetry-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="latest-telemetry-screenshot">No local evidence file selected.</small><small>Accepted: image file or PDF. This chooser records only the filename; it does not upload or submit the artifact.</small></label>
                 </div>
             </article>
         </section>
@@ -427,6 +429,7 @@
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-sig"><span>Sensor SIG is connected to Arduino A0.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-water"><span>Cup is one-third full and the top two-thirds are dry.</span></label>
                 </div>
+                <div class="danger-card mt-block"><strong>If the sensor reading is missing or fixed:</strong> stop the VI, disconnect Arduino USB, dry your hands, and move water away from the electronics. Verify VCC, GND, SIG to A0, sensor depth, USB, serial port, LINX firmware, and NI-VISA before restoring power.</div>
             </article>
         </section>
 
@@ -457,9 +460,10 @@
                         </tbody>
                     </table>
                 </div>
+                <details><summary>If V_dry and V_wet are invalid or nearly identical</summary><div><ul><li>Use a consistent sensor depth, keep the top circuitry dry, and allow each reading to settle before averaging.</li><li>Confirm the values are measured, different, assigned to the correct dry/wet endpoints, and within the Arduino input range.</li><li>Recheck A0 wiring and LINX Analog Read before changing the calibration formula.</li></ul></div></details>
                 <div class="grid-layout two mt-block">
-                    <label class="response-field evidence-upload"><span>HMI front panel screenshot</span><input class="persist-file" data-key="hmi-front-panel" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="hmi-front-panel">No file selected.</small></label>
-                    <label class="response-field evidence-upload"><span>Native LabVIEW calibration block-diagram screenshot</span><input class="persist-file" data-key="hmi-block-diagram" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="hmi-block-diagram">No file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>Local evidence reference: HMI front panel (image or PDF)</span><input class="persist-file" data-key="hmi-front-panel" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="hmi-front-panel">No local evidence file selected.</small><small>Accepted: image file or PDF. This chooser records only the filename; it does not upload or submit the artifact.</small></label>
+                    <label class="response-field evidence-upload"><span>Local evidence reference: native LabVIEW calibration block diagram (image or PDF)</span><input class="persist-file" data-key="hmi-block-diagram" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="hmi-block-diagram">No local evidence file selected.</small><small>Accepted: image file or PDF. This chooser records only the filename; it does not upload or submit the artifact.</small></label>
                 </div>
             </article>
         </section>
@@ -470,8 +474,8 @@
                 <h2>Convert voltage to percent moisture</h2>
                 <p>Add a numeric <code>moisture_threshold</code> indicator, a LabVIEW front-panel Low Moisture round LED indicator, a <code>moisture_percent</code> numeric indicator, and a <code>moisture_percent</code> waveform chart. Build the calibration and alarm with native LabVIEW arithmetic, comparison functions, Boolean logic, and Case Structures as needed.</p>
                 <div class="grid-layout two">
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for revised LabVIEW HMI screenshot"><strong>Screenshot required</strong><span>LabVIEW HMI with raw_voltage, moisture_percent, moisture_threshold, front-panel Low Moisture LED indicator, and chart</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for native LabVIEW calibration and alarm logic screenshot"><strong>Screenshot required</strong><span>Native LabVIEW arithmetic, clamp, numeric validation, and Less? comparison</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for revised LabVIEW HMI screenshot"><span>Provide a screenshot that shows the LabVIEW HMI with raw_voltage, moisture_percent, moisture_threshold, the front-panel Low Moisture LED indicator, and chart.</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for native LabVIEW calibration and alarm logic screenshot"><span>Provide a screenshot that shows native LabVIEW arithmetic, clamp, numeric validation, and the Less? comparison.</span></figure>
                 </div>
                 <pre><code>scaled_percent = (raw_voltage - V_dry) / (V_wet - V_dry) * 100
 moisture_percent = clamp(scaled_percent, 0, 100)
@@ -501,11 +505,11 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                 <h2>Publish JSON telemetry to ThingsBoard</h2>
                 <p>In the Communication Loop, format the three current LabVIEW values as one JSON object and publish it to <code>v1/devices/me/telemetry</code> at approximately one-second intervals.</p>
                 <pre><code>{"raw_voltage":2.81,"moisture_percent":34.6,"low_moisture_alarm":true}</code></pre>
-                <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW ThingsBoard JSON telemetry publish block screenshot"><strong>Screenshot required</strong><span>LabVIEW JSON formatting and publish event for v1/devices/me/telemetry</span></figure>
+                <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW ThingsBoard JSON telemetry publish block screenshot"><span>Provide a screenshot that shows LabVIEW JSON formatting and the publish event for v1/devices/me/telemetry.</span></figure>
                 <div class="warning-card mt-block"><strong>Separate local and cloud timing:</strong> run Arduino/LabVIEW acquisition and alarm logic every 100&ndash;250 ms, but send ThingsBoard telemetry about once per second. Do not publish every sensor sample. Threshold changes are event-driven.</div>
                 <div class="grid-layout two mt-block">
                     <label class="response-field"><span>Evidence that all three telemetry keys stream to ThingsBoard</span><textarea class="persist-text" data-key="publish-evidence" data-stage-required></textarea></label>
-                    <label class="response-field evidence-upload"><span>Streaming Latest Telemetry screenshot</span><input class="persist-file" data-key="publish-telemetry-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="publish-telemetry-screenshot">No file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>Local evidence reference: streaming Latest Telemetry (image or PDF)</span><input class="persist-file" data-key="publish-telemetry-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="publish-telemetry-screenshot">No local evidence file selected.</small><small>Accepted: image file or PDF. This chooser records only the filename; it does not upload or submit the artifact.</small></label>
                 </div>
             </article>
         </section>
@@ -524,15 +528,16 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                 </ol>
                 <pre><code>{"sharedKeys":"moisture_threshold"}</code></pre>
                 <p>The response may be <code>{"shared":{"moisture_threshold":30}}</code>. Parse and validate the number before updating the local setpoint. Until a valid response arrives, retain a documented safe default. On malformed JSON, show a readable error and preserve the last valid threshold instead of stopping the complete VI.</p>
+                <div class="success-card mt-block"><strong>Forced receive-path check:</strong> subscribe to <code>v1/devices/me/attributes/response/+</code>, then publish <code>{"sharedKeys":"moisture_threshold"}</code> to <code>v1/devices/me/attributes/request/1</code>. A response proves the LabVIEW receive path works. After every reconnect, recreate invalid references if needed, resubscribe, and request the current value again.</div>
                 <div class="grid-layout two">
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Shared Attributes tab screenshot"><strong>Screenshot required</strong><span>Device &rarr; Shared Attributes showing moisture_threshold</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW shared-attribute startup synchronization screenshot"><strong>Screenshot required</strong><span>LabVIEW subscribe, request, response parse, validation, and safe-default logic</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Shared Attributes tab screenshot"><span>Provide a screenshot that shows Device &rarr; Shared Attributes with moisture_threshold.</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW shared-attribute startup synchronization screenshot"><span>Provide a screenshot that shows LabVIEW subscribe, request, response parsing, validation, and safe-default logic.</span></figure>
                 </div>
                 <div class="grid-layout two mt-block">
                     <label class="response-field"><span>What proves LabVIEW received both a live change and the startup-request response?</span><textarea class="persist-text" data-key="threshold-evidence" data-stage-required></textarea></label>
                     <label class="response-field"><span>How does the VI validate JSON and preserve a safe or last-valid threshold?</span><textarea class="persist-text" data-key="attribute-parse-validation" data-stage-required></textarea></label>
                 </div>
-                <label class="response-field evidence-upload"><span>Shared Attributes screenshot</span><input class="persist-file" data-key="shared-attributes-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="shared-attributes-screenshot">No file selected.</small></label>
+                <label class="response-field evidence-upload"><span>Local evidence reference: Shared Attributes (image or PDF)</span><input class="persist-file" data-key="shared-attributes-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="shared-attributes-screenshot">No local evidence file selected.</small><small>Accepted: image file or PDF. This chooser records only the filename; it does not upload or submit the artifact.</small></label>
             </article>
         </section>
 
@@ -550,12 +555,13 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                     <li>Optionally add an alarm-history, event-history, device-activity, or last-update widget.</li>
                 </ol>
                 <div class="grid-layout four">
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard dashboard creation page screenshot"><strong>Screenshot required</strong><span>Dashboard creation page</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard entity alias selection screenshot"><strong>Screenshot required</strong><span>Entity alias selection for the Lab 8 device</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard telemetry widget configuration screenshot"><strong>Screenshot required</strong><span>Telemetry widget configuration</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard shared-attribute threshold control screenshot"><strong>Screenshot required</strong><span>Shared-attribute threshold control configuration</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard dashboard creation page screenshot"><span>Provide a screenshot that shows the dashboard creation page.</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard entity alias selection screenshot"><span>Provide a screenshot that shows entity alias selection for the Lab 8 device.</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard telemetry widget configuration screenshot"><span>Provide a screenshot that shows telemetry widget configuration.</span></figure>
+                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard shared-attribute threshold control screenshot"><span>Provide a screenshot that shows shared-attribute threshold control configuration.</span></figure>
                 </div>
                 <div class="warning-card mt-block"><strong>Threshold control action:</strong> initial state must read shared attribute <code>moisture_threshold</code>; changes must set that shared attribute to a numeric value. Do not write telemetry, set a server-side attribute, or execute RPC. After changing the control, first confirm the value changes under the device's <strong>Shared Attributes</strong> tab, then troubleshoot LabVIEW if needed.</div>
+                <details><summary>If a widget has no value or the threshold control has no effect</summary><div><ul><li>Confirm the entity alias points to the Lab 8 device and each widget uses the exact telemetry or shared-attribute key.</li><li>Confirm the threshold control sets numeric shared attribute <code>moisture_threshold</code>, not telemetry, RPC, or a server attribute.</li><li>Verify the value changes in the Shared Attributes tab before inspecting the LabVIEW subscription and JSON validation path.</li></ul></div></details>
                 <div class="grid-layout two mt-block">
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-gauge"><span>raw_voltage value card and moisture_percent gauge display measured telemetry.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-slider"><span>Threshold control updates the shared moisture_threshold attribute.</span></label>
@@ -563,7 +569,7 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-test"><span>Moving the sensor updates telemetry and changing the threshold changes the local alarm when appropriate.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="dashboard-alarm"><span>low_moisture_alarm indicator is visibly distinct from measured moisture and configured threshold.</span></label>
                 </div>
-                <label class="response-field evidence-upload mt-block"><span>Completed dashboard screenshot</span><input class="persist-file" data-key="dashboard-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="dashboard-screenshot">No file selected.</small></label>
+                <label class="response-field evidence-upload mt-block"><span>Local evidence reference: completed dashboard (image or PDF)</span><input class="persist-file" data-key="dashboard-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="dashboard-screenshot">No local evidence file selected.</small><small>Accepted: image file or PDF. This chooser records only the filename; it does not upload or submit the artifact.</small></label>
             </article>
         </section>
 
@@ -581,7 +587,7 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                 <div class="warning-card mt-block"><strong>Cloud communication is not deterministic.</strong> Never use ThingsBoard as the inner loop of a fast controller. Stale, delayed, duplicate, or repeated commands must not create unsafe behaviour. A ThingsBoard alarm/history widget may observe <code>low_moisture_alarm</code>, but a cloud rule chain must not replace the local decision.</div>
                 <div class="grid-layout two mt-block">
                     <label class="response-field"><span>Record the normal, cloud-loss, and reconnect test results</span><textarea class="persist-text" data-key="alert-evidence" data-stage-required></textarea></label>
-                    <label class="response-field evidence-upload"><span>Local alarm and internet-loss evidence</span><input class="persist-file" data-key="alarm-reliability-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="alarm-reliability-screenshot">No file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>Local evidence reference: local alarm and internet-loss test (image or PDF)</span><input class="persist-file" data-key="alarm-reliability-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="alarm-reliability-screenshot">No local evidence file selected.</small><small>Accepted: image file or PDF. This chooser records only the filename; it does not upload or submit the artifact.</small></label>
                 </div>
             </article>
         </section>
@@ -591,7 +597,7 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Revise</p>
                 <h2>Add useful ThingsBoard analytics</h2>
                 <p>Use <code>moisture_percent</code> from the Lab 8 device alias to create Minimum Today, Maximum Today, and Average Today cards. Arrange them around the required value, gauge, time-series, threshold, and alarm widgets.</p>
-                <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard aggregate telemetry widgets screenshot"><strong>Screenshot required</strong><span>ThingsBoard minimum, maximum, and average moisture_percent widgets</span></figure>
+                <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard aggregate telemetry widgets screenshot"><span>Provide a screenshot that shows the ThingsBoard minimum, maximum, and average moisture_percent widgets.</span></figure>
                 <div class="grid-layout three mt-block">
                     <div class="mini-card optional-card">Add a weather widget if it is relevant and available.</div>
                     <div class="mini-card optional-card">Add average moisture over 24 hours.</div>
@@ -604,36 +610,18 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
             </article>
         </section>
 
-        <section class="stage-panel stage-12" id="troubleshoot" tabindex="-1">
-            <article class="section-card card border-maroon">
-                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Revise</p>
-                <h2>ThingsBoard and LabVIEW troubleshooting</h2>
-                <div class="table-wrap">
-                    <table>
-                        <thead><tr><th>Observation</th><th>Likely cause</th><th>Test</th><th>Result</th><th>Next action</th></tr></thead>
-                        <tbody>
-                            <tr><td><input class="persist-text" data-key="tr-obs-1" data-stage-required aria-label="Troubleshooting row 1 - Observation"></td><td><input class="persist-text" data-key="tr-cause-1" data-stage-required aria-label="Troubleshooting row 1 - Likely cause"></td><td><input class="persist-text" data-key="tr-test-1" data-stage-required aria-label="Troubleshooting row 1 - Test"></td><td><input class="persist-text" data-key="tr-result-1" data-stage-required aria-label="Troubleshooting row 1 - Result"></td><td><input class="persist-text" data-key="tr-action-1" data-stage-required aria-label="Troubleshooting row 1 - Next action"></td></tr>
-                            <tr><td><input class="persist-text" data-key="tr-obs-2" data-stage-required aria-label="Troubleshooting row 2 - Observation"></td><td><input class="persist-text" data-key="tr-cause-2" data-stage-required aria-label="Troubleshooting row 2 - Likely cause"></td><td><input class="persist-text" data-key="tr-test-2" data-stage-required aria-label="Troubleshooting row 2 - Test"></td><td><input class="persist-text" data-key="tr-result-2" data-stage-required aria-label="Troubleshooting row 2 - Result"></td><td><input class="persist-text" data-key="tr-action-2" data-stage-required aria-label="Troubleshooting row 2 - Next action"></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="grid-layout two mt-block">
-                    <div class="mini-card"><h3>Publishing works but no dashboard value appears</h3><ul><li>Topic must be exactly <code>v1/devices/me/telemetry</code>, with no leading slash.</li><li>Payload must be valid JSON.</li><li>Telemetry key spelling must match the widget.</li><li>Entity alias must point to the Lab 8 device.</li><li>The access token must belong to that same device.</li></ul></div>
-                    <div class="mini-card"><h3>Connection fails</h3><ul><li>Broker is <code>mqtt.thingsboard.cloud</code> and port is correct.</li><li>Device token is the username and password is blank.</li><li>Client ID is unique.</li><li>Campus firewall is not blocking MQTT.</li><li>A non-TLS client is not attempting TLS; port 8883 requires explicit TLS and certificate support.</li></ul></div>
-                    <div class="mini-card"><h3>Subscribe succeeds but no message arrives</h3><ul><li><code>subscribeSuccess</code> only means the broker accepted the subscription.</li><li>The shared attribute must change after subscribing.</li><li>Live topic is <code>v1/devices/me/attributes</code>.</li><li>The dashboard control must set a shared attribute, not telemetry, RPC, or a server attribute.</li></ul></div>
-                    <div class="mini-card"><h3>Dashboard control moves but LabVIEW receives nothing</h3><p>Confirm the action is <strong>Set shared attribute</strong> for <code>moisture_threshold</code>, not <strong>Execute RPC</strong>, <strong>Add time series</strong>, or <strong>Set server attribute</strong>. Verify the change in the device's Shared Attributes tab.</p></div>
-                    <div class="mini-card"><h3>LabVIEW stops receiving after reconnect</h3><ul><li>Reconnect to MQTT.</li><li>Resubscribe after every connection.</li><li>Request the current shared attribute again.</li><li>Do not reuse an invalid connection reference.</li></ul></div>
-                    <div class="mini-card"><h3>Malformed JSON</h3><p>Display a readable parse or validation error without stopping the complete VI. Keep the last valid threshold, or the documented safe default if no valid value has been received.</p></div>
-                </div>
-                <div class="success-card mt-block"><h3>Forced shared-attribute receive-path test</h3><p>Subscribe to <code>v1/devices/me/attributes/response/+</code>, then publish <code>{"sharedKeys":"moisture_threshold"}</code> to <code>v1/devices/me/attributes/request/1</code>. If a response arrives, the LabVIEW receive path works; inspect the dashboard/shared-attribute configuration next.</p></div>
-                <details><summary>Sensor, hardware, and calibration checks</summary><div><ul><li>Keep the top circuitry dry and use a consistent sensor depth.</li><li>Verify VCC, GND, SIG to A0, USB, serial port, LINX firmware, and NI-VISA.</li><li>Check V_dry and V_wet are measured, different, correctly assigned, and used by the native arithmetic.</li><li>Confirm moisture_percent is clamped and the numeric threshold is in a valid 0&ndash;100 range.</li></ul></div></details>
-            </article>
-        </section>
-
-        <section class="stage-panel stage-13" id="reflect" tabindex="-1">
+        <section class="stage-panel stage-12" id="reflect" tabindex="-1">
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Reflect</p>
-                <h2>Deliverables and cleanup</h2>
+                <h2>Learning Outcomes Achieved</h2>
+                <ul>
+                    <li>Measure dry and wet reference voltages and implement a bounded native-LabVIEW moisture calibration.</li>
+                    <li>Calculate a local low-moisture decision from a validated cloud-configured threshold.</li>
+                    <li>Publish labelled telemetry and receive, validate, and resynchronize a persistent ThingsBoard shared attribute through MQTT.</li>
+                    <li>Build a dashboard that distinguishes measured moisture, configured threshold, locally calculated alarm, and aggregate analytics.</li>
+                    <li>Verify that sensing and alarm logic remain safe during cloud loss, reconnection, and final hardware cleanup.</li>
+                </ul>
+                <h2 class="mt-block">Deliverables and cleanup</h2>
                 <div class="grid-layout two">
                     <div class="mini-card"><h3>Submit</h3><ol><li>Sensor circuit evidence and measured V_dry/V_wet.</li><li>Native LabVIEW calibration and local-alarm explanation.</li><li>HMI screenshot with raw_voltage, moisture_percent, moisture_threshold, front-panel Low Moisture LED indicator, and chart.</li><li>ThingsBoard Latest Telemetry evidence for all three telemetry keys.</li><li>Shared moisture_threshold evidence and startup synchronization test.</li><li>Completed dashboard with measured moisture, configured threshold, and locally calculated alarm visibly distinguished.</li><li>Internet-loss and reconnect results.</li><li>Minimum, maximum, and average widgets.</li><li>System block diagram, sensor comparison, application, suggestions, and cleanup confirmation.</li></ol></div>
                     <div class="danger-card"><h3>Final cleanup warning</h3><ol><li>Stop the VI with its Stop control, not Abort.</li><li>Disconnect MQTT and close MQTT, LINX/NI-VISA, queue, event, and other references.</li><li>Keep the most recently valid threshold or documented safe default active during disconnect.</li><li>Turn off power, disconnect Arduino USB, remove the sensor, and let it dry.</li><li>Remove real credentials from local examples and clear saved front-panel token defaults before distributing a VI.</li></ol></div>
@@ -681,27 +669,51 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
     <script>
         (() => {
             const STORAGE_PREFIX = 'smrttech-lab8-soil-moisture';
-            const STAGE_COUNT = 14;
-            const STAGE_NAMES = ['Prepare', 'Predict', 'ThingsBoard', 'MQTT', 'Circuit', 'Calibrate', 'Percent', 'Publish', 'Threshold', 'Dashboard', 'Reliability', 'Analytics', 'Troubleshoot', 'Reflect'];
+            const STAGE_COUNT = 13;
+            const STAGE_NAMES = ['Prepare', 'Predict', 'ThingsBoard', 'MQTT', 'Circuit', 'Calibrate', 'Percent', 'Publish', 'Threshold', 'Dashboard', 'Reliability', 'Analytics', 'Reflect'];
             const ORDER_KEYS = ['chain-sensor','chain-a0','chain-calibration','chain-percent','chain-publish','chain-variable','chain-dashboard'];
-            const LEGACY_DATA_KEYS = {
-                'ubidots-vars': 'thingsboard-device-name',
-                'ubidots-color': 'thingsboard-tenant-check',
-                'str2double-why': 'attribute-parse-validation',
-                'dashboard-tank': 'dashboard-gauge'
-            };
+            const RETIRED_INCOMPATIBLE_DATA_KEYS = ['ubidots-vars', 'ubidots-color', 'str2double-why', 'dashboard-tank'];
+            const LEGACY_DATA_MIGRATION_MARKER = `${STORAGE_PREFIX}:legacy-data-v2`;
+            const STAGE_MODEL_MIGRATION_MARKER = `${STORAGE_PREFIX}:stage-model-v3`;
             document.body.classList.add('js-enabled');
 
             function storageKey(key) { return `${STORAGE_PREFIX}:${key}`; }
 
-            Object.entries(LEGACY_DATA_KEYS).forEach(([legacyKey, currentKey]) => {
-                const oldStorageKey = storageKey(legacyKey);
-                const newStorageKey = storageKey(currentKey);
-                if (localStorage.getItem(newStorageKey) === null && localStorage.getItem(oldStorageKey) !== null) {
-                    localStorage.setItem(newStorageKey, localStorage.getItem(oldStorageKey));
+            function discardIncompatibleLegacyValues() {
+                if (localStorage.getItem(LEGACY_DATA_MIGRATION_MARKER) === 'true') return;
+                RETIRED_INCOMPATIBLE_DATA_KEYS.forEach(key => localStorage.removeItem(storageKey(key)));
+                localStorage.setItem(LEGACY_DATA_MIGRATION_MARKER, 'true');
+            }
+
+            function migrateRemovedTroubleshootStage() {
+                if (localStorage.getItem(STAGE_MODEL_MIGRATION_MARKER) === 'true') return;
+
+                const currentStageKey = storageKey('current-stage');
+                const oldCurrentStage = Number(localStorage.getItem(currentStageKey));
+                if (oldCurrentStage === 12 || oldCurrentStage === 13) {
+                    localStorage.setItem(currentStageKey, '12');
                 }
-                localStorage.removeItem(oldStorageKey);
-            });
+
+                const oldReflectCompletionKey = storageKey('stage-13-complete');
+                const newReflectCompletionKey = storageKey('stage-12-complete');
+                const oldReflectWasComplete = localStorage.getItem(oldReflectCompletionKey) === 'true';
+                localStorage.removeItem(newReflectCompletionKey);
+                localStorage.removeItem(oldReflectCompletionKey);
+                if (oldReflectWasComplete) localStorage.setItem(newReflectCompletionKey, 'true');
+
+                const oldTroubleshootConfirmationKey = 'smrttech:stage-confirmed:v1:lab-08:12';
+                const oldReflectConfirmationKey = 'smrttech:stage-confirmed:v1:lab-08:13';
+                const newReflectConfirmationKey = 'smrttech:stage-confirmed:v1:lab-08:12';
+                const oldReflectWasConfirmed = localStorage.getItem(oldReflectConfirmationKey) === 'true';
+                localStorage.removeItem(oldTroubleshootConfirmationKey);
+                localStorage.removeItem(oldReflectConfirmationKey);
+                if (oldReflectWasConfirmed) localStorage.setItem(newReflectConfirmationKey, 'true');
+
+                localStorage.setItem(STAGE_MODEL_MIGRATION_MARKER, 'true');
+            }
+
+            discardIncompatibleLegacyValues();
+            migrateRemovedTroubleshootStage();
 
             function setStage(stage) {
                 const safeStage = Math.max(0, Math.min(STAGE_COUNT - 1, Number(stage) || 0));
