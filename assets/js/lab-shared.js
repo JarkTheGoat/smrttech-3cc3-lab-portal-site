@@ -155,7 +155,7 @@
                     input,
                     output,
                     'success',
-                    `Saved evidence selection: ${saved}. The filename is stored locally; reselect the file to replace it.`
+                    `Saved evidence selection: ${saved}. Reselect this file before downloading the submission ZIP so it can be included.`
                 );
             } else if (saved) {
                 localStorage.removeItem(fileKey);
@@ -185,7 +185,7 @@
                     output,
                     fileName ? 'success' : '',
                     fileName
-                        ? `Selected: ${fileName}. This filename will be recorded locally with the completion file.`
+                        ? `Selected: ${fileName}. It will be included in the submission ZIP while this page remains open.`
                         : 'No file selected.'
                 );
             });

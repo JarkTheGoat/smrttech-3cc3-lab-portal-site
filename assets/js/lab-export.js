@@ -366,14 +366,16 @@
                 required_group: input.dataset.stageRequiredGroup || null,
                 validation: {
                     status: required ? (valid ? 'pass' : 'fail') : accepted ? 'pass' : 'not_checked',
-                    rule: required ? 'An accepted required evidence filename must be recorded.' : 'Optional evidence.',
+                    rule: required ? 'An accepted required evidence file must be selected.' : 'Optional evidence.',
                     message: required
                         ? (valid ? 'Required evidence was selected in the browser.' : 'Required evidence is missing or has an unsupported file type.')
                         : (accepted ? 'Optional evidence was selected in the browser.' : filename ? 'Optional evidence has an unsupported file type.' : 'No optional evidence was selected.')
                 },
-                included_in_export: false,
+                included_in_export: Boolean(file),
                 message: filename
-                    ? 'The selected filename is recorded locally. File contents are not uploaded or embedded in this JSON.'
+                    ? (file
+                        ? 'The selected file will be included in the submission ZIP.'
+                        : 'The filename is saved locally. Reselect the file before downloading the submission ZIP so its contents can be included.')
                     : 'No file was selected in the browser.'
             };
         });
@@ -676,10 +678,10 @@
         card.dataset.completionExportCard = 'true';
         card.setAttribute('aria-labelledby', 'completion-file-title');
         card.append(createElement('p', 'completion-export-eyebrow', 'Final submission'));
-        const heading = createElement('h2', 'completion-export-title', 'Lab Completion File');
+        const heading = createElement('h2', 'completion-export-title', 'Lab Submission Package');
         heading.id = 'completion-file-title';
         card.append(heading);
-        card.append(createElement('p', 'completion-export-copy', 'After the required checkpoints are complete, download this completion JSON and submit it as instructed by your instructor. Evidence choosers on the page store filenames only; they do not upload or embed the selected files. Submit the actual VI, report, code, and evidence artifacts through the Avenue to Learn location or other instructor-approved channel specified for your lab section.'));
+        card.append(createElement('p', 'completion-export-copy', 'After the required checkpoints are complete, download one submission ZIP containing completion.json and every selected evidence file. This static page cannot retain files after it is reopened, so reselect any previously chosen screenshot or VI file before downloading the ZIP. Submit the resulting ZIP through Avenue to Learn or another instructor-approved course location.'));
 
         const details = createElement('div', 'completion-details');
         details.append(createElement('h3', 'completion-details-title', 'Submission Details'));
@@ -733,7 +735,7 @@
         card.append(remaining);
 
         const actions = createElement('div', 'completion-export-actions');
-        const download = createElement('button', 'nav-button primary completion-export-button', 'Download Completion File');
+        const download = createElement('button', 'nav-button primary completion-export-button', 'Download Submission ZIP');
         download.type = 'button';
         download.dataset.labExport = 'final';
         actions.append(download);
@@ -757,11 +759,11 @@
             button.disabled = !status.ready;
             button.setAttribute('aria-disabled', String(!status.ready));
             button.textContent = status.ready
-                ? 'Download Completion File'
-                : 'Completion file locked';
+                ? 'Download Submission ZIP'
+                : 'Submission ZIP locked';
             button.title = status.ready
-                ? 'Download the instructor grading file.'
-                : 'Complete the required checkpoints and submission details to unlock the completion file.';
+                ? 'Download a ZIP containing completion.json and the selected evidence files.'
+                : 'Complete the required checkpoints and submission details to unlock the submission ZIP.';
         });
     }
 
@@ -773,7 +775,7 @@
         remaining.innerHTML = '';
         if (!status.labComplete) {
             const count = status.missing.length;
-            statusMessage.textContent = `Completion file locked. Complete ${count} required checkpoint${count === 1 ? '' : 's'} to unlock it.`;
+            statusMessage.textContent = `Submission ZIP locked. Complete ${count} required checkpoint${count === 1 ? '' : 's'} to unlock it.`;
             statusMessage.className = 'completion-export-status is-locked';
             status.missing.forEach(checkpoint => remaining.appendChild(createElement('li', '', checkpoint.title)));
             remaining.hidden = false;
@@ -781,7 +783,7 @@
         }
 
         if (!status.studentComplete) {
-            statusMessage.textContent = 'Lab checks are complete. Enter your submission details to unlock the completion file.';
+            statusMessage.textContent = 'Lab checks are complete. Enter your submission details to unlock the submission ZIP.';
             statusMessage.className = 'completion-export-status is-details-needed';
             status.missingDetails.forEach(field => {
                 remaining.appendChild(createElement('li', '', `${field.label} is required.`));
@@ -790,7 +792,7 @@
             return;
         }
 
-        statusMessage.textContent = 'Lab complete. Download your completion file now.';
+        statusMessage.textContent = 'Lab complete. Download your submission ZIP now.';
         statusMessage.className = 'completion-export-status is-ready';
         remaining.hidden = true;
     }
@@ -896,6 +898,12 @@
                 client_side_export: true,
                 tamper_proof: false,
                 message: 'This file was generated in the browser from recorded lab inputs. It is intended for instructor review or autograding, but it is not cryptographically tamper-proof.'
+            },
+            submission_package: {
+                format: 'ZIP',
+                completion_record: 'completion.json',
+                evidence_folder: 'evidence/',
+                note: 'The ZIP includes files currently selected in this browser. Files must be reselected after reopening the page.'
             }
         };
         const hash = await sha256(JSON.stringify(data));
@@ -905,6 +913,111 @@
             data.export_hash_scope = 'JSON content excluding the export_hash fields.';
         }
         return data;
+    }
+
+    function archiveFilenamePart(value) {
+        return String(value || 'file')
+            .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '_')
+            .replace(/\s+/g, '_')
+            .replace(/^\.+/, '')
+            .slice(0, 160) || 'file';
+    }
+
+    function currentEvidenceInputs() {
+        return [...document.querySelectorAll('input[type="file"][data-key]')];
+    }
+
+    function unavailableSavedEvidence(inputs) {
+        return inputs.filter(input => {
+            const saved = localStorage.getItem(evidenceFileStorageKey(input)) || '';
+            return Boolean(saved) && !input.files?.[0];
+        });
+    }
+
+    function crc32(bytes) {
+        let crc = 0xFFFFFFFF;
+        for (let index = 0; index < bytes.length; index += 1) {
+            crc ^= bytes[index];
+            for (let bit = 0; bit < 8; bit += 1) {
+                crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
+            }
+        }
+        return (crc ^ 0xFFFFFFFF) >>> 0;
+    }
+
+    function zipBlob(entries) {
+        const encoder = new TextEncoder();
+        const normalized = entries.map(entry => {
+            const nameBytes = encoder.encode(entry.name);
+            const data = entry.data instanceof Uint8Array ? entry.data : new Uint8Array(entry.data);
+            return { ...entry, nameBytes, data, crc: crc32(data) };
+        });
+        const localSize = normalized.reduce((total, entry) => total + 30 + entry.nameBytes.length + entry.data.length, 0);
+        const centralSize = normalized.reduce((total, entry) => total + 46 + entry.nameBytes.length, 0);
+        const output = new Uint8Array(localSize + centralSize + 22);
+        const view = new DataView(output.buffer);
+        let offset = 0;
+        const write16 = value => { view.setUint16(offset, value, true); offset += 2; };
+        const write32 = value => { view.setUint32(offset, value >>> 0, true); offset += 4; };
+
+        normalized.forEach(entry => {
+            entry.localOffset = offset;
+            write32(0x04034B50);
+            write16(20); write16(0x0800); write16(0); write16(0); write16(0);
+            write32(entry.crc); write32(entry.data.length); write32(entry.data.length);
+            write16(entry.nameBytes.length); write16(0);
+            output.set(entry.nameBytes, offset); offset += entry.nameBytes.length;
+            output.set(entry.data, offset); offset += entry.data.length;
+        });
+
+        const centralOffset = offset;
+        normalized.forEach(entry => {
+            write32(0x02014B50);
+            write16(20); write16(20); write16(0x0800); write16(0); write16(0); write16(0);
+            write32(entry.crc); write32(entry.data.length); write32(entry.data.length);
+            write16(entry.nameBytes.length); write16(0); write16(0); write16(0); write16(0); write32(0);
+            write32(entry.localOffset);
+            output.set(entry.nameBytes, offset); offset += entry.nameBytes.length;
+        });
+        write32(0x06054B50);
+        write16(0); write16(0); write16(normalized.length); write16(normalized.length);
+        write32(offset - centralOffset); write32(centralOffset); write16(0);
+        return new Blob([output], { type: 'application/zip' });
+    }
+
+    async function buildSubmissionZip(data) {
+        const inputs = currentEvidenceInputs();
+        const unavailable = unavailableSavedEvidence(inputs);
+        if (unavailable.length) {
+            return { unavailable };
+        }
+        const files = inputs
+            .map(input => ({ input, file: input.files?.[0] }))
+            .filter(item => item.file && evidenceFileIsAccepted(item.input, item.file));
+        const usedNames = new Set(['completion.json']);
+        const entries = [{ name: 'completion.json', data: new TextEncoder().encode(JSON.stringify(data, null, 2)) }];
+        for (const { input, file } of files) {
+            const baseName = `evidence/${archiveFilenamePart(input.dataset.key)}-${archiveFilenamePart(file.name)}`;
+            let archiveName = baseName;
+            let suffix = 2;
+            while (usedNames.has(archiveName.toLowerCase())) {
+                archiveName = `${baseName}-${suffix}`;
+                suffix += 1;
+            }
+            usedNames.add(archiveName.toLowerCase());
+            entries.push({ name: archiveName, data: new Uint8Array(await file.arrayBuffer()) });
+        }
+        return { blob: zipBlob(entries), fileCount: files.length };
+    }
+
+    function triggerDownload(blob, filename) {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(link.href), 0);
     }
 
     async function download() {
@@ -919,17 +1032,18 @@
         }
 
         const data = await buildExportData(status);
+        const submission = await buildSubmissionZip(data);
+        if (submission.unavailable?.length) {
+            const names = submission.unavailable.map(input => localStorage.getItem(evidenceFileStorageKey(input))).filter(Boolean);
+            const message = document.querySelector('[data-completion-export-status]');
+            if (message) message.textContent = `Reselect these saved evidence files before downloading the ZIP: ${names.join(', ')}.`;
+            document.querySelector('[data-completion-export-card]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return false;
+        }
         const student = readStudentDetails();
         const identifier = safeFilenamePart(student.name_or_team || student.group_number || 'unidentified');
-        const filename = `3CC3_Lab${String(labNumber()).padStart(2, '0')}_Completion_${identifier}_${localTimestamp()}.json`;
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.setTimeout(() => URL.revokeObjectURL(link.href), 0);
+        const filename = `3CC3_Lab${String(labNumber()).padStart(2, '0')}_Submission_${identifier}_${localTimestamp()}.zip`;
+        triggerDownload(submission.blob, filename);
         return true;
     }
 
