@@ -261,7 +261,6 @@
                 </div>
                 <div class="chip-row compact" aria-label="Lab utility actions">
                     <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
-                    <button class="utility-button" type="button" data-print>Print lab</button>
                     <button class="utility-button" type="button" data-reset>Reset Lab 5 data</button>
                 </div>
                 <div class="briefing-card mt-block">
@@ -302,7 +301,7 @@
                     <div class="learning-outcome-card"><strong>Scaling</strong><span>Scale voltage to angle, then angle to servo pulse width.</span></div>
                     <div class="learning-outcome-card"><strong>LINX servo control</strong><span>Use Servo Open, Servo Write, Servo Close, and LINX Close.</span></div>
                     <div class="learning-outcome-card"><strong>HMI modes</strong><span>Build Manual and Automatic LabVIEW front panels.</span></div>
-                    <div class="learning-outcome-card"><strong>Automatic logic</strong><span>Use Case Structures, MathScript Nodes, SubVIs, local variables, and previous-state values.</span></div>
+                    <div class="learning-outcome-card"><strong>Automatic logic</strong><span>Use Case Structures, Formula Nodes, SubVIs, local variables, and previous-state values.</span></div>
                     <div class="learning-outcome-card"><strong>Troubleshooting</strong><span>Diagnose wiring, scaling, servo-range, and LabVIEW logic faults.</span></div>
                 </div>
             </article>
@@ -458,9 +457,9 @@
                     <div class="mini-card"><h3>Controls</h3><p>Add <code>Speed</code>, <code>NumberOfWaves</code>, <code>GO</code>, and keep the Voltage indicator.</p></div>
                 </div>
                 <div class="briefing-card mt-block">
-                    <h3>Manual MathScript Node</h3>
+                <h3>Manual Formula Node</h3>
                     <figure class="diagram-card">
-                        <img src="../../assets/lab5-pdf-manual-case.png" alt="Source PDF Manual case showing a MathScript Node calculating Angle equals V divided by 5 times 180.">
+                        <img src="../../assets/lab5-pdf-manual-case.png" alt="Reference block diagram for the manual voltage-to-angle calculation.">
                         <figcaption>Source PDF Manual case: voltage from Analog Read becomes a commanded angle.</figcaption>
                     </figure>
                     <pre><code>Angle = V / 5 * 180;</code></pre>
@@ -485,9 +484,9 @@
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 5</p>
                 <h2>Convert angle into servo pulse width</h2>
-                <p>Add the second MathScript Node below the Case Structure so both Manual and Automatic angle commands pass through the same pulse-width mapping.</p>
+                <p>Add a Formula Node below the Case Structure so both Manual and Automatic angle commands pass through the same pulse-width mapping. Review the <a class="concept-link" href="https://www.ni.com/docs/en-US/bundle/labview/page/formula-node-syntax.html" target="_blank" rel="noopener">NI Formula Node syntax reference</a> as needed.</p>
                 <figure class="diagram-card">
-                    <img src="../../assets/lab5-pdf-pulse-width-node.png" alt="Source PDF block diagram showing the pulse-width MathScript Node below the Case Structure.">
+                    <img src="../../assets/lab5-pdf-pulse-width-node.png" alt="Reference block diagram for the shared angle-to-pulse-width calculation below the Case Structure.">
                     <figcaption>Source PDF pulse-width calculation: the angle output maps to a microsecond pulse command for Set Pulse Width.</figcaption>
                 </figure>
                 <pre><code>URV = 2400;
@@ -537,7 +536,7 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 6</p>
                 <h2>Create a reusable automatic-wave SubVI</h2>
-                <p>Create a new Blank VI for automatic waving. Add front-panel controls and indicators, then add the MathScript Node shown below.</p>
+                <p>Create a new Blank VI for automatic waving. Add front-panel controls and indicators, then create a Formula Node using the <a class="concept-link" href="https://www.ni.com/docs/en-US/bundle/labview/page/formula-node-syntax.html" target="_blank" rel="noopener">current NI documentation</a>. Build and explain your own logic rather than copying a finished program.</p>
                 <div class="grid-layout three">
                     <figure class="diagram-card">
                         <img src="../../assets/lab5-pdf-subvi-front-panel.png" alt="Source PDF SubVI front panel with Go, NumberOfWaves, Speed, Waving, Direction, Wave Count, and Angle.">
@@ -548,8 +547,8 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
                         <figcaption>Source PDF icon example: edit the SubVI icon so it is recognizable when placed in the main VI.</figcaption>
                     </figure>
                     <figure class="diagram-card">
-                        <img src="../../assets/lab5-pdf-subvi-block-diagram.png" alt="Source PDF SubVI block diagram showing the MathScript Node, local variables, wait function, and connector wiring.">
-                        <figcaption>Source PDF SubVI block diagram: local variables read previous state values and the MathScript Node updates the waving command.</figcaption>
+                        <img src="../../assets/lab5-pdf-subvi-block-diagram.png" alt="Reference layout for an automatic-wave SubVI with local variables, a wait function, and connector wiring.">
+                        <figcaption>Reference layout only: develop, test, and explain your own Formula Node logic and local-variable state handling.</figcaption>
                     </figure>
                 </div>
                 <div class="grid-layout three">
@@ -557,28 +556,7 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
                     <div class="mini-card"><h3>Indicators</h3><p><code>Waving</code>, <code>Direction</code>, <code>Wave Count</code>, and <code>Angle</code>.</p></div>
                     <div class="mini-card"><h3>State inputs</h3><p>Local variables changed to Read provide AngleLast, DirectionLast, WaveCountLast, and WavingLast.</p></div>
                 </div>
-                <pre><code>Angle = AngleLast;
-Waving = WavingLast;
-Direction = DirectionLast;
-WaveCount = WaveCountLast;
-if Go == true
-    Waving = true
-    WaveCount = NumberOfWaves
-end
-if Waving == true
-    if Direction == false
-        Angle = Angle + Speed
-    else
-        Angle = Angle - Speed
-    end
-    if Angle >= 180 | Angle <= 0
-        Direction = Not(Direction)
-        WaveCount = WaveCount - 1
-    end
-    if WaveCount == 0
-        Waving = false
-    end
-end</code></pre>
+                <div class="briefing-card mt-block"><strong>Logic requirements:</strong> initialize state from the previous values; use <code>GO</code> to begin a wave sequence; advance or reverse the angle according to direction; reverse at the safe limits; decrement the wave count at each completed pass; and stop when the requested count reaches zero. Document your own implementation.</div>
                 <div class="logic-flow mt-block" aria-label="Automatic waving state diagram"><span>Idle</span><b>-&gt;</b><span>GO pressed</span><b>-&gt;</b><span>Waving forward</span><b>-&gt;</b><span>Boundary reached</span><b>-&gt;</b><span>Waving backward</span><b>-&gt;</b><span>Count decreases</span><b>-&gt;</b><span>Idle</span></div>
                 <div class="grid-layout two mt-block">
                     <div class="mini-card"><h3>Connector pane</h3><p>Set a pattern with three inputs and one output. Top input to GO, middle to NumberOfWaves, bottom to Speed, output to Angle.</p></div>
@@ -609,8 +587,9 @@ end</code></pre>
                 </div>
                 <p class="briefing-card mt-block">Manual mode and Automatic mode produce the same kind of output: an angle command. The shared pulse-width conversion turns either angle source into a servo command.</p>
                 <details><summary>Think it through</summary><div><ul><li>Why should both cases output an angle?</li><li>Why should pulse-width scaling remain outside the Case Structure?</li><li>What would happen if Automatic output pulse width instead of angle?</li><li>What does GO trigger?</li><li>What does Speed change?</li><li>What does NumberOfWaves change?</li><li>How will you test that the number of waves is correct?</li><li>How can you safely stop automatic motion?</li></ul></div></details>
+                <p class="mt-block">For each <strong>Setting</strong> cell, enter the values you actually used (for example mode, speed, or number of waves), then record your observation and decision for that same test.</p>
                 <div class="table-wrap mt-block">
-                    <table>
+                    <table style="table-layout:fixed;width:100%">
                         <thead><tr><th>Test</th><th>Setting</th><th>Expected observation</th><th>Actual observation</th><th>Decision</th></tr></thead>
                         <tbody>
                             <tr><td>Manual mode</td><td><input class="persist-text" data-key="auto-manual-setting" aria-label="Manual mode test setting"></td><td>Potentiometer changes command angle</td><td><input class="persist-text" data-key="auto-manual-actual" aria-label="Manual mode actual observation"></td><td><input class="persist-text" data-key="auto-manual-decision" aria-label="Manual mode test decision"></td></tr>
@@ -629,8 +608,8 @@ end</code></pre>
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Reflect</p>
                 <h2>Deliverables and assessment</h2>
                 <div class="grid-layout two">
-                    <div class="mini-card"><h3>Submit</h3><ol><li>Completed servo and potentiometer circuit.</li><li>Manual-control front panel and block diagram evidence.</li><li>Evidence that A0 is read and Digital Pin 7 commands the servo.</li><li>Voltage-to-angle and angle-to-pulse-width calculations.</li><li>MathScript Node explanations.</li><li>Completed automatic-wave SubVI with front panel, block diagram, icon, and connector pane.</li><li>Final main VI with SubVI in Automatic case.</li><li>Manual and automatic mode test evidence.</li><li>Explanation of each if statement, <code>==</code>, <code>|</code>, and local variables.</li><li>Three applications of servomotors.</li><li>Student names and numbers as required.</li><li>Report formatted according to 3CC3 Lab Policies and Report Writing.pdf.</li></ol></div>
-                    <div class="mini-card"><h3>Suggested weighting</h3><table><tbody><tr><td>Circuit construction and safety evidence</td><td>10%</td></tr><tr><td>Manual-control VI and HMI</td><td>15%</td></tr><tr><td>Scaling calculations</td><td>15%</td></tr><tr><td>Manual servo test evidence</td><td>10%</td></tr><tr><td>Automatic-wave SubVI</td><td>20%</td></tr><tr><td>Final automatic integration</td><td>15%</td></tr><tr><td>Code explanation and report responses</td><td>10%</td></tr><tr><td>Troubleshooting and reflection</td><td>5%</td></tr></tbody></table></div>
+                    <div class="mini-card"><h3>Submit</h3><ol><li>Completed servo and potentiometer circuit.</li><li>Manual-control front panel and block diagram evidence.</li><li>Evidence that A0 is read and Digital Pin 7 commands the servo.</li><li>Voltage-to-angle and angle-to-pulse-width calculations.</li><li>Formula Node explanations.</li><li>Completed automatic-wave SubVI with front panel, block diagram, icon, and connector pane.</li><li>Final main VI with SubVI in Automatic case.</li><li>Manual and automatic mode test evidence.</li><li>Explanation of each if statement, <code>==</code>, <code>|</code>, and local variables.</li><li>Three applications of servomotors.</li><li>Student names and numbers as required.</li><li>Report formatted according to 3CC3 Lab Policies and Report Writing.pdf.</li></ol></div>
+                    <div class="mini-card"><h3>Suggested weighting</h3><table style="table-layout:fixed;width:100%"><tbody><tr><td>Circuit construction and safety evidence</td><td>10%</td></tr><tr><td>Manual-control VI and HMI</td><td>15%</td></tr><tr><td>Scaling calculations</td><td>15%</td></tr><tr><td>Manual servo test evidence</td><td>10%</td></tr><tr><td>Automatic-wave SubVI</td><td>20%</td></tr><tr><td>Final automatic integration</td><td>15%</td></tr><tr><td>Code explanation and report responses</td><td>10%</td></tr><tr><td>Troubleshooting and reflection</td><td>5%</td></tr></tbody></table></div>
                 </div>
             </article>
 
@@ -655,28 +634,13 @@ end</code></pre>
                 <label class="response-field"><span>7. Why might 600-2400 microseconds not be safe for every servo?</span><textarea class="persist-text" data-key="reflect-7" data-stage-required></textarea></label>
                 <label class="response-field"><span>8. What is the purpose of the Manual/Automatic Case Structure?</span><textarea class="persist-text" data-key="reflect-8" data-stage-required></textarea></label>
                 <label class="response-field"><span>9. Why is the automatic waving logic placed in a SubVI?</span><textarea class="persist-text" data-key="reflect-9" data-stage-required></textarea></label>
-                <label class="response-field"><span>10. What does each if statement in the automatic MathScript code do?</span><textarea class="persist-text" data-key="reflect-10" data-stage-required></textarea></label>
+                <label class="response-field"><span>10. What does each if statement in your automatic Formula Node logic do?</span><textarea class="persist-text" data-key="reflect-10" data-stage-required></textarea></label>
                 <label class="response-field"><span>11. What do == and | mean in the code?</span><textarea class="persist-text" data-key="reflect-11" data-stage-required></textarea></label>
                 <label class="response-field"><span>12. Why are local variables used in the automatic SubVI?</span><textarea class="persist-text" data-key="reflect-12" data-stage-required></textarea></label>
                 <label class="response-field"><span>13. What could cause servo jitter?</span><textarea class="persist-text" data-key="reflect-13" data-stage-required></textarea></label>
                 <label class="response-field"><span>14. What could cause the servo to move in the opposite direction from the potentiometer?</span><textarea class="persist-text" data-key="reflect-14" data-stage-required></textarea></label>
                 <label class="response-field"><span>15. Does this lab create a complete IoT system? If not, which IoT layer is completed and what still needs to be added?</span><textarea class="persist-text" data-key="reflect-15" data-stage-required></textarea></label>
                 <label class="response-field"><span>16. What did you initially believe about servo control that this lab changed or clarified?</span><textarea class="persist-text" data-key="reflect-16" data-stage-required></textarea></label>
-            </article>
-
-            <article class="section-card card border-success">
-                <h2>Optional extensions</h2>
-                <div class="grid-layout three">
-                    <div class="mini-card optional-card">Add a safe pulse-width limiter.</div>
-                    <div class="mini-card optional-card">Add user-adjustable LRV and URV fields.</div>
-                    <div class="mini-card optional-card">Add a reset-to-center button.</div>
-                    <div class="mini-card optional-card">Add an emergency stop that commands 90 degrees.</div>
-                    <div class="mini-card optional-card">Add a live angle-versus-time chart.</div>
-                    <div class="mini-card optional-card">Add a moving average filter or software deadband to reduce jitter.</div>
-                    <div class="mini-card optional-card">Add a second automatic pattern besides waving.</div>
-                    <div class="mini-card optional-card">Add a simulated cloud-command placeholder.</div>
-                    <div class="mini-card optional-card">Explain how this node could later receive cloud dashboard commands.</div>
-                </div>
             </article>
 
             <article class="section-card card border-maroon">
@@ -711,7 +675,7 @@ end</code></pre>
                     <details><summary>Case Structure</summary><div>LabVIEW structure that selects code based on Choice.</div></details>
                     <details><summary>Manual mode</summary><div>Mode where potentiometer voltage generates the angle command.</div></details>
                     <details><summary>Automatic mode</summary><div>Mode where the SubVI generates the angle command over time.</div></details>
-                    <details><summary>MathScript Node</summary><div>LabVIEW node for script-style calculations.</div></details>
+                    <details><summary>Formula Node</summary><div>LabVIEW node for compact formula-based calculations. Consult the current NI documentation for supported syntax.</div></details>
                     <details><summary>Local variable</summary><div>A LabVIEW object used here to read previous state values.</div></details>
                     <details><summary>GO button</summary><div>Button that starts automatic waving.</div></details>
                     <details><summary>Speed</summary><div>User control for how quickly the angle changes.</div></details>
@@ -720,7 +684,7 @@ end</code></pre>
                     <details><summary>Waving</summary><div>Boolean state indicating automatic motion is active.</div></details>
                     <details><summary>Wave Count</summary><div>Remaining automatic wave count.</div></details>
                     <details><summary>== operator</summary><div>Equality comparison.</div></details>
-                    <details><summary>| operator</summary><div>Logical OR in the MathScript condition.</div></details>
+                    <details><summary>| operator</summary><div>Logical OR in the Formula Node condition.</div></details>
                     <details><summary>LRV</summary><div>Lower reference value for pulse-width mapping.</div></details>
                     <details><summary>URV</summary><div>Upper reference value for pulse-width mapping.</div></details>
                     <details><summary>Saturation</summary><div>A limit condition where a command or actuator cannot increase further.</div></details>
@@ -949,7 +913,6 @@ end</code></pre>
             document.querySelectorAll('[data-stage]').forEach(button => button.addEventListener('click', () => setStage(button.dataset.stage)));
             document.querySelector('[data-check-order]')?.addEventListener('click', checkOrder);
             // Completion-file export is provided by assets/js/lab-export.js.
-            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
             document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
             setStage(localStorage.getItem(storageKey('current-stage')) || 0);
         })();

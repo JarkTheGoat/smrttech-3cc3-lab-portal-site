@@ -251,7 +251,6 @@
                 <div class="warning-card mt-block"><strong>Central question:</strong> How does soil moisture become calibrated telemetry, a cloud-configured threshold, and a reliable local alarm?</div>
                 <div class="flex flex-wrap gap-3 mt-block">
                     <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
-                    <button class="utility-button" type="button" data-print>Print lab</button>
                     <button class="utility-button" type="button" data-reset>Reset Lab 8 data</button>
                 </div>
             </div>
@@ -934,7 +933,6 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
             document.querySelectorAll('[data-stage]').forEach(button => button.addEventListener('click', () => setStage(button.dataset.stage)));
             document.querySelector('[data-check-order]')?.addEventListener('click', checkOrder);
             // Completion-file export is provided by assets/js/lab-export.js.
-            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
             document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
             setStage(localStorage.getItem(storageKey('current-stage')) || 0);
         })();

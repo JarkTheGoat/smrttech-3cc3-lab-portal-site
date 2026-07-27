@@ -238,7 +238,6 @@
                 </div>
                 <div class="chip-row compact" aria-label="Lab utility actions">
                     <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
-                    <button class="utility-button" type="button" data-print>Print lab</button>
                     <button class="utility-button" type="button" data-reset>Reset Lab 6 data</button>
                 </div>
                 <div class="briefing-card mt-block">
@@ -351,10 +350,10 @@
                     <table>
                         <thead><tr><th>Arduino pin</th><th>Driver pin</th><th>Checked</th><th>Notes</th></tr></thead>
                         <tbody>
-                            <tr><td>Digital 8</td><td>IN1</td><td><select class="persist-text" data-key="pin-d8" data-stage-required data-stage-required-value="Checked"><option value="">Choose...</option><option>Checked</option><option>Needs correction</option></select></td><td><input class="persist-text" data-key="pin-d8-note"></td></tr>
-                            <tr><td>Digital 9</td><td>IN2</td><td><select class="persist-text" data-key="pin-d9" data-stage-required data-stage-required-value="Checked"><option value="">Choose...</option><option>Checked</option><option>Needs correction</option></select></td><td><input class="persist-text" data-key="pin-d9-note"></td></tr>
-                            <tr><td>Digital 10</td><td>IN3</td><td><select class="persist-text" data-key="pin-d10" data-stage-required data-stage-required-value="Checked"><option value="">Choose...</option><option>Checked</option><option>Needs correction</option></select></td><td><input class="persist-text" data-key="pin-d10-note"></td></tr>
-                            <tr><td>Digital 11</td><td>IN4</td><td><select class="persist-text" data-key="pin-d11" data-stage-required data-stage-required-value="Checked"><option value="">Choose...</option><option>Checked</option><option>Needs correction</option></select></td><td><input class="persist-text" data-key="pin-d11-note"></td></tr>
+                            <tr><td>Digital 8</td><td>IN1</td><td><input class="persist-check" data-key="pin-d8" type="checkbox" aria-label="Digital 8 to IN1 checked"></td><td><input class="persist-text" data-key="pin-d8-note" data-stage-optional aria-label="Optional note for Digital 8 to IN1"></td></tr>
+                            <tr><td>Digital 9</td><td>IN2</td><td><input class="persist-check" data-key="pin-d9" type="checkbox" aria-label="Digital 9 to IN2 checked"></td><td><input class="persist-text" data-key="pin-d9-note" data-stage-optional aria-label="Optional note for Digital 9 to IN2"></td></tr>
+                            <tr><td>Digital 10</td><td>IN3</td><td><input class="persist-check" data-key="pin-d10" type="checkbox" aria-label="Digital 10 to IN3 checked"></td><td><input class="persist-text" data-key="pin-d10-note" data-stage-optional aria-label="Optional note for Digital 10 to IN3"></td></tr>
+                            <tr><td>Digital 11</td><td>IN4</td><td><input class="persist-check" data-key="pin-d11" type="checkbox" aria-label="Digital 11 to IN4 checked"></td><td><input class="persist-text" data-key="pin-d11-note" data-stage-optional aria-label="Optional note for Digital 11 to IN4"></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -409,8 +408,8 @@ void loop() {
                     <div class="mini-card"><h3>Required actions</h3><ol><li>Open Arduino IDE and create a new sketch.</li><li>Paste the provided code.</li><li>Select Tools - Board - Arduino Mega.</li><li>Select the correct Tools - Port.</li><li>Click Verify and resolve compile errors.</li><li>Click Upload to load firmware.</li></ol></div>
                     <div class="mini-card"><h3>Think it through</h3><ul><li>Why does the sketch include <code>Stepper.h</code>?</li><li>What runs once inside <code>setup()</code>?</li><li>What repeats inside <code>loop()</code>?</li><li>Why does the program look for commas?</li><li>Why does direction multiply the step count by 1 or -1?</li></ul></div>
                 </div>
-                <label class="response-field mt-block"><span>Arduino board and COM port used</span><input class="persist-text" data-key="arduino-port"></label>
-                <label class="response-field"><span>Compile/upload evidence</span><textarea class="persist-text" data-key="arduino-evidence" data-stage-required></textarea></label>
+                <label class="response-field mt-block"><span>Arduino board and COM port used</span><input class="persist-text" data-key="arduino-port" data-stage-required placeholder="e.g., Arduino Mega, COM3"></label>
+                <label class="response-field evidence-upload"><span>Compile/upload screenshot</span><input class="persist-file" data-key="arduino-compile-evidence" data-stage-required type="file" accept="image/*"><small class="file-name-preview" data-file-name-for="arduino-compile-evidence">No screenshot selected.</small><small class="text-gray-500">Add a PNG, JPG/JPEG, WebP, GIF, or other image screenshot showing a successful Verify or Upload result. The completion record stores the filename only.</small></label>
             </article>
         </section>
 
@@ -425,9 +424,9 @@ void loop() {
                     <table>
                         <thead><tr><th>Command sent</th><th>Expected motion</th><th>Actual observation</th><th>Motor heat or lock-up?</th></tr></thead>
                         <tbody>
-                            <tr><td><input class="persist-text" data-key="serial-cmd-1" value="10,1.5,1" aria-label="Serial test 1 command sent"></td><td><input class="persist-text" data-key="serial-exp-1" aria-label="Serial test 1 expected motion"></td><td><input class="persist-text" data-key="serial-act-1" data-stage-required aria-label="Serial test 1 actual observation"></td><td><input class="persist-text" data-key="serial-heat-1" aria-label="Serial test 1 motor heat or lock-up observation"></td></tr>
-                            <tr><td><input class="persist-text" data-key="serial-cmd-2" aria-label="Serial test 2 command sent"></td><td><input class="persist-text" data-key="serial-exp-2" aria-label="Serial test 2 expected motion"></td><td><input class="persist-text" data-key="serial-act-2" aria-label="Serial test 2 actual observation"></td><td><input class="persist-text" data-key="serial-heat-2" aria-label="Serial test 2 motor heat or lock-up observation"></td></tr>
-                            <tr><td><input class="persist-text" data-key="serial-cmd-3" aria-label="Serial test 3 command sent"></td><td><input class="persist-text" data-key="serial-exp-3" aria-label="Serial test 3 expected motion"></td><td><input class="persist-text" data-key="serial-act-3" aria-label="Serial test 3 actual observation"></td><td><input class="persist-text" data-key="serial-heat-3" aria-label="Serial test 3 motor heat or lock-up observation"></td></tr>
+                            <tr><td><input class="persist-text" data-key="serial-cmd-1" value="10,1.5,1" data-stage-required aria-label="Serial test 1 command sent"></td><td><input class="persist-text" data-key="serial-exp-1" data-stage-required aria-label="Serial test 1 expected motion"></td><td><input class="persist-text" data-key="serial-act-1" data-stage-required aria-label="Serial test 1 actual observation"></td><td><input class="persist-text" data-key="serial-heat-1" data-stage-required aria-label="Serial test 1 motor heat or lock-up observation"></td></tr>
+                            <tr><td><input class="persist-text" data-key="serial-cmd-2" data-stage-required aria-label="Serial test 2 command sent"></td><td><input class="persist-text" data-key="serial-exp-2" data-stage-required aria-label="Serial test 2 expected motion"></td><td><input class="persist-text" data-key="serial-act-2" data-stage-required aria-label="Serial test 2 actual observation"></td><td><input class="persist-text" data-key="serial-heat-2" data-stage-required aria-label="Serial test 2 motor heat or lock-up observation"></td></tr>
+                            <tr><td><input class="persist-text" data-key="serial-cmd-3" data-stage-required aria-label="Serial test 3 command sent"></td><td><input class="persist-text" data-key="serial-exp-3" data-stage-required aria-label="Serial test 3 expected motion"></td><td><input class="persist-text" data-key="serial-act-3" data-stage-required aria-label="Serial test 3 actual observation"></td><td><input class="persist-text" data-key="serial-heat-3" data-stage-required aria-label="Serial test 3 motor heat or lock-up observation"></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -527,6 +526,7 @@ void loop() {
 
             <article class="section-card card border-gold">
                 <h2>Reflection questions</h2>
+                <label class="response-field evidence-upload"><span>Final LabVIEW VI file</span><input class="persist-file" data-key="final-vi-file" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-vi-file">No .vi file selected.</small><small class="text-gray-500">Select the final LabVIEW VI before finishing. The completion record stores the filename only; submit the actual file through the course submission location.</small></label>
                 <label class="response-field"><span>1. Explain the provided Arduino code in detail.</span><textarea class="persist-text" data-key="reflect-1" data-stage-required></textarea></label>
                 <label class="response-field"><span>2. How did you modify the code or LabVIEW design for the angle-control extension?</span><textarea class="persist-text" data-key="reflect-2" data-stage-required></textarea></label>
                 <label class="response-field"><span>3. What is the maximum speed that your motor can use reliably? What evidence supports that answer?</span><textarea class="persist-text" data-key="reflect-3" data-stage-required></textarea></label>
@@ -777,7 +777,6 @@ void loop() {
             document.querySelectorAll('[data-stage]').forEach(button => button.addEventListener('click', () => setStage(button.dataset.stage)));
             document.querySelector('[data-check-order]')?.addEventListener('click', checkOrder);
             // Completion-file export is provided by assets/js/lab-export.js.
-            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
             document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
             setStage(localStorage.getItem(storageKey('current-stage')) || 0);
         })();

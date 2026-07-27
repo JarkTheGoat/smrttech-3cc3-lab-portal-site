@@ -462,6 +462,7 @@
     function syncCorrectOrderFeedback(panel) {
         const feedbackItems = [...panel.querySelectorAll('[data-order-feedback], [data-monitor-feedback], [data-control-feedback]')];
         panel.querySelectorAll('.order-grid[data-dnd-order]').forEach((grid, index) => {
+            if (grid.hasAttribute('data-manual-check')) return;
             if (!isOrderGridCorrect(grid)) return;
             const localFeedback = grid.parentElement?.querySelectorAll('[data-order-feedback], [data-monitor-feedback], [data-control-feedback]') || [];
             const feedback = localFeedback.length === 1 ? localFeedback[0] : feedbackItems[index];
@@ -658,14 +659,22 @@
             applyStageGate();
         }, true);
 
-        document.addEventListener('input', () => window.requestAnimationFrame(applyStageGate), true);
+        const resyncGate = () => window.requestAnimationFrame(applyStageGate);
+        document.addEventListener('input', resyncGate, true);
         document.addEventListener('change', event => {
             if (event.target.matches?.('.order-select')) {
                 const panel = event.target.closest('.stage-panel');
                 if (panel) resetOrderFeedback(panel);
             }
-            window.requestAnimationFrame(applyStageGate);
+            resyncGate();
         }, true);
+        // Browsers and mobile keyboards do not always emit the same final event.
+        // Re-read the live DOM value on blur, autofill, and history restoration.
+        document.addEventListener('blur', resyncGate, true);
+        document.addEventListener('animationstart', event => {
+            if (event.animationName === 'onAutoFillStart') resyncGate();
+        }, true);
+        window.addEventListener('pageshow', resyncGate);
         document.addEventListener('click', event => {
             if (event.target.closest('button')) {
                 window.requestAnimationFrame(applyStageGate);
@@ -679,6 +688,50 @@
         bodyObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
         window.requestAnimationFrame(applyStageGate);
+    }
+
+    function setupStageNavigationViewport() {
+        const navigationSelector = '.stage-btn, button.nav-button';
+        document.addEventListener('click', event => {
+            if (!event.target.closest(navigationSelector)) return;
+            window.requestAnimationFrame(() => {
+                window.requestAnimationFrame(() => {
+                    const stageClass = [...document.body.classList].find(name => /^stage-\d+$/.test(name));
+                    const panel = stageClass ? document.querySelector(`.stage-panel.${stageClass}`) : null;
+                    if (!panel) return;
+                    panel.tabIndex = -1;
+                    panel.focus({ preventScroll: true });
+                    panel.scrollIntoView({
+                        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                        block: 'start'
+                    });
+                });
+            });
+        });
+    }
+
+    function setupCodeCopyButtons() {
+        document.querySelectorAll('pre').forEach(pre => {
+            if (pre.querySelector('[data-copy-code]')) return;
+            const code = pre.querySelector('code');
+            if (!code) return;
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'utility-button code-copy-button';
+            button.dataset.copyCode = 'true';
+            button.textContent = 'Copy code';
+            button.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(code.textContent || '');
+                    button.textContent = 'Copied';
+                    window.setTimeout(() => { button.textContent = 'Copy code'; }, 1500);
+                } catch {
+                    button.textContent = 'Copy unavailable';
+                    window.setTimeout(() => { button.textContent = 'Copy code'; }, 1500);
+                }
+            });
+            pre.before(button);
+        });
     }
 
     function setupDragOrder() {
@@ -1147,5 +1200,7 @@
         setupDragOrder();
         removeRedundantStageCompleteButtons();
         setupStageGate();
+        setupStageNavigationViewport();
+        setupCodeCopyButtons();
     });
 }());

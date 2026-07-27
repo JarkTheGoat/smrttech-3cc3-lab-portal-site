@@ -260,7 +260,6 @@
                 <div class="warning-card mt-block"><strong>Central question:</strong> How does a local sensor measurement become cloud data, and how does a cloud command control a local actuator?</div>
                 <div class="flex flex-wrap gap-3 mt-block">
                     <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
-                    <button class="utility-button" type="button" data-print>Print lab</button>
                     <button class="utility-button" type="button" data-reset>Reset Lab 7 data</button>
                 </div>
             </div>
@@ -503,7 +502,7 @@
             <article class="section-card card border-success">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Measure</p>
                 <h2>Publish ThingsBoard JSON telemetry</h2>
-                <p>Build one valid JSON object containing the measured distance and actual LED state, then publish it to <code>v1/devices/me/telemetry</code>. Use an existing course JSON utility or native LabVIEW string formatting, arithmetic, comparison, Boolean logic, Case Structures, and shift registers. Do not introduce a MathScript Node.</p>
+                <p>Build one valid JSON object containing the measured distance and actual LED state, then publish it to <code>v1/devices/me/telemetry</code>. Use an existing course JSON utility or native LabVIEW string formatting, arithmetic, comparison, Boolean logic, Case Structures, and shift registers.</p>
                 <pre aria-label="Required Lab 7 telemetry payload"><code>{
   "distance_cm": 42.7,
   "led_state": true
@@ -523,7 +522,7 @@
             <article class="section-card card border-gold">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Measure</p>
                 <h2>Receive <code>led_switch</code> and synchronize at startup</h2>
-                <p>Use <code>led_switch</code> as the desired dashboard state. Subscribe to live shared-attribute changes, request the current value after every connection, parse valid JSON with the course JSON utility or standard LabVIEW JSON functions, and apply the Boolean through local logic. Do not use MathScript.</p>
+                <p>Use <code>led_switch</code> as the desired dashboard state. Subscribe to live shared-attribute changes, request the current value after every connection, parse valid JSON with the course JSON utility or standard LabVIEW JSON functions, and apply the Boolean through local logic.</p>
                 <div class="grid-layout two">
                     <div class="mini-card">
                         <h3>Live update</h3>
@@ -940,7 +939,6 @@
             document.querySelector('[data-check-monitor]')?.addEventListener('click', () => checkSequence(MONITOR_KEYS, '[data-monitor-feedback]', 'Correct distance monitoring path.', 'Not yet. Follow sensor data from the local measurement to the dashboard gauge.'));
             document.querySelector('[data-check-control]')?.addEventListener('click', () => checkSequence(CONTROL_KEYS, '[data-control-feedback]', 'Correct remote control path.', 'Not yet. Follow the ThingsBoard shared-attribute command back to Digital Write and the LED.'));
             // Completion-file export is provided by assets/js/lab-export.js.
-            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
             document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
             setStage(localStorage.getItem(storageKey('current-stage')) || 0);
         })();

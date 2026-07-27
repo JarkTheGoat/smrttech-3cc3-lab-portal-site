@@ -621,7 +621,6 @@
                 <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Worksheet Tools</h4>
                 <div class="grid gap-2">
                     <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
-                    <button class="utility-button" type="button" data-print>Print worksheet</button>
                     <button class="utility-button" type="button" data-reset>Reset Lab 3 local data</button>
                 </div>
             </div>
@@ -710,8 +709,8 @@
             </article>
 
             <article class="section-card card border-warning">
-                <p class="eyebrow">Safety And Setup</p>
-                <h2>Pre-power checklist</h2>
+                <p class="eyebrow">Material Check</p>
+                <h2>Materials and pre-power check</h2>
                 <div class="danger-card"><strong>STOP - Check the circuit before connecting Arduino to USB or running the VI.</strong><p>This checklist supports safe work, but it does not replace instructor approval when approval is required.</p></div>
                 <div class="grid-layout two mt-block">
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-power"><span>USB or power is disconnected before wiring changes.</span></label>
@@ -735,24 +734,8 @@
                 <div class="grid-layout two">
                     <div class="mini-card">
                         <h3>Activity A: Shift-register readiness</h3>
-                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-shift-doc"><span>I read the NI documentation on LabVIEW shift registers.</span></label>
+                        <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-shift-doc"><span>I read the <a class="concept-link" href="https://www.ni.com/docs/en-US/bundle/labview/page/shift-registers.html" target="_blank" rel="noopener">NI documentation on LabVIEW shift registers</a>.</span></label>
                         <label class="response-field mt-block"><span>What problem does a shift register solve in a loop?</span><textarea class="persist-text" data-key="pre-shift-answer"></textarea></label>
-                    </div>
-                    <div class="mini-card">
-                        <h3>Activity D: Input or output?</h3>
-                        <div class="table-wrap">
-                            <table class="classification-table">
-                                <thead><tr><th>Item</th><th>Classification</th></tr></thead>
-                                <tbody>
-                                    <tr><td>Tilt switch</td><td><select class="persist-text" data-key="class-tilt"><option value="">Choose...</option><option>Input</option><option>Output</option><option>Display</option></select></td></tr>
-                                    <tr><td>Active buzzer</td><td><select class="persist-text" data-key="class-buzzer"><option value="">Choose...</option><option>Input</option><option>Output</option><option>Display</option></select></td></tr>
-                                    <tr><td>Arduino Digital Pin 2</td><td><select class="persist-text" data-key="class-d2"><option value="">Choose...</option><option>Input</option><option>Output</option></select></td></tr>
-                                    <tr><td>Arduino Digital Pin 3</td><td><select class="persist-text" data-key="class-d3"><option value="">Choose...</option><option>Input</option><option>Output</option></select></td></tr>
-                                    <tr><td>Round LED indicator</td><td><select class="persist-text" data-key="class-led"><option value="">Choose...</option><option>Input</option><option>Output display</option></select></td></tr>
-                                    <tr><td>Waveform Chart</td><td><select class="persist-text" data-key="class-chart"><option value="">Choose...</option><option>Input</option><option>Output display</option></select></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
                 </div>
 
@@ -782,6 +765,20 @@
                 </div>
                 <label class="response-field"><span>Why would the input be unreliable without the pull-down resistor?</span><textarea class="persist-text" data-key="predict-floating"></textarea></label>
                 <details><summary>Hint after you predict</summary><div><p>A floating input has no defined reference to decide HIGH or LOW. A pull-down resistor gives the input a defined LOW when the switch is open.</p></div></details>
+                <h3>Activity D: Input or output?</h3>
+                <div class="table-wrap">
+                    <table class="classification-table">
+                        <thead><tr><th>Item</th><th>Classification</th></tr></thead>
+                        <tbody>
+                            <tr><td>Tilt switch</td><td><select class="persist-text" data-key="class-tilt"><option value="">Choose...</option><option>Input</option><option>Output</option><option>Display</option></select></td></tr>
+                            <tr><td>Active buzzer</td><td><select class="persist-text" data-key="class-buzzer"><option value="">Choose...</option><option>Input</option><option>Output</option><option>Display</option></select></td></tr>
+                            <tr><td>Arduino Digital Pin 2</td><td><select class="persist-text" data-key="class-d2"><option value="">Choose...</option><option>Input</option><option>Output</option></select></td></tr>
+                            <tr><td>Arduino Digital Pin 3</td><td><select class="persist-text" data-key="class-d3"><option value="">Choose...</option><option>Input</option><option>Output</option></select></td></tr>
+                            <tr><td>Round LED indicator</td><td><select class="persist-text" data-key="class-led"><option value="">Choose...</option><option>Input</option><option>Output display</option></select></td></tr>
+                            <tr><td>Waveform Chart</td><td><select class="persist-text" data-key="class-chart"><option value="">Choose...</option><option>Input</option><option>Output display</option></select></td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </article>
         </section>
 
@@ -987,8 +984,8 @@
                             <tr><td>After one tilt</td><td>1</td><td><input class="persist-text" data-key="chart-one"></td></tr>
                             <tr><td>After three tilts</td><td>3</td><td><input class="persist-text" data-key="chart-three"></td></tr>
                             <tr><td>Hold sensor tilted</td><td>No repeated counting</td><td><input class="persist-text" data-key="chart-held"></td></tr>
-                            <tr><td>Final front panel screenshot</td><td>Included</td><td><input class="persist-text" data-key="chart-front" data-stage-required></td></tr>
-                            <tr><td>Final block diagram screenshot</td><td>Included</td><td><input class="persist-text" data-key="chart-block"></td></tr>
+                            <tr><td>Final front panel screenshot</td><td>Included</td><td><input class="persist-file" data-key="chart-front" type="file" accept="image/*" data-stage-required aria-label="Final front panel screenshot"><small class="file-name-preview" data-file-name-for="chart-front">No screenshot selected.</small></td></tr>
+                            <tr><td>Final block diagram screenshot</td><td>Included</td><td><input class="persist-file" data-key="chart-block" type="file" accept="image/*" data-stage-required aria-label="Final block diagram screenshot"><small class="file-name-preview" data-file-name-for="chart-block">No screenshot selected.</small></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -1029,10 +1026,10 @@
                     </div>
                     <div class="mini-card">
                         <h3>Required evidence</h3>
-                        <label class="response-field"><span>Modified front panel screenshot or file name</span><input class="persist-text" data-key="extend-front"></label>
-                        <label class="response-field"><span>Modified block diagram screenshot or file name</span><input class="persist-text" data-key="extend-block"></label>
+                        <label class="response-field evidence-upload"><span>Modified front panel screenshot</span><input class="persist-file" data-key="extend-front" type="file" accept="image/*" data-stage-required><small class="file-name-preview" data-file-name-for="extend-front">No screenshot selected.</small></label>
+                        <label class="response-field evidence-upload"><span>Modified block diagram screenshot</span><input class="persist-file" data-key="extend-block" type="file" accept="image/*" data-stage-required><small class="file-name-preview" data-file-name-for="extend-block">No screenshot selected.</small></label>
                         <label class="response-field"><span>Logic modification explanation</span><textarea class="persist-text" data-key="extend-logic" data-stage-required></textarea></label>
-                        <label class="response-field"><span>Normal mode test result</span><input class="persist-text" data-key="extend-normal"></label>
+                        <label class="response-field"><span>Normal mode test result</span><input class="persist-text" data-key="extend-normal" data-stage-required></label>
                         <label class="response-field"><span>Inverted mode test result</span><input class="persist-text" data-key="extend-inverted"></label>
                     </div>
                 </div>
@@ -1046,22 +1043,6 @@
                 </ul>
             </article>
 
-            <article class="section-card card border-gold">
-                <p class="eyebrow">Optional Extensions</p>
-                <h2>Try these after required evidence is complete</h2>
-                <div class="grid-layout two">
-                    <div class="mini-card optional-card">Add switch-debounce logic.</div>
-                    <div class="mini-card optional-card">Add a reset-count button.</div>
-                    <div class="mini-card optional-card">Add a visual warning indicator when tilt count exceeds a threshold.</div>
-                    <div class="mini-card optional-card">Log tilt events to a file.</div>
-                    <div class="mini-card optional-card">Add a timestamp for each tilt event.</div>
-                    <div class="mini-card optional-card">Compare loop timing values: 50 ms, 100 ms, and 500 ms.</div>
-                    <div class="mini-card optional-card">Add a simulated cloud-upload placeholder.</div>
-                    <div class="mini-card optional-card">Add a second digital sensor.</div>
-                    <div class="mini-card optional-card">Convert the counter into an alarm-state machine.</div>
-                    <div class="mini-card optional-card">Explain how this local event node could later publish tilt events to a cloud dashboard.</div>
-                </div>
-            </article>
         </section>
 
         <section class="stage-panel stage-7" id="reflect" tabindex="-1">
@@ -1082,26 +1063,6 @@
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-extension"><span>Extension implementation for inverted buzzer behaviour.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-names"><span>Student names and numbers included as required.</span></label>
                 </div>
-            </article>
-
-            <article class="section-card card border-gold">
-                <p class="eyebrow">Assessment Guide</p>
-                <h2>Suggested weighting</h2>
-                <div class="table-wrap">
-                    <table>
-                        <thead><tr><th>Category</th><th>Weight</th><th>Assessment type</th></tr></thead>
-                        <tbody>
-                            <tr><td>Pre-lab and predictions</td><td>10%</td><td>Structured evidence</td></tr>
-                            <tr><td>Circuit construction and explanation</td><td>15%</td><td>Instructor assessed</td></tr>
-                            <tr><td>Sensor read and buzzer control VI</td><td>20%</td><td>Structured and instructor assessed</td></tr>
-                            <tr><td>Event-counting logic and shift-register explanation</td><td>25%</td><td>Instructor assessed</td></tr>
-                            <tr><td>Waveform chart and test evidence</td><td>10%</td><td>Structured evidence</td></tr>
-                            <tr><td>Extension implementation</td><td>10%</td><td>Structured and instructor assessed</td></tr>
-                            <tr><td>Troubleshooting and reflection</td><td>10%</td><td>Instructor assessed</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p class="warning-card mt-block">This page does not grade automatically. It helps collect required evidence and reasoning for instructor assessment.</p>
             </article>
 
             <article class="section-card card border-success">
@@ -1381,7 +1342,6 @@
             document.querySelectorAll('[data-stage]').forEach(button => button.addEventListener('click', () => setStage(button.dataset.stage)));
             document.querySelector('[data-check-order]')?.addEventListener('click', checkOrder);
             // Completion-file export is provided by assets/js/lab-export.js.
-            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
             document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
             setStage(localStorage.getItem(storageKey('current-stage')) || 0);
         })();

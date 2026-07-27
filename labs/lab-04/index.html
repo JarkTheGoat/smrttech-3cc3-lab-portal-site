@@ -238,7 +238,6 @@
                 <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Worksheet Tools</h4>
                 <div class="grid gap-2">
                     <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
-                    <button class="utility-button" type="button" data-print>Print worksheet</button>
                     <button class="utility-button" type="button" data-reset>Reset Lab 4 local data</button>
                 </div>
             </div>
@@ -601,7 +600,7 @@
                 </ul>
             </article>
 
-            <article class="section-card card border-gold">
+            <article class="section-card card border-gold" hidden>
                 <p class="eyebrow">Optional Extensions</p>
                 <h2>Try these after required evidence is complete</h2>
                 <div class="grid-layout two">
@@ -637,7 +636,7 @@
                 </div>
             </article>
 
-            <article class="section-card card border-gold">
+            <article class="section-card card border-gold" hidden>
                 <p class="eyebrow">Assessment Guide</p>
                 <h2>Suggested weighting</h2>
                 <div class="table-wrap"><table><thead><tr><th>Category</th><th>Weight</th><th>Assessment type</th></tr></thead><tbody>
@@ -953,7 +952,6 @@
             document.querySelectorAll('[data-stage]').forEach(button => button.addEventListener('click', () => setStage(button.dataset.stage)));
             document.querySelector('[data-check-order]')?.addEventListener('click', checkOrder);
             // Completion-file export is provided by assets/js/lab-export.js.
-            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
             document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
             setStage(localStorage.getItem(storageKey('current-stage')) || 0);
         })();

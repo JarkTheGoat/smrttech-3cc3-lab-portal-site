@@ -1561,7 +1561,7 @@ window.SMRTTECH_CURRICULUM = {
             },
             {
               "heading": "Where it is used",
-              "body": "Used in Lab 5. Prerequisites: servo-motor, mathscript-node."
+              "body": "Used in Lab 5. Prerequisites: servo-motor, formula-node."
             }
           ],
           "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Map a command angle into a timed servo pulse measured in microseconds.",
@@ -1569,7 +1569,7 @@ window.SMRTTECH_CURRICULUM = {
             "servo-pulse-limits",
             "pwm-output",
             "servo-motor",
-            "mathscript-node"
+            "formula-node"
           ]
         },
         {
@@ -3111,7 +3111,7 @@ window.SMRTTECH_CURRICULUM = {
           "related": [
             "controls-indicators",
             "vi-subvi",
-            "mathscript-node",
+            "formula-node",
             "labview-interface"
           ]
         },
@@ -3269,21 +3269,21 @@ window.SMRTTECH_CURRICULUM = {
           ],
           "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Select which LabVIEW logic runs based on a mode such as Manual or Automatic.",
           "related": [
-            "mathscript-node",
+            "formula-node",
             "automatic-wave-subvi",
             "block-diagram",
             "controls-indicators"
           ]
         },
         {
-          "id": "mathscript-node",
+          "id": "formula-node",
           "type": "skill",
-          "name": "MathScript Node",
-          "title": "How does mathscript node support the 3CC3 lab workflow",
+          "name": "Formula Node",
+          "title": "How does Formula Node support the 3CC3 lab workflow",
           "asset": "Dataflow_Execution_Model.png",
           "summary": "Use script-style equations inside the existing Lab 5 servo activities for angle, pulse-width, and automatic motion logic.",
           "keywords": [
-            "MathScript",
+            "Formula Node",
             "Angle",
             "PW",
             "URV",
@@ -3371,7 +3371,7 @@ window.SMRTTECH_CURRICULUM = {
             },
             {
               "heading": "Where it is used",
-              "body": "Used in Lab 5. Prerequisites: vi-subvi, local-variables, mathscript-node."
+              "body": "Used in Lab 5. Prerequisites: vi-subvi, local-variables, formula-node."
             }
           ],
           "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Generate a reusable waving angle command from GO, Speed, and NumberOfWaves.",
@@ -3380,7 +3380,7 @@ window.SMRTTECH_CURRICULUM = {
             "pulse-width",
             "vi-subvi",
             "local-variables",
-            "mathscript-node"
+            "formula-node"
           ]
         },
         {

@@ -10,10 +10,10 @@
     const CHECKPOINT_PREFIX = 'smrttech:completion-record:v1';
     const STAGE_CONFIRM_PREFIX = 'smrttech:stage-confirmed:v1';
     const REQUIRED_STUDENT_DETAILS = [
-        { key: 'name_or_team', label: 'Name' },
-        { key: 'student_numbers', label: 'Student Number' },
+        { key: 'name_or_team', label: 'Student Names' },
+        { key: 'student_numbers', label: 'Student Numbers' },
         { key: 'lab_section', label: 'Lab Section' },
-        { key: 'instructor_or_ta', label: 'Lab Instructor or TA' }
+        { key: 'instructor_or_ta', label: 'Lab Instructor' }
     ];
 
     function text(value) {
@@ -683,19 +683,19 @@
 
         const details = createElement('div', 'completion-details');
         details.append(createElement('h3', 'completion-details-title', 'Submission Details'));
-        details.append(createElement('p', 'completion-details-copy', 'Enter all four required details before downloading: Name, Student Number, Lab Section, and Lab Instructor or TA.'));
+        details.append(createElement('p', 'completion-details-copy', 'Enter all four required details before downloading: Student Names, Student Numbers, Lab Section, and Lab Instructor.'));
         const grid = createElement('div', 'completion-details-grid');
         addDetailField(grid, {
-            labelText: 'Name',
+            labelText: 'Student Names',
             key: 'name_or_team',
-            placeholder: 'e.g., Alex Chen',
-            helper: 'Required. Enter the name used for this submission.',
+            placeholder: 'e.g., Alex Chen, Jordan Lee',
+            helper: 'Required. Use comma-separated student names for an approved team submission.',
             required: true
         });
         addDetailField(grid, {
-            labelText: 'Student Number',
+            labelText: 'Student Numbers',
             key: 'student_numbers',
-            placeholder: 'e.g., 400123456',
+            placeholder: 'e.g., 400123456, 400789012',
             helper: 'Required. Use comma-separated student numbers for an approved team submission.',
             required: true
         });
@@ -713,9 +713,9 @@
             required: true
         });
         addDetailField(grid, {
-            labelText: 'Lab Instructor or TA',
+            labelText: 'Lab Instructor',
             key: 'instructor_or_ta',
-            placeholder: 'e.g., Dr. Chen or Sam Lee',
+            placeholder: 'e.g., Dr. Chen',
             helper: 'Required.',
             required: true
         });
@@ -738,10 +738,11 @@
         download.dataset.labExport = 'final';
         actions.append(download);
         card.append(actions);
-        card.append(createElement('p', 'completion-export-note', 'This file is intended for instructor review or automated grading. Keep the file unchanged after downloading. It is generated in the browser and is not tamper-proof.'));
+        card.append(createElement('p', 'completion-export-note', 'Integrity protection for this browser-generated completion record is a future course-design enhancement.'));
 
         const footer = finalPanel.querySelector('.stage-footer');
-        if (footer) footer.before(card);
+        if (footer && labNumber() === 6) footer.after(card);
+        else if (footer) footer.before(card);
         else finalPanel.appendChild(card);
 
         const oldFinalButton = [...finalPanel.querySelectorAll('[data-lab-export]')]

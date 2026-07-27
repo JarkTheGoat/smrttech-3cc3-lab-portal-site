@@ -845,7 +845,6 @@
                 <h4 class="font-bold text-gray-700 uppercase text-sm mb-3">Worksheet Tools</h4>
                 <div class="grid gap-2">
                     <button class="utility-button" type="button" data-export disabled aria-disabled="true">Completion file locked</button>
-                    <button class="utility-button" type="button" data-print>Print worksheet</button>
                     <button class="utility-button" type="button" data-reset>Reset Lab 2 local data</button>
                 </div>
             </div>
@@ -976,7 +975,7 @@
 
                 <h3>Activity B: Build the sensing chain</h3>
                 <p>Drag the events into order, or use the numbered selects if you prefer keyboard entry.</p>
-                <div class="order-grid" data-order-activity data-dnd-order>
+                <div class="order-grid" data-order-activity data-dnd-order data-manual-check>
                     <label class="order-item"><select class="persist-text order-select" data-key="chain-temperature" aria-label="Order for temperature changes"></select><span>Temperature changes</span></label>
                     <label class="order-item"><select class="persist-text order-select" data-key="chain-resistance" aria-label="Order for thermistor resistance changes"></select><span>Thermistor resistance changes</span></label>
                     <label class="order-item"><select class="persist-text order-select" data-key="chain-divider" aria-label="Order for voltage divider output changes"></select><span>Voltage divider output changes</span></label>
@@ -988,6 +987,7 @@
                 <div class="chip-row">
                     <button class="utility-button" type="button" data-check-order>Check order</button>
                     <span class="stage-status" data-order-feedback aria-live="polite"></span>
+                    <span class="stage-status" data-order-attempts aria-live="polite"></span>
                 </div>
 
                 <h3>Activity C: Predict voltage-divider behavior</h3>
@@ -1018,35 +1018,11 @@
                 <h2>Can LabVIEW communicate with Arduino?</h2>
                 <p>Use the LabVIEW Arduino firmware loading and testing instructions from A2L. Do not begin sensor troubleshooting until basic communication is proven.</p>
                 <div class="grid two">
-                    <label class="response-field"><span>Arduino board type</span><input class="persist-text" data-key="comm-board" type="text"></label>
-                    <label class="response-field"><span>Serial port used</span><input class="persist-text" data-key="comm-port" type="text"></label>
-                    <label class="response-field"><span>LINX firmware loaded?</span><select class="persist-text" data-key="comm-firmware"><option value="">Choose...</option><option>Yes</option><option>No</option><option>Not sure</option></select></label>
-                    <label class="response-field"><span>One successful communication indicator</span><input class="persist-text" data-key="comm-evidence" type="text" data-stage-required></label>
-                    <label class="response-field"><span>One possible cause if communication fails</span><input class="persist-text" data-key="comm-fail-cause" type="text"></label>
+                    <label class="response-field"><span>Arduino board type</span><select class="persist-text" data-key="comm-board" data-stage-required><option value="">Choose...</option><option>Arduino Uno</option><option>Arduino Mega</option></select></label>
+                    <label class="response-field"><span>Serial port used</span><select class="persist-text" data-key="comm-port" data-stage-required><option value="">Choose...</option><option>COM1</option><option>COM2</option><option>COM3</option><option>COM4</option><option>COM5</option></select></label>
+                    <label class="response-field"><span><a class="concept-link" href="../../knowledge/skill-tree.html?topic=labview-linx">LINX firmware</a> loaded?</span><select class="persist-text" data-key="comm-firmware" data-stage-required><option value="">Choose...</option><option>Yes</option><option>No</option><option>Not sure</option></select></label>
                 </div>
-                <div class="grid two">
-                    <div class="mini-card">
-                        <h3>Think it through</h3>
-                        <ul>
-                            <li>What evidence proves that LabVIEW is communicating with Arduino?</li>
-                            <li>Does a detected serial port prove the firmware is correct?</li>
-                            <li>What is the difference between detecting a board and reading a sensor?</li>
-                            <li>What should you check before blaming the thermistor circuit?</li>
-                            <li>If communication fails, is the problem hardware, firmware, software, or configuration?</li>
-                        </ul>
-                    </div>
-                    <div class="mini-card">
-                        <h3>Communication hints</h3>
-                        <ul>
-                            <li>Wrong COM port</li>
-                            <li>LINX firmware not loaded</li>
-                            <li>USB cable is power-only</li>
-                            <li>Wrong board selected</li>
-                            <li>Arduino already in use by another program</li>
-                            <li>LabVIEW LINX Toolkit missing</li>
-                        </ul>
-                    </div>
-                </div>
+                <p class="briefing-card mt-block">Select the board and COM port you verified, then confirm the firmware status before proceeding to sensor work.</p>
             </article>
         </section>
 
@@ -1332,7 +1308,7 @@
                 </div>
             </article>
 
-            <article class="section-card card border-success">
+            <article class="section-card card border-success" hidden>
                 <p class="eyebrow">Optional Extensions</p>
                 <h2>Try these after required evidence is complete</h2>
                 <div class="grid two">
@@ -1368,7 +1344,7 @@
                 </div>
             </article>
 
-            <article class="section-card card border-gold">
+            <article class="section-card card border-gold" hidden>
                 <p class="eyebrow">Assessment Guide</p>
                 <h2>Suggested weighting</h2>
                 <div class="table-wrap">
@@ -1630,18 +1606,23 @@
             function checkOrder() {
                 const values = ORDER_KEYS.map(key => document.querySelector(`[data-key="${key}"]`)?.value || '');
                 const feedback = document.querySelector('[data-order-feedback]');
+                const attempts = document.querySelector('[data-order-attempts]');
                 if (!feedback) return;
+                const attemptKey = storageKey('sensing-chain-attempts');
+                const attempt = Number(localStorage.getItem(attemptKey) || '0') + 1;
+                localStorage.setItem(attemptKey, String(attempt));
+                if (attempts) attempts.textContent = `Attempt ${attempt}`;
                 if (values.some(value => value === '')) {
-                    feedback.textContent = 'Choose an order for every event.';
+                    feedback.textContent = 'Needs correction.';
                     return;
                 }
                 const unique = new Set(values);
                 if (unique.size !== values.length) {
-                    feedback.textContent = 'Each order number should be used once.';
+                    feedback.textContent = 'Needs correction.';
                     return;
                 }
                 const correct = values.every((value, index) => value === CORRECT_ORDER[index]);
-                feedback.textContent = correct ? 'Correct signal chain.' : 'Not yet. Trace what changes physically before LabVIEW receives data.';
+                feedback.textContent = correct ? 'Correct.' : 'Needs correction.';
             }
 
             function updateFahrenheitChecks() {
@@ -1655,7 +1636,7 @@
                         return;
                     }
                     const value = Number(input.value);
-                    target.textContent = Math.abs(value - expected) < 0.01 ? 'Matches formula.' : `Formula gives ${expected}.`;
+                    target.textContent = Math.abs(value - expected) < 0.01 ? 'Matches Formula' : 'Needs correction.';
                 });
             }
 
@@ -1680,11 +1661,13 @@
             });
             setupOrderOptions();
             restoreInputs();
+            const savedAttempts = Number(localStorage.getItem(storageKey('sensing-chain-attempts')) || '0');
+            const attemptDisplay = document.querySelector('[data-order-attempts]');
+            if (attemptDisplay && savedAttempts) attemptDisplay.textContent = `Attempt ${savedAttempts}`;
             updateFahrenheitChecks();
             document.querySelectorAll('.f-pred').forEach(input => input.addEventListener('input', updateFahrenheitChecks));
             document.querySelector('[data-check-order]')?.addEventListener('click', checkOrder);
             // Completion-file export is provided by assets/js/lab-export.js.
-            document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
             document.querySelector('[data-reset]')?.addEventListener('click', resetLocalData);
 
             setStage(localStorage.getItem(storageKey('current-stage')) || 0);
