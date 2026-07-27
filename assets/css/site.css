@@ -207,6 +207,14 @@ html {
     outline: none;
 }
 
+/* A subpage that is not selected must never leak its questions or controls
+   through a lab-specific display rule. */
+.tab-content[hidden],
+[role="tabpanel"][hidden],
+.tab-content[aria-hidden="true"] {
+    display: none !important;
+}
+
 .code-tab:focus-visible {
     outline: 3px solid rgba(253, 191, 87, 0.82);
     outline-offset: -3px;

@@ -235,6 +235,59 @@
         });
     }
 
+    function setupTabbedSubpageContainment() {
+        const allTabs = [...document.querySelectorAll('[data-tabs][data-target]')];
+        const groups = [...new Set(allTabs.map(tab => tab.dataset.tabs).filter(Boolean))];
+
+        function tabsInGroup(group) {
+            return allTabs.filter(tab => tab.dataset.tabs === group);
+        }
+
+        function activateTab(selectedTab) {
+            const group = selectedTab?.dataset.tabs;
+            if (!group) return;
+
+            tabsInGroup(group).forEach((tab, index) => {
+                const active = tab === selectedTab;
+                const panel = document.getElementById(tab.dataset.target);
+                const safeGroup = group.replace(/[^a-z0-9_-]+/gi, '-');
+
+                tab.id ||= `${safeGroup}-shared-tab-${index + 1}`;
+                tab.setAttribute('role', 'tab');
+                tab.setAttribute('aria-selected', String(active));
+                tab.tabIndex = active ? 0 : -1;
+                tab.classList.toggle('active', active);
+
+                if (!panel) return;
+                tab.setAttribute('aria-controls', panel.id);
+                panel.setAttribute('role', 'tabpanel');
+                panel.setAttribute('aria-labelledby', tab.id);
+                panel.setAttribute('aria-hidden', String(!active));
+                panel.classList.toggle('active', active);
+                panel.hidden = !active;
+                panel.inert = !active;
+            });
+        }
+
+        groups.forEach(group => {
+            const tabs = tabsInGroup(group);
+            if (!tabs.length) return;
+            const tabList = tabs[0].parentElement;
+            tabList?.setAttribute('role', 'tablist');
+            if (tabList && !tabList.getAttribute('aria-label')) {
+                tabList.setAttribute('aria-label', `${group} subpages`);
+            }
+
+            const initial = tabs.find(tab =>
+                tab.classList.contains('active') || tab.getAttribute('aria-selected') === 'true'
+            ) || tabs[0];
+            activateTab(initial);
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => activateTab(tab));
+            });
+        });
+    }
+
     function stageNumberFromPanel(panel) {
         const className = [...panel.classList].find(name => /^stage-\d+$/.test(name));
         return className ? Number(className.replace('stage-', '')) : -1;
@@ -1087,6 +1140,7 @@
         setupEvidenceFileInputs();
         setupActivityHeadings();
         setupCheckpointMarkers();
+        setupTabbedSubpageContainment();
         setupEssentialResponseFields();
         setupTableControlLabels();
         setupSidebarAccessibility();
