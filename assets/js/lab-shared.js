@@ -215,26 +215,6 @@
         });
     }
 
-    function setupCheckpointMarkers() {
-        stagePanels().forEach(({ panel, stage }) => {
-            if (stage === 0) return;
-            const existing = panel.querySelector('.checkpoint-marker');
-            if (existing) {
-                existing.setAttribute('aria-hidden', 'true');
-                return;
-            }
-
-            const heading = panel.querySelector('h2');
-            if (!heading) return;
-            heading.classList.add('checkpoint-heading');
-            const marker = document.createElement('span');
-            marker.className = 'checkpoint-marker';
-            marker.textContent = String(stage);
-            marker.setAttribute('aria-hidden', 'true');
-            heading.prepend(marker);
-        });
-    }
-
     function setupTabbedSubpageContainment() {
         const allTabs = [...document.querySelectorAll('[data-tabs][data-target]')];
         const groups = [...new Set(allTabs.map(tab => tab.dataset.tabs).filter(Boolean))];
@@ -459,19 +439,6 @@
         return selects.length > 0 && selects.every((select, index) => select.value === String(index + 1));
     }
 
-    function syncCorrectOrderFeedback(panel) {
-        const feedbackItems = [...panel.querySelectorAll('[data-order-feedback], [data-monitor-feedback], [data-control-feedback]')];
-        panel.querySelectorAll('.order-grid[data-dnd-order]').forEach((grid, index) => {
-            if (grid.hasAttribute('data-manual-check')) return;
-            if (!isOrderGridCorrect(grid)) return;
-            const localFeedback = grid.parentElement?.querySelectorAll('[data-order-feedback], [data-monitor-feedback], [data-control-feedback]') || [];
-            const feedback = localFeedback.length === 1 ? localFeedback[0] : feedbackItems[index];
-            if (feedback && !/^Correct\b/i.test(feedback.textContent.trim())) {
-                feedback.textContent = 'Correct order.';
-            }
-        });
-    }
-
     function panelControls(panel) {
         return [...panel.querySelectorAll('input, select, textarea, button')];
     }
@@ -563,7 +530,6 @@
 
         items.forEach(({ panel, stage }) => {
             const locked = !isStageUnlocked(stage, items);
-            syncCorrectOrderFeedback(panel);
             const validation = validatePanelChecks(panel);
             stageStates.push({ stage, complete: !locked && validation.ok && stageIsConfirmed(stage) });
             panel.classList.toggle('stage-panel-locked', locked);
@@ -1192,7 +1158,6 @@
         setupGatedHints();
         setupEvidenceFileInputs();
         setupActivityHeadings();
-        setupCheckpointMarkers();
         setupTabbedSubpageContainment();
         setupEssentialResponseFields();
         setupTableControlLabels();

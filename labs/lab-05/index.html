@@ -864,7 +864,7 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
                     return;
                 }
                 const correct = values.every((value, index) => value === CORRECT_ORDER[index]);
-                feedback.textContent = correct ? 'Correct command chain.' : 'Not yet. Trace the path from potentiometer motion to servo shaft motion.';
+                feedback.textContent = correct ? 'Correct measurement chain.' : 'Not yet. Trace the path from potentiometer motion to servo shaft motion.';
             }
 
             function updateScaleChecks() {
@@ -872,12 +872,12 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
                     const target = document.querySelector(`[data-scale-result="${input.dataset.key}"]`);
                     if (!target) return;
                     if (input.value === '') {
-                        target.textContent = '';
+                        target.textContent = 'Enter a value.';
                         return;
                     }
                     const expected = Number(input.dataset.expected);
                     const value = Number(input.value);
-                    target.textContent = Math.abs(value - expected) < 0.01 ? 'Matches expected value.' : `Expected ${expected}.`;
+                    target.textContent = Math.abs(value - expected) < 0.01 ? 'Correct.' : 'Incorrect.';
                 });
             }
 

@@ -820,7 +820,7 @@
                         <h3>Required evidence</h3>
                         <label class="response-field"><span>Pin used for tilt input</span><input class="persist-text" data-key="build-input-pin" value="Digital Pin 2"></label>
                         <label class="response-field"><span>Pin used for buzzer output</span><input class="persist-text" data-key="build-output-pin" value="Digital Pin 3"></label>
-                        <label class="response-field"><span>Resistor value</span><input class="persist-text" data-key="build-resistor" value="10 kOhm"></label>
+                        <label class="response-field"><span>Resistor value</span><input class="persist-text" data-key="build-resistor" value="10 kΩ"></label>
                         <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-buzzer-polarity"><span>Buzzer polarity checked.</span></label>
                         <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-pulldown"><span>Pull-down resistor location checked.</span></label>
                         <label class="response-field mt-block"><span>Predicted upright digital value</span><input class="persist-text" data-key="build-upright" value="HIGH"></label>
@@ -1308,7 +1308,7 @@
                     return;
                 }
                 const correct = values.every((value, index) => value === CORRECT_ORDER[index]);
-                feedback.textContent = correct ? 'Correct signal chain.' : 'Not yet. Trace the path from physical tilt to counted event.';
+                feedback.textContent = correct ? 'Correct measurement chain.' : 'Not yet. Trace the path from physical tilt to counted event.';
             }
 
             function exportResponses() {

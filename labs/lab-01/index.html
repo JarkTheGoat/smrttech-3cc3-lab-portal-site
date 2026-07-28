@@ -1170,7 +1170,7 @@ void loop()
                         </legend>
                         <label class="quiz-option"><input type="radio" name="ready-labview-access" value="a"><span>A Tinkercad class link and a trainer board.</span></label>
                         <label class="quiz-option"><input type="radio" name="ready-labview-access" value="b"><span>The approved course knowledge resources and LabVIEW installed on the machine.</span></label>
-                        <label class="quiz-option"><input type="radio" name="ready-labview-access" value="c"><span>An Arduino sketch and a 220 ohm resistor.</span></label>
+                        <label class="quiz-option"><input type="radio" name="ready-labview-access" value="c"><span>An Arduino sketch and a 220 Ω resistor.</span></label>
                         <label class="quiz-option"><input type="radio" name="ready-labview-access" value="d"><span>A multimeter set to voltage and a real photoresistor.</span></label>
                         <div class="quiz-actions">
                             <button type="button" class="quiz-check-button" onclick="gradeQuestion(this)">Check answer</button>
@@ -1230,7 +1230,7 @@ void loop()
                                     <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Approved Learning Resources</h4>
                                     <p class="text-gray-600 leading-relaxed">
                                         Begin with the linked Master Skill Tree topics. They explain the LabVIEW workspace and
-                                        the reusable skills needed for this activity without relying on an external video service.
+                                        the reusable skills needed for this activity.
                                     </p>
                                     <ul class="compact-list text-gray-600 list-disc ml-5 mt-3">
                                         <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=labview-interface">LabVIEW interface</a></li>
@@ -1238,13 +1238,6 @@ void loop()
                                         <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=controls-indicators">Controls and indicators</a></li>
                                         <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=while-loops">While Loops</a></li>
                                     </ul>
-                                </div>
-                                <div class="resource-placeholder" role="note" aria-label="Instructor replacement resource needed">
-                                    <h4 class="font-bold mb-2">Instructor resource needed</h4>
-                                    <p>
-                                        Provide a replacement course video or approved learning resource that explains the
-                                        LabVIEW front panel, block diagram, controls, indicators, and basic VI workflow.
-                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -1308,6 +1301,7 @@ void loop()
                                     <ol class="list-decimal ml-5 space-y-2 text-gray-600">
                                         <li>Start a blank VI. A VI is the LabVIEW program file; it has a front panel for the user interface and a block diagram for program logic.</li>
                                         <li>On the front panel, place three <strong>numeric controls</strong> named <code>Vin</code>, <code>R1</code>, and <code>R2</code>. A control supplies a value to the program.</li>
+                                        <li>To create the boxes & arrows shown in the image, use the <strong>Controls>>Decorations</strong> tab</li>
                                         <li>Place one <strong>numeric indicator</strong> named <code>Vout</code>. An indicator displays a value calculated by the program.</li>
                                         <li>Open the block diagram and use <a class="concept-link" href="../../knowledge/skill-tree.html?topic=program-elements">arithmetic functions and wires</a> to implement <code>Vout = Vin × R2 ÷ (R1 + R2)</code>. Wires carry data from controls through functions to the indicator.</li>
                                         <li>Place the calculation inside a <a class="concept-link" href="../../knowledge/skill-tree.html?topic=while-loops">While Loop</a>, add a Boolean <code>Stop</code> control, and wire it to the loop Stop terminal.</li>
@@ -1431,7 +1425,7 @@ void loop()
                                 <tbody><tr><td class="p-3 border font-semibold">PR resistance (&Omega;)</td><td class="p-2 border"><input type="number" min="100" max="2000000" step="0.01" class="persist-text" data-key="t1-r-0" placeholder="e.g., 200000"></td><td class="p-2 border"><input type="number" min="100" max="2000000" step="0.01" class="persist-text" data-key="t1-r-25" placeholder="e.g., 200000"></td><td class="p-2 border"><input type="number" min="100" max="2000000" step="0.01" class="persist-text" data-key="t1-r-50" placeholder="e.g., 200000"></td><td class="p-2 border"><input type="number" min="100" max="2000000" step="0.01" class="persist-text" data-key="t1-r-75" placeholder="e.g., 200000"></td><td class="p-2 border"><input type="number" min="100" max="2000000" step="0.01" class="persist-text" data-key="t1-r-100" placeholder="e.g., 200000"></td></tr></tbody>
                             </table>
                         </div>
-                        <p class="measurement-caption">Record photoresistor resistance in ohms so the checkpoint validation can check for likely measurement-entry errors.</p>
+                        <p class="measurement-caption">Record photoresistor resistance in Ω so the checkpoint validation can check for likely measurement-entry errors.</p>
                     </div>
 
                     <div class="quiz-stack mt-6">
@@ -1541,7 +1535,7 @@ void loop()
                     <div class="quiz-stack mt-6">
                         <fieldset class="quiz-card auto-question" data-question-id="divider-fixed-resistor">
                             <legend class="quiz-title">What resistor value is used in the simulated divider?<span class="quiz-points">1 point</span></legend>
-                            <label class="quiz-option"><input type="radio" name="divider-fixed-resistor" value="a"><span>220 ohm</span></label>
+                            <label class="quiz-option"><input type="radio" name="divider-fixed-resistor" value="a"><span>220 Ω</span></label>
                             <label class="quiz-option"><input type="radio" name="divider-fixed-resistor" value="b"><span>1 k&Omega;</span></label>
                             <label class="quiz-option"><input type="radio" name="divider-fixed-resistor" value="c"><span>4.7 k&Omega;</span></label>
                             <label class="quiz-option"><input type="radio" name="divider-fixed-resistor" value="d"><span>10 k&Omega;</span></label>
@@ -1847,7 +1841,7 @@ void loop()
             'divider-fixed-resistor': {
                 correct: 'c',
                 hint: 'This value appears in both the Tinkercad divider and real hardware exercise.',
-                explanation: 'Correct. The divider uses a 4.7 kOhm resistor.'
+                explanation: 'Correct. The divider uses a 4.7 kΩ resistor.'
             },
             'divider-conversion': {
                 correct: 'a',
@@ -2007,7 +2001,7 @@ void loop()
                     outOfRange.focus();
                     return {
                         ok: false,
-                        message: `Photoresistor resistance should be between ${PHOTORESISTOR_RANGE_OHMS.min} and ${PHOTORESISTOR_RANGE_OHMS.max} ohms. If you used kOhm, convert to ohms before completing this checkpoint.`
+                        message: `Photoresistor resistance should be between ${PHOTORESISTOR_RANGE_OHMS.min} and ${PHOTORESISTOR_RANGE_OHMS.max} Ω. If you used kΩ, convert to Ω before completing this checkpoint.`
                     };
                 }
             }

@@ -298,7 +298,7 @@
                 </div>
                 <div class="grid-layout two mt-block">
                     <div class="mini-card"><h3>Software</h3><p>LabVIEW, NI LabVIEW LINX Toolkit, and LINX firmware loaded to Arduino.</p></div>
-                    <div class="mini-card"><h3>Hardware</h3><p>Arduino Mega, breadboard, jumper wires, load cell, screw terminals, LMC6484 op-amp, 10 kOhm, 100 kOhm, and 1 MOhm resistors, voltmeter, and USB cable.</p></div>
+                    <div class="mini-card"><h3>Hardware</h3><p>Arduino Mega, breadboard, jumper wires, load cell, screw terminals, LMC6484 op-amp, 10 kΩ, 100 kΩ, and 1 MΩ resistors, voltmeter, and USB cable.</p></div>
                 </div>
                 <p class="briefing-card mt-block">Prerequisite: LabVIEW LINX analog reading from previous labs.</p>
             </article>
@@ -319,20 +319,20 @@
             </article>
 
             <article class="section-card card border-warning">
-                <p class="eyebrow">Safety And Setup</p>
-                <h2>Pre-power checklist</h2>
-                <div class="danger-card"><strong>STOP - Check the load-cell wiring, op-amp orientation, resistor values, and Arduino input voltage range before powering the circuit.</strong><p>This checklist supports safe work, but does not replace instructor approval when approval is required.</p></div>
+                <p class="eyebrow">Materials Checklist</p>
+                <h2>Confirm the required materials</h2>
+                <p>Gather the following software, hardware, and measurement tools before beginning the lab.</p>
                 <div class="grid-layout two mt-block">
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-power"><span>USB or power is disconnected before wiring changes.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-rails"><span>5 V and GND rails are verified before powering.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-short"><span>5 V is not shorted to GND.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-opamp"><span>Op-amp orientation and LMC6484 pin numbers are checked.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-resistors"><span>Resistor values are verified, with a multimeter if uncertain.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-a0"><span>Arduino A0 will not be connected to voltage outside the allowed analog-input range.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-force"><span>Force will be applied gently and only in the indicated direction.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-loadcell"><span>The load cell is stable at the table edge and will not be overloaded.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-meter"><span>Measurement reference is confirmed before recording voltage.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-help"><span>I will ask for help if Arduino, op-amp, or load cell becomes hot or behaves unexpectedly.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-labview"><span>LabVIEW and the NI LabVIEW LINX Toolkit.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-firmware"><span>Arduino with LINX firmware loaded.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-arduino"><span>Arduino Mega and USB cable.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-breadboard"><span>Breadboard and jumper wires.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-loadcell"><span>Load cell and screw terminals.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-opamp"><span>LMC6484 op-amp.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-r10k"><span>10 k&Omega; resistors.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-r100k"><span>100 k&Omega; resistors.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-r1m"><span>1 M&Omega; resistors.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-meter"><span>Voltmeter or digital multimeter.</span></label>
                 </div>
             </article>
         </section>
@@ -341,15 +341,7 @@
             <article class="section-card card border-maroon">
                 <p class="eyebrow">Pre-Lab</p>
                 <h2>Predict before building</h2>
-                <div class="warning-card">
-                    <strong>Datasheet note:</strong> The PDF prelab names LMC6482, while the materials and circuit procedure use LMC6484. Use the component provided in your lab kit and confirm the correct datasheet with your instructor.
-                </div>
-                <div class="grid-layout two mt-block">
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-loadcell"><span>Load-cell datasheet reviewed.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="pre-opamp"><span>LMC6484 op-amp datasheet reviewed or confirmed with instructor.</span></label>
-                </div>
-
-                <h3>Activity B: Arrange the measurement chain</h3>
+                <h3>Activity A: Arrange the measurement chain</h3>
                 <p>Drag the events into order, or use the numbered selects if you prefer keyboard entry.</p>
                 <div class="order-grid" data-dnd-order>
                     <label class="order-item"><select class="persist-text order-select" data-key="chain-force"></select><span>Force is applied</span></label>
@@ -368,13 +360,13 @@
                 <label class="response-field"><span>Why might the raw voltage across SIG+ and SIG- be too small to read accurately with Arduino?</span><textarea class="persist-text" data-key="predict-raw-small"></textarea></label>
                 <details><summary>Hint after you predict</summary><div><p>Arduino's analog input has limited resolution. Amplifying a tiny sensor voltage allows more of the input range to be used, improving useful measurement sensitivity.</p></div></details>
 
-                <h3>Activity D: Gain calculations</h3>
+                <h3>Activity B: Gain calculations</h3>
                 <div class="table-wrap">
                     <table>
                         <thead><tr><th>Calculation</th><th>Given values</th><th>Your answer</th><th>Check</th></tr></thead>
                         <tbody>
-                            <tr><td>AV1 = R3 / R1</td><td>R3 = 1 MOhm, R1 = 10 kOhm</td><td><input type="number" class="persist-text gain-input" data-key="gain-av1" data-expected="100"></td><td data-gain-result="gain-av1"></td></tr>
-                            <tr><td>AV2 = 1 + R6 / R5</td><td>R6 = 100 kOhm, R5 = 10 kOhm</td><td><input type="number" class="persist-text gain-input" data-key="gain-av2" data-expected="11"></td><td data-gain-result="gain-av2"></td></tr>
+                            <tr><td>AV1 = R3 / R1</td><td>R3 = 1 MΩ, R1 = 10 kΩ</td><td><input type="number" class="persist-text gain-input" data-key="gain-av1" data-expected="100"></td><td data-gain-result="gain-av1"></td></tr>
+                            <tr><td>AV2 = 1 + R6 / R5</td><td>R6 = 100 kΩ, R5 = 10 kΩ</td><td><input type="number" class="persist-text gain-input" data-key="gain-av2" data-expected="11"></td><td data-gain-result="gain-av2"></td></tr>
                             <tr><td>AVtotal = AV1 * AV2</td><td>100 * 11</td><td><input type="number" class="persist-text gain-input" data-key="gain-total" data-expected="1100"></td><td data-gain-result="gain-total"></td></tr>
                         </tbody>
                     </table>
@@ -455,7 +447,7 @@
             <article class="section-card card border-success">
                 <p class="eyebrow">Checkpoint 3</p>
                 <h2>Amplify the load-cell signal with the first op-amp stage</h2>
-                <p>Add the first-stage amplifier using the LMC6484. Use pin 2 for SIG-, pin 3 for SIG+, and pin 1 for output V2. Use R3 = R4 = 1 MOhm and R1 = R2 = 10 kOhm. The ideal gain is AV = R3 / R1 = 100.</p>
+                <p>Add the first-stage amplifier using the LMC6484. Use pin 2 for SIG-, pin 3 for SIG+, and pin 1 for output V2. Use R3 = R4 = 1 MΩ and R1 = R2 = 10 kΩ. The ideal gain is AV = R3 / R1 = 100.</p>
                 <figure class="diagram-card">
                     <img src="../../assets/lab4-pdf-stage1-circuit.png" alt="Source PDF schematic showing the first LMC6484 amplifier stage for the load-cell signal.">
                     <figcaption>Source PDF first-stage amplifier: R3/R1 sets the ideal gain of 100 for the V2 output.</figcaption>
@@ -492,7 +484,7 @@
             <article class="section-card card border-gold">
                 <p class="eyebrow">Checkpoint 4</p>
                 <h2>Add a non-inverting second-stage amplifier</h2>
-                <p>Add the second-stage amplifier using op-amp number three on the LMC6484 chip, pins 8, 9, and 10. Use R5 = 10 kOhm and R6 = 100 kOhm. The additional ideal gain is AV = 1 + R6 / R5 = 11.</p>
+                <p>Add the second-stage amplifier using op-amp number three on the LMC6484 chip, pins 8, 9, and 10. Use R5 = 10 kΩ and R6 = 100 kΩ. The additional ideal gain is AV = 1 + R6 / R5 = 11.</p>
                 <figure class="diagram-card">
                     <img src="../../assets/lab4-pdf-stage2-circuit.png" alt="Source PDF schematic showing the complete two-stage LMC6484 amplifier circuit connected to Arduino analog input.">
                     <figcaption>Source PDF second-stage amplifier: the non-inverting stage increases V2 to V3 before Arduino A0 reads it.</figcaption>
@@ -911,12 +903,12 @@
                     const target = document.querySelector(`[data-gain-result="${input.dataset.key}"]`);
                     if (!target) return;
                     if (input.value === '') {
-                        target.textContent = '';
+                        target.textContent = 'Enter a value.';
                         return;
                     }
                     const expected = Number(input.dataset.expected);
                     const value = Number(input.value);
-                    target.textContent = Math.abs(value - expected) < 0.01 ? 'Matches expected value.' : `Expected ${expected}.`;
+                    target.textContent = Math.abs(value - expected) < 0.01 ? 'Correct.' : 'Incorrect.';
                 });
             }
 

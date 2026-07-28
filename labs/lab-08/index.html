@@ -845,7 +845,7 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                     return;
                 }
                 const correct = values.every((value, index) => value === String(index + 1));
-                feedback.textContent = correct ? 'Correct moisture monitoring chain.' : 'Not yet. Follow the data from sensor voltage to cloud dashboard and analytics.';
+                feedback.textContent = correct ? 'Correct measurement chain.' : 'Not yet. Follow the data from sensor voltage to cloud dashboard and analytics.';
             }
 
             function updateTopicChecks() {
@@ -855,13 +855,13 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                     const actual = input.value.trim();
                     const expected = input.dataset.expected.trim();
                     if (!actual) {
-                        target.textContent = '';
+                        target.textContent = 'Enter a value.';
                         return;
                     }
                     const matches = input.hasAttribute('data-case-sensitive')
                         ? actual === expected
                         : actual.toLowerCase() === expected.toLowerCase();
-                    target.textContent = matches ? 'Matches expected value.' : `Expected ${input.dataset.expected}.`;
+                    target.textContent = matches ? 'Correct.' : 'Incorrect.';
                 });
             }
 

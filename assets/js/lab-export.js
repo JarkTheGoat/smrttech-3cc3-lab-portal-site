@@ -106,8 +106,8 @@
         if (explicit && /^(%|v|mv|a|ma|ohm|kohm|mohm|rpm|ms|s|c|f|k|cm|mm|m|deg|degrees?|count)$/i.test(text(explicit[1]).replace(/Ω/g, 'ohm'))) {
             return text(explicit[1]);
         }
-        const known = label.match(/\b(k?ohm|mohm|volts?|millivolts?|amps?|milliamps?|rpm|milliseconds?|seconds?|celsius|fahrenheit|kelvin|percent)\b/i);
-        return known ? text(known[1]) : '';
+        const known = label.match(/(?:\b(k?ohm|mohm|volts?|millivolts?|amps?|milliamps?|rpm|milliseconds?|seconds?|celsius|fahrenheit|kelvin|percent)\b|((?:k|M)?Ω))/i);
+        return known ? text(known[1] || known[2]) : '';
     }
 
     function fieldId(control, index) {
@@ -244,7 +244,7 @@
         const inRange = value >= 100 && value <= 2000000;
         return {
             status: inRange ? 'pass' : 'warning',
-            rule: 'Photoresistor resistance should be between 100 ohm and 2,000,000 ohm.',
+            rule: 'Photoresistor resistance should be between 100 Ω and 2,000,000 Ω.',
             message: inRange
                 ? 'Value is within the Lab 1 photoresistor measurement range.'
                 : 'Value is outside the Lab 1 photoresistor measurement range and should be reviewed.'

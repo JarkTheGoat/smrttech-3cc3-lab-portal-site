@@ -186,7 +186,7 @@
                     <dt class="text-gray-500">Echo</dt><dd class="font-semibold text-right">Digital 9</dd>
                     <dt class="text-gray-500">Trig</dt><dd class="font-semibold text-right">Digital 8</dd>
                     <dt class="text-gray-500">LED output</dt><dd class="font-semibold text-right">Digital 12</dd>
-                    <dt class="text-gray-500">LED resistor</dt><dd class="font-semibold text-right">220 ohm</dd>
+                    <dt class="text-gray-500">LED resistor</dt><dd class="font-semibold text-right">220 Ω</dd>
                 </dl>
             </div>
             <div class="danger-card text-sm"><strong>Before rewiring:</strong> disconnect Arduino USB, verify HC-SR04 pin order, and confirm the LED resistor is in series.</div>
@@ -255,7 +255,7 @@
                     <span class="stage-summary-chip">Lab time: 3 hours</span>
                     <span class="stage-summary-chip">Post-lab: 45-60 min</span>
                     <span class="stage-summary-chip">Software: LabVIEW 2026 Q1, Lab7_init.vi, ThingsBoard Cloud, MQTT</span>
-                    <span class="stage-summary-chip">Hardware: Arduino Mega, HC-SR04, LED, 220 ohm resistor</span>
+                    <span class="stage-summary-chip">Hardware: Arduino Mega, HC-SR04, LED, 220 Ω resistor</span>
                 </div>
                 <div class="warning-card mt-block"><strong>Central question:</strong> How does a local sensor measurement become cloud data, and how does a cloud command control a local actuator?</div>
                 <div class="flex flex-wrap gap-3 mt-block">
@@ -465,17 +465,17 @@
                 <h2>Create the ultrasonic sensor and LED circuit</h2>
                 <p>Wire the local sensing and actuation hardware. The ultrasonic sensor provides distance measurement; the LED provides a visible actuator controlled locally and from the cloud.</p>
                 <div class="grid-layout two">
-                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-ultrasonic-led-schematic.png" alt="Source PDF schematic showing Arduino Mega connected to HC-SR04 ultrasonic sensor and LED with resistor."><figcaption>Source PDF circuit: Echo to D9, Trig to D8, LED output on D12 through 220 ohm resistor.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-ultrasonic-led-schematic.png" alt="Source PDF schematic showing Arduino Mega connected to HC-SR04 ultrasonic sensor and LED with resistor."><figcaption>Source PDF circuit: Echo to D9, Trig to D8, LED output on D12 through 220 Ω resistor.</figcaption></figure>
                     <figure class="diagram-card"><img src="../../assets/lab7-pdf-ultrasonic-led-photo.jpg" alt="Source PDF photo of Arduino Mega breadboard ultrasonic sensor and LED circuit."><figcaption>Source PDF hardware photo: compare breadboard placement, Arduino wiring, sensor orientation, and LED path.</figcaption></figure>
                 </div>
                 <div class="grid-layout two mt-block">
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-led-resistor"><span>Digital 12 connects to LED in series with a 220 ohm resistor.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-led-resistor"><span>Digital 12 connects to LED in series with a 220 Ω resistor.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-vcc-gnd"><span>HC-SR04 VCC and GND are connected to the correct rails.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-echo"><span>Echo is connected to Digital 9.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-trig"><span>Trig is connected to Digital 8.</span></label>
                 </div>
                 <details><summary>Think it through</summary><div><ul><li>What does the ultrasonic sensor physically measure?</li><li>What evidence would prove Trig and Echo are not swapped?</li><li>Why does the LED need a current-limiting resistor?</li></ul></div></details>
-                <div class="danger-card mt-block"><strong>If local hardware behaviour is wrong:</strong> stop the VI and disconnect Arduino USB before rewiring. Then verify LED polarity and its 220 ohm series resistor, D12, HC-SR04 power and ground, Trig D8, and Echo D9 before restoring power.</div>
+                <div class="danger-card mt-block"><strong>If local hardware behaviour is wrong:</strong> stop the VI and disconnect Arduino USB before rewiring. Then verify LED polarity and its 220 Ω series resistor, D12, HC-SR04 power and ground, Trig D8, and Echo D9 before restoring power.</div>
             </article>
         </section>
 
@@ -897,13 +897,13 @@
                     const actual = input.value.trim();
                     const expected = input.dataset.expected.trim();
                     if (!actual) {
-                        target.textContent = '';
+                        target.textContent = 'Enter a value.';
                         return;
                     }
                     const matches = input.hasAttribute('data-case-sensitive')
                         ? actual === expected
                         : actual.toLowerCase() === expected.toLowerCase();
-                    target.textContent = matches ? 'Matches expected value.' : `Expected ${input.dataset.expected}.`;
+                    target.textContent = matches ? 'Correct.' : 'Incorrect.';
                 });
             }
 

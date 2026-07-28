@@ -1185,7 +1185,7 @@
                         <h3>Required evidence</h3>
                         <label class="completion-box"><input type="checkbox" class="persist-check" data-key="sense-circuit-checked"><span>Circuit checked before USB connection.</span></label>
                         <label class="response-field"><span>Arduino pin used</span><input class="persist-text" data-key="sense-pin" value="A0"></label>
-                        <label class="response-field"><span>Fixed resistor value</span><input class="persist-text" data-key="sense-resistor" value="10 kOhm"></label>
+                        <label class="response-field"><span>Fixed resistor value</span><input class="persist-text" data-key="sense-resistor" value="10 kΩ"></label>
                         <label class="response-field"><span>Brief explanation of voltage-divider purpose</span><textarea class="persist-text" data-key="sense-divider-purpose"></textarea></label>
                         <label class="response-field"><span>Predicted direction of voltage change when the thermistor warms</span><textarea class="persist-text" data-key="sense-direction"></textarea></label>
                     </div>
@@ -1398,7 +1398,7 @@
                 <h2>Key terms</h2>
                 <div class="grid three">
                     <details><summary>Thermistor</summary><div>A resistor whose resistance changes with temperature.</div></details>
-                    <details><summary>Resistance</summary><div>Opposition to electric current, measured in ohms.</div></details>
+                    <details><summary>Resistance</summary><div>Opposition to electric current, measured in Ω.</div></details>
                     <details><summary>Voltage divider</summary><div>Two resistive elements that create a measurable junction voltage.</div></details>
                     <details><summary>Analog voltage</summary><div>A continuously varying voltage value.</div></details>
                     <details><summary>Arduino analog input</summary><div>A microcontroller input that measures voltage and converts it to a number.</div></details>
@@ -1622,7 +1622,7 @@
                     return;
                 }
                 const correct = values.every((value, index) => value === CORRECT_ORDER[index]);
-                feedback.textContent = correct ? 'Correct.' : 'Needs correction.';
+                feedback.textContent = correct ? 'Correct measurement chain.' : 'Needs correction.';
             }
 
             function updateFahrenheitChecks() {
@@ -1632,11 +1632,11 @@
                     const target = document.querySelector(`[data-f-result="${input.dataset.celsius}"]`);
                     if (!target) return;
                     if (input.value === '') {
-                        target.textContent = '';
+                        target.textContent = 'Enter a value.';
                         return;
                     }
                     const value = Number(input.value);
-                    target.textContent = Math.abs(value - expected) < 0.01 ? 'Matches Formula' : 'Needs correction.';
+                    target.textContent = Math.abs(value - expected) < 0.01 ? 'Correct.' : 'Incorrect.';
                 });
             }
 

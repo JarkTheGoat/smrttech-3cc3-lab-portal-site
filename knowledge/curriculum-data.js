@@ -229,15 +229,15 @@ window.SMRTTECH_CURRICULUM = {
           "name": "Resistor values and units",
           "title": "How does resistor values and units support the 3CC3 lab workflow",
           "asset": "Voltage_Divider_Schematic.png",
-          "summary": "Use ohms, kilo-ohms, and component values consistently.",
+          "summary": "Use Ω, kΩ, and component values consistently.",
           "keywords": [
-            "ohm",
-            "kOhm",
-            "MOhm",
+            "Ω",
+            "kΩ",
+            "MΩ",
             "4.7",
-            "10 kOhm",
-            "100 kOhm",
-            "1 MOhm",
+            "10 kΩ",
+            "100 kΩ",
+            "1 MΩ",
             "Lab 1",
             "Lab 2",
             "Lab 3",
@@ -248,14 +248,14 @@ window.SMRTTECH_CURRICULUM = {
           "sections": [
             {
               "heading": "Core idea",
-              "body": "Use ohms, kilo-ohms, and component values consistently."
+              "body": "Use Ω, kΩ, and component values consistently."
             },
             {
               "heading": "Where it is used",
               "body": "Used in Lab 1, Lab 2, Lab 3, Lab 4. Prerequisites: dc-circuits."
             }
           ],
-          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use ohms, kilo-ohms, and component values consistently.",
+          "hint": "If this topic is blocking your progress, trace one example through the lab system and connect it to: Use Ω, kΩ, and component values consistently.",
           "related": [
             "measurement-units",
             "led-current-limiting",
@@ -387,7 +387,7 @@ window.SMRTTECH_CURRICULUM = {
           "summary": "Hold a digital input LOW when a switch is open so the input does not float.",
           "keywords": [
             "floating input",
-            "10 kOhm",
+            "10 kΩ",
             "digital logic",
             "Lab 3",
             "Circuits and components",
@@ -451,7 +451,7 @@ window.SMRTTECH_CURRICULUM = {
           "asset": "Voltage_Divider_Schematic.png",
           "summary": "Protect the LED by limiting current in the output path.",
           "keywords": [
-            "220 ohm",
+            "220 Ω",
             "resistor",
             "Lab 1",
             "Lab 7",
@@ -1818,10 +1818,10 @@ window.SMRTTECH_CURRICULUM = {
           "name": "Measuring Resistance",
           "title": "How do I measure resistance safely without damaging the meter",
           "asset": "DMM_Resistance_Measurement.jpg",
-          "summary": "Reading ohms on an unpowered part.",
+          "summary": "Reading resistance in Ω on an unpowered part.",
           "keywords": [
             "resistance",
-            "ohms",
+            "Ω",
             "unpowered",
             "continuity"
           ],
@@ -2004,7 +2004,7 @@ window.SMRTTECH_CURRICULUM = {
           "asset": "DMM_Resistance_Measurement.jpg",
           "summary": "Measure resistance on an unpowered circuit or isolated component.",
           "keywords": [
-            "ohms",
+            "Ω",
             "unpowered",
             "Lab 1",
             "Measurement and instrumentation",
