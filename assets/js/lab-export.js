@@ -434,9 +434,9 @@
             const localFeedback = grid.parentElement?.querySelectorAll('[data-order-feedback], [data-monitor-feedback], [data-control-feedback]') || [];
             const feedback = localFeedback.length === 1 ? localFeedback[0] : orderFeedback[index];
             const selects = [...grid.querySelectorAll('.order-item select')];
-            const complete = selects.length > 0
-                ? selects.every((select, selectIndex) => select.value === String(selectIndex + 1))
-                : /^Correct\b/i.test(text(feedback?.textContent));
+            const correctOrder = selects.length > 0 &&
+                selects.every((select, selectIndex) => select.value === String(selectIndex + 1));
+            const complete = correctOrder && /^Correct\b/i.test(text(feedback?.textContent));
             checks.push({
                 id: grid.dataset.key || `ordering-check-${index + 1}`,
                 label: `Ordering activity ${index + 1}`,

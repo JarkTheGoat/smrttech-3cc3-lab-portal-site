@@ -941,23 +941,18 @@
             </article>
 
             <article class="section-card card border-warning">
-                <p class="eyebrow">Safety And Setup</p>
-                <h2>Pre-power checklist</h2>
-                <div class="warning-box">
-                    <strong>STOP - Check the circuit before connecting Arduino to USB or running the VI.</strong>
-                    <p>This checklist supports safe work, but it does not replace instructor approval when approval is required.</p>
-                </div>
+                <p class="eyebrow">Materials Checklist</p>
+                <h2>Confirm the required materials</h2>
+                <p>Gather the following software, hardware, and course resources before beginning the lab.</p>
                 <div class="grid two mt-block">
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-low-voltage"><span>Only low-voltage Arduino connections are used.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-power-off"><span>USB or power is disconnected before wiring changes.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-5v-gnd"><span>5 V and GND locations are verified before connecting the sensor circuit.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-no-short"><span>5 V is not shorted to GND.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-breadboard"><span>No jumper wires are forced into damaged breadboard holes.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-metal-tools"><span>Metal tools are kept away from powered breadboard rails.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-board-port"><span>Arduino board type and serial port are confirmed before running the VI.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-linx"><span>LINX firmware is loaded before starting the sensor VI.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-stop"><span>The VI will be stopped using the Stop button unless instructed otherwise.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-hot-board"><span>I will ask for help if the board becomes hot, disconnects repeatedly, or gives unstable readings.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-labview"><span>LabVIEW is installed and opens normally.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-linx"><span>NI LabVIEW LINX Toolkit is installed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-firmware"><span>Arduino firmware for LINX is available to load.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-files"><span>Required course files from Avenue to Learn are downloaded.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-arduino"><span>Arduino Mega and a USB data cable are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-thermistor"><span>Thermistor and 10 kΩ fixed resistor are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-breadboard"><span>Breadboard and jumper wires are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-port"><span>The Arduino serial port can be identified on this computer.</span></label>
                 </div>
             </article>
 
@@ -1341,6 +1336,10 @@
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-kelvin"><span>Kelvin extension implementation and explanation.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-reflections"><span>Answers to all reflection questions.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-name"><span>Student name and number included as required by course procedure.</span></label>
+                </div>
+                <div class="grid two mt-block">
+                    <label class="response-field evidence-upload"><span>Final <code>Thermometer.vi</code> file</span><input class="persist-file" data-key="final-thermometer-vi" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-thermometer-vi">No .vi file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>Final Celsius-to-Fahrenheit SubVI file</span><input class="persist-file" data-key="final-c-to-f-subvi" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-c-to-f-subvi">No .vi file selected.</small></label>
                 </div>
             </article>
 

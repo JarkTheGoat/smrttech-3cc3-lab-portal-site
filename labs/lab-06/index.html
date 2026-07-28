@@ -258,7 +258,7 @@
         <section class="stage-panel stage-0" id="prepare" tabindex="-1">
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Prepare</p>
-                <h2>Scenario, objectives, and safety</h2>
+                <h2>Scenario and objectives</h2>
                 <p>You are building a local motion-control node that receives commands from a LabVIEW HMI, sends those commands over serial to Arduino firmware, and uses a motor driver plus external power supply to move a stepper motor in controlled increments.</p>
                 <div class="grid-layout three mt-block">
                     <figure class="diagram-card"><img src="../../assets/lab6-pdf-stepper-model.jpg" alt="Source PDF model of a stepper motor with windings and permanent magnet rotor."><figcaption>Source PDF Figure 1: basic stepper motor model with windings and permanent magnet core.</figcaption></figure>
@@ -269,14 +269,18 @@
             </article>
 
             <article class="section-card card border-gold">
-                <h2>Pre-power checklist</h2>
-                <div class="grid-layout two">
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="prep-ide"><span>Arduino IDE downloaded and installed from the official Arduino website.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="prep-motor"><span>Stepper motor, motor driver, Arduino Mega, and jumper wires available.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="prep-power"><span>External power supply and breadboard power board available.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="prep-ground"><span>I understand Arduino and driver circuit must share common ground.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="prep-current"><span>I will not power the motor from Arduino 5 V.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="prep-port"><span>Arduino board type and serial port will be confirmed before upload.</span></label>
+                <p class="eyebrow">Materials Checklist</p>
+                <h2>Confirm the required materials</h2>
+                <p>Gather the following software, hardware, and course resources before beginning the lab.</p>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-ide"><span>Arduino IDE is installed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-labview"><span>LabVIEW and NI-VISA are installed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-arduino"><span>Arduino Mega and a USB data cable are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-motor"><span>Stepper motor and compatible motor driver are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-breadboard"><span>Breadboard and jumper wires are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-power"><span>External power supply and breadboard power board are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-firmware"><span>Course Arduino firmware and required LabVIEW files are downloaded.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-port"><span>The Arduino serial port can be identified on this computer.</span></label>
                 </div>
             </article>
         </section>

@@ -114,6 +114,16 @@ html {
     text-transform: uppercase;
 }
 
+/* Direct card headings identify the purpose of each lab section. */
+.section-card > h2 {
+    margin: 0 0 0.9rem;
+    color: var(--mac-maroon, #7A003C);
+    font-size: clamp(1.35rem, 2vw, 1.7rem) !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.015em;
+    line-height: 1.18;
+}
+
 .activity-heading {
     display: flex;
     flex-wrap: wrap;

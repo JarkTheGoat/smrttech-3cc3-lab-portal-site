@@ -132,6 +132,7 @@
         .stage-message { display: none; width: 100%; margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.88rem; font-weight: 600; }
         .stage-message.show { display: block; }
         .stage-message.success { background: #EFFAF3; border: 1px solid #B7E4C7; color: #174D2D; }
+        .pulse-width-range-note { display: block; margin-top: 0.4rem; color: #8A4D00; font-size: 0.78rem; font-weight: 600; line-height: 1.35; }
         .knowledge-skill-list { display: grid; gap: 0.55rem; margin: 0; padding: 0; list-style: none; }
         .knowledge-skill-list a { display: block; padding: 0.7rem 0.8rem; border-radius: 10px; border: 1px solid #DDE3E8; background: white; color: var(--lab-text); font-weight: 700; text-decoration: none; }
         .optional-card { border-left: 5px solid var(--mac-gold); }
@@ -236,6 +237,50 @@
                     <li><a href="../../knowledge/skill-tree.html?topic=systematic-troubleshooting">Troubleshooting sequence</a></li>
                 </ul>
             </div>
+            <div class="card p-5">
+                <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-3">Formula Node Syntax Reference</h4>
+                <p class="text-sm text-gray-600">A practical map of the syntax documented by NI. Create input/output terminals on the Formula Node border first, then reference those terminal names in the code.</p>
+                <p class="text-sm mt-2"><a class="concept-link" href="https://www.ni.com/docs/en-US/bundle/labview/page/formula-node-syntax.html" target="_blank" rel="noopener">Open the official NI Formula Node syntax reference</a></p>
+                <details open><summary>Statements, blocks, and comments</summary><div><p>End each executable statement with <code>;</code>. Use braces to group a block. Both one-line and block comments are supported.</p><pre><code>// One-line comment
+/* Multi-line
+   comment */
+{
+    output = input;
+}</code></pre></div></details>
+                <details><summary>Assignments and expressions</summary><div><p>An assignment writes a value to an output, local variable, or array element. Expressions can use parentheses, function calls, array subscriptions, and the conditional <code>? :</code> form.</p><pre><code>Angle = voltage * 36;
+count += 1;
+limit = (high &gt; low) ? high : low;
+reading = samples[index];</code></pre><p>Assignment operators: <code>= += -= *= /= &gt;&gt;= &lt;&lt;= &amp;= ^= |= %= **=</code>.</p></div></details>
+                <details><summary>Operators</summary><div><p>Binary operators: <code>+ - * / ^ != == &gt; &lt; &gt;= &lt;= &amp;&amp; || &amp; | % **</code>.</p><p>Unary operators: <code>+ - ! ++ -- ~</code>. Use <code>==</code> to compare; a single <code>=</code> assigns.</p></div></details>
+                <details><summary>Conditionals and selection</summary><div><pre><code>if (Angle &gt;= highLimit) {
+    Direction = -1;
+} else if (Angle &lt;= lowLimit) {
+    Direction = 1;
+}
+
+switch (mode) {
+    case 0: output = manualValue; break;
+    default: output = automaticValue; break;
+}</code></pre><p>Use <code>if</code>, <code>else</code>, <code>switch</code>, <code>case</code>, and <code>default</code> to choose behaviour.</p></div></details>
+                <details><summary>Loops and flow control</summary><div><pre><code>for (i = 0; i &lt; 3; i++) {
+    total += samples[i];
+}
+
+while (running) {
+    // repeated work
+}
+
+do {
+    count--;
+} while (count &gt; 0);</code></pre><p>Formula Nodes support <code>for</code>, <code>while</code>, and <code>do ... while</code> loops. <code>break;</code> leaves the nearest loop or switch; <code>continue;</code> skips to the next loop iteration.</p></div></details>
+                <details><summary>Variables, arrays, and types</summary><div><p>Declare a local variable with a type and identifier; arrays include a constant size in brackets.</p><pre><code>float64 scaled;
+int32 index;
+uInt16 samples[3];
+scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>float32</code>, <code>float64</code>. Integer types: <code>int</code>, <code>int8</code>, <code>int16</code>, <code>int32</code>, <code>uInt8</code>, <code>uInt16</code>, <code>uInt32</code>.</p></div></details>
+                <details><summary>Identifiers and constants</summary><div><p>Identifiers begin with a letter or underscore, then may contain letters, digits, or underscores. Constants can be <code>pi</code>, decimal, binary (<code>0b...</code>), octal (leading <code>0</code>), hexadecimal (<code>0x...</code>), or floating-point values with an optional exponent such as <code>1.5e2</code>.</p></div></details>
+                <details><summary>Functions and scope</summary><div><p>Use a function as <code>functionName(argument1, argument2)</code>. NI documents the available functions separately; only use functions supported by the installed LabVIEW version. Variables follow Formula Node scope rules, so declare locals in the block where they are needed and avoid reusing a terminal name for a local variable.</p></div></details>
+                <p class="text-sm text-gray-600 mt-3">This reference is for Formula Node syntax only. Keep LabVIEW dataflow, wires, terminals, and local-variable configuration on the block diagram.</p>
+            </div>
             <div class="success-card text-sm">
                 <strong>Concept anchor:</strong> LabVIEW does not send degrees directly to the servo. It calculates a pulse-width command; the servo electronics interpret that signal as a target position.
             </div>
@@ -307,40 +352,25 @@
             </article>
 
             <article class="section-card card border-maroon">
-                <h2>Safety and pre-power checklist</h2>
-                <div class="danger-card"><strong>STOP - Check servo wiring, potentiometer wiring, and pulse-width limits before running the VI.</strong><p>This checklist supports safe work, but it does not replace instructor approval when approval is required.</p></div>
+                <p class="eyebrow">Materials Checklist</p>
+                <h2>Confirm the required materials</h2>
+                <p>Gather the following software, hardware, and course resources before beginning the lab.</p>
                 <div class="grid-layout two mt-block">
-                    <div class="mini-card"><h3>Electrical safety</h3><ul><li>Disconnect USB before changing wiring.</li><li>Verify 5 V and GND rails before powering.</li><li>Do not short 5 V to GND.</li><li>Confirm brown to GND, red to 5 V, orange to Digital Pin 7.</li><li>Confirm potentiometer middle terminal to A0.</li><li>Ask for help if the Arduino or servo becomes hot, buzzes continuously, or behaves unexpectedly.</li></ul></div>
-                    <div class="mini-card"><h3>Mechanical safety</h3><ul><li>Attach the white plastic coupling before testing.</li><li>Keep fingers, wires, and loose objects clear of the moving servo horn.</li><li>Do not force the shaft by hand while powered.</li><li>Do not command extreme pulse widths without confirming limits.</li><li>Use the Stop button rather than aborting the VI during normal operation.</li></ul></div>
-                </div>
-                <div class="grid-layout two mt-block">
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safe-coupling"><span>White plastic coupling attached.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safe-servo-wires"><span>Servo brown, red, and orange wires checked.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safe-pot"><span>Potentiometer outside terminals and middle terminal checked.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safe-linx"><span>LINX firmware, board type, and COM port checked.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safe-motion"><span>Wires and fingers clear of servo motion.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safe-limits"><span>Pulse-width limits will be tested cautiously.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-labview"><span>LabVIEW and the NI LabVIEW LINX Toolkit are installed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-firmware"><span>Arduino firmware for LINX is available to load.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-arduino"><span>Arduino Mega and a USB data cable are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-breadboard"><span>Breadboard and jumper wires are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-potentiometer"><span>Potentiometer is available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-servo"><span>Servo motor is available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-coupling"><span>White plastic servo coupling is available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-port"><span>The Arduino serial port can be identified on this computer.</span></label>
                 </div>
             </article>
         </section>
 
         <section class="stage-panel stage-1" id="predict" tabindex="-1">
-            <article class="section-card card border-maroon">
-                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Predict</p>
-                <h2>Pre-lab activities</h2>
-                <h3>A. Servo readiness</h3>
-                <div class="grid-layout two">
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="ready-mega"><span>Arduino Mega and USB cable available.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="ready-servo"><span>Servo motor and white coupling available.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="ready-pot"><span>Potentiometer and jumper wires available.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="ready-port"><span>Arduino COM port known.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="ready-pins"><span>A0 and Digital Pin 7 identified.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="ready-firmware"><span>LINX firmware loaded.</span></label>
-                </div>
-            </article>
-
             <article class="section-card card border-gold">
-                <h2>B. Build the command chain</h2>
+                <h2>A. Build the command chain</h2>
                 <p>Drag the events into order, or use the numbered selects if you prefer keyboard entry.</p>
                 <div class="order-grid" data-dnd-order>
                     <label class="order-item"><select class="persist-text order-select" data-key="chain-pot"></select><span>Potentiometer rotates</span></label>
@@ -356,7 +386,7 @@
             </article>
 
             <article class="section-card card border-success">
-                <h2>C. Predict scaling values</h2>
+                <h2>B. Predict scaling values</h2>
                 <div class="table-wrap">
                     <table>
                         <thead><tr><th>Prompt</th><th>Expected relationship</th><th>Your answer</th><th>Check</th></tr></thead>
@@ -370,7 +400,7 @@
                         </tbody>
                     </table>
                 </div>
-                <label class="response-field mt-block"><span>D. What does the Case Structure decide?</span><textarea class="persist-text" data-key="predict-case"></textarea></label>
+                <label class="response-field mt-block"><span>C. What does the Case Structure decide?</span><textarea class="persist-text" data-key="predict-case"></textarea></label>
             </article>
         </section>
 
@@ -476,7 +506,7 @@
                         </tbody>
                     </table>
                 </div>
-                <label class="response-field evidence-upload mt-block"><span>Manual case evidence file</span><input class="persist-file" data-key="manual-screenshot" data-stage-required type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.pdf"><small class="file-name-preview" data-file-name-for="manual-screenshot">No file selected.</small><small class="text-gray-500">Accepted: PNG, JPG/JPEG, WebP, GIF, or PDF. The completion record stores only the filename; it does not upload or embed the file.</small></label>
+                <label class="response-field evidence-upload mt-block"><span>Upload one screenshot or PDF showing both the Manual/Automatic front panel and the Manual Case block diagram</span><input class="persist-file" data-key="manual-screenshot" data-stage-required type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.pdf"><small class="file-name-preview" data-file-name-for="manual-screenshot">No file selected.</small><small class="text-gray-500">Show the Choice control, Voltage and Angle indicators on the front panel, plus the Formula Node and its V-to-Angle wiring in the Manual Case.</small></label>
             </article>
         </section>
 
@@ -498,9 +528,9 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
                     <table>
                         <thead><tr><th>Angle</th><th>Pulse width using 600-2400 microseconds</th><th>Your measured or adjusted value</th><th>Notes</th></tr></thead>
                         <tbody>
-                            <tr><td>0 degrees</td><td>600 microseconds</td><td><input type="number" step="1" min="400" max="2600" class="persist-text" data-key="pw-measured-0" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-0"></td></tr>
-                            <tr><td>90 degrees</td><td>1500 microseconds</td><td><input type="number" step="1" min="400" max="2600" class="persist-text" data-key="pw-measured-90" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-90"></td></tr>
-                            <tr><td>180 degrees</td><td>2400 microseconds</td><td><input type="number" step="1" min="400" max="2600" class="persist-text" data-key="pw-measured-180" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-180"></td></tr>
+                            <tr><td>0 degrees</td><td>600 microseconds</td><td><input type="number" step="1" class="persist-text" data-key="pw-measured-0" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-0"><small class="pulse-width-range-note" data-pulse-range-note-for="pw-measured-0" aria-live="polite"></small></td></tr>
+                            <tr><td>90 degrees</td><td>1500 microseconds</td><td><input type="number" step="1" class="persist-text" data-key="pw-measured-90" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-90"><small class="pulse-width-range-note" data-pulse-range-note-for="pw-measured-90" aria-live="polite"></small></td></tr>
+                            <tr><td>180 degrees</td><td>2400 microseconds</td><td><input type="number" step="1" class="persist-text" data-key="pw-measured-180" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-180"><small class="pulse-width-range-note" data-pulse-range-note-for="pw-measured-180" aria-live="polite"></small></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -546,10 +576,27 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
                         <img src="../../assets/lab5-pdf-wave-servo-icon.png" alt="Source PDF Wave Servo icon for the automatic waving SubVI.">
                         <figcaption>Source PDF icon example: edit the SubVI icon so it is recognizable when placed in the main VI.</figcaption>
                     </figure>
-                    <figure class="diagram-card">
-                        <img src="../../assets/lab5-pdf-subvi-block-diagram.png" alt="Reference layout for an automatic-wave SubVI with local variables, a wait function, and connector wiring.">
-                        <figcaption>Reference layout only: develop, test, and explain your own Formula Node logic and local-variable state handling.</figcaption>
-                    </figure>
+                    <div class="diagram-card">
+                        <h3>Formula Node starter architecture</h3>
+                        <p>Copy this structure into the Formula Node after creating the listed terminals. The TODO comments deliberately leave the automatic-wave behaviour for you to implement and test.</p>
+                        <pre><code>/*
+Inputs: GO, NumberOfWaves, Speed,
+        AngleLast, DirectionLast, WaveCountLast, WavingLast
+Outputs: Angle, Direction, WaveCount, Waving
+*/
+
+// Start from the previous iteration's state.
+Angle = AngleLast;
+Direction = DirectionLast;
+WaveCount = WaveCountLast;
+Waving = WavingLast;
+
+// TODO: Start a new sequence when GO is pressed.
+// TODO: Move Angle using Speed and Direction.
+// TODO: Reverse Direction at your safe angle limits.
+// TODO: Update WaveCount after each completed pass.
+// TODO: Stop waving when the requested count reaches zero.</code></pre>
+                    </div>
                 </div>
                 <div class="grid-layout three">
                     <div class="mini-card"><h3>Controls</h3><p><code>Go</code>, <code>NumberOfWaves</code>, and <code>Speed</code>.</p></div>
@@ -600,6 +647,10 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
                 </div>
                 <details><summary>If Manual mode works but Automatic mode does not</summary><div>Keep the known-good wiring and scaling unchanged. Check the Choice selector, SubVI connector pane, Automatic-case output tunnel, and local-variable read direction one at a time, then repeat the same controlled test.</div></details>
                 <label class="response-field evidence-upload mt-block"><span>Final main VI front-panel and block-diagram evidence file</span><input class="persist-file" data-key="auto-final-evidence" type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="auto-final-evidence">No file selected.</small><small class="text-gray-500">Accepted: PNG, JPG/JPEG, WebP, GIF, or PDF. The completion record stores only the filename; it does not upload or embed the file.</small></label>
+                <div class="grid-layout two mt-block">
+                    <label class="response-field evidence-upload"><span>Final main servo-control VI file</span><input class="persist-file" data-key="final-servo-main-vi" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-servo-main-vi">No .vi file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>Final automatic-wave SubVI file</span><input class="persist-file" data-key="final-servo-subvi" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-servo-subvi">No .vi file selected.</small></label>
+                </div>
             </article>
         </section>
 
@@ -607,10 +658,7 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Reflect</p>
                 <h2>Deliverables and assessment</h2>
-                <div class="grid-layout two">
-                    <div class="mini-card"><h3>Submit</h3><ol><li>Completed servo and potentiometer circuit.</li><li>Manual-control front panel and block diagram evidence.</li><li>Evidence that A0 is read and Digital Pin 7 commands the servo.</li><li>Voltage-to-angle and angle-to-pulse-width calculations.</li><li>Formula Node explanations.</li><li>Completed automatic-wave SubVI with front panel, block diagram, icon, and connector pane.</li><li>Final main VI with SubVI in Automatic case.</li><li>Manual and automatic mode test evidence.</li><li>Explanation of each if statement, <code>==</code>, <code>|</code>, and local variables.</li><li>Three applications of servomotors.</li><li>Student names and numbers as required.</li><li>Report formatted according to 3CC3 Lab Policies and Report Writing.pdf.</li></ol></div>
-                    <div class="mini-card"><h3>Suggested weighting</h3><table style="table-layout:fixed;width:100%"><tbody><tr><td>Circuit construction and safety evidence</td><td>10%</td></tr><tr><td>Manual-control VI and HMI</td><td>15%</td></tr><tr><td>Scaling calculations</td><td>15%</td></tr><tr><td>Manual servo test evidence</td><td>10%</td></tr><tr><td>Automatic-wave SubVI</td><td>20%</td></tr><tr><td>Final automatic integration</td><td>15%</td></tr><tr><td>Code explanation and report responses</td><td>10%</td></tr><tr><td>Troubleshooting and reflection</td><td>5%</td></tr></tbody></table></div>
-                </div>
+                <div class="mini-card"><h3>Submit</h3><ol><li>Completed servo and potentiometer circuit.</li><li>Manual-control front panel and block diagram evidence.</li><li>Evidence that A0 is read and Digital Pin 7 commands the servo.</li><li>Voltage-to-angle and angle-to-pulse-width calculations.</li><li>Formula Node explanations.</li><li>Completed automatic-wave SubVI with front panel, block diagram, icon, and connector pane.</li><li>Final main VI with SubVI in Automatic case.</li><li>Manual and automatic mode test evidence.</li><li>Explanation of each if statement, <code>==</code>, <code>|</code>, and local variables.</li><li>Three applications of servomotors.</li><li>Student names and numbers as required.</li><li>Report formatted according to 3CC3 Lab Policies and Report Writing.pdf.</li></ol></div>
             </article>
 
             <article class="section-card card border-success" aria-labelledby="lab5-outcomes-achieved">
@@ -878,6 +926,14 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
                     const expected = Number(input.dataset.expected);
                     const value = Number(input.value);
                     target.textContent = Math.abs(value - expected) < 0.01 ? 'Correct.' : 'Incorrect.';
+                });
+                document.querySelectorAll('[data-pulse-range-note-for]').forEach(note => {
+                    const input = document.querySelector(`[data-key="${note.dataset.pulseRangeNoteFor}"]`);
+                    const rawValue = String(input?.value || '').trim();
+                    const value = Number(rawValue);
+                    note.textContent = rawValue && Number.isFinite(value) && (value < 400 || value > 2600)
+                        ? 'Abnormal or unexpected value: this is outside the expected 400–2600 microsecond range. Record the observation, then verify the servo limits and wiring.'
+                        : '';
                 });
             }
 

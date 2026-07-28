@@ -302,16 +302,18 @@
             </article>
 
             <article class="section-card card border-gold">
-                <h2>Safety and setup checklist</h2>
-                <div class="grid-layout two">
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="readiness-account"><span>I can reach ThingsBoard Cloud registration and have access to my student email for verification.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="readiness-token-safety"><span>I understand that the device access token is password-equivalent and must stay out of responses, screenshots, reports, HTML, repositories, and completion JSON.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="readiness-device-model"><span>I understand that one physical project uses one device named <code>Lab7-Ultrasonic-StudentName</code>, not one device per sensor or actuator.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="readiness-data-model"><span>I can distinguish telemetry keys <code>distance_cm</code>/<code>led_state</code> from shared attribute <code>led_switch</code>.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-lab7"><span><code>Lab7_init.vi</code> is downloaded and opened from Lab7.zip.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-broker"><span>Broker <code>mqtt.thingsboard.cloud</code>, initial port <code>1883</code>, unique client ID, blank password, and QoS 1 are confirmed.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-circuit"><span>Arduino circuit will be checked before USB power is connected.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-stop"><span>I will use Stop, not Abort, and reset the maintained Stop button before rerunning.</span></label>
+                <p class="eyebrow">Materials Checklist</p>
+                <h2>Confirm the required materials</h2>
+                <p>Gather the following software, hardware, accounts, and course resources before beginning the lab.</p>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-labview"><span>LabVIEW, NI-VISA, and the LabVIEW Hobbyist Toolkit / LINX are installed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-files"><span><code>Lab7.zip</code>, <code>Lab7_init.vi</code>, and the required MQTT library are downloaded.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-account"><span>ThingsBoard Cloud registration and student-email verification are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-arduino"><span>Arduino Mega and a USB data cable are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-breadboard"><span>Breadboard and jumper wires are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-sensor"><span>HC-SR04 ultrasonic sensor is available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-led"><span>LED and 220 Ω resistor are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-port"><span>The Arduino serial port can be identified on this computer.</span></label>
                 </div>
                 <div class="danger-card mt-block"><strong>Credential warning:</strong> a device access token is a credential. Anyone who possesses it may be able to send data as that device. Use <code>YOUR_DEVICE_ACCESS_TOKEN</code> in examples; never hardcode a real token in public GitHub repositories, screenshots, reports, shared documents, HTML, or completion JSON. If a configuration file is needed, distribute only a token-free <code>thingsboard-config.example.json</code>, keep the real local copy excluded by <code>.gitignore</code>, and clear saved front-panel defaults before distributing a LabVIEW VI.</div>
             </article>
@@ -637,6 +639,7 @@
                 </div>
                 <div class="danger-card mt-block"><strong>Safe cleanup:</strong> stop with the VI Stop control, turn the LED off, close MQTT, LINX/VISA, queue, event, and other references, then disconnect Arduino USB before changing or storing the circuit. Remove real tokens from saved front-panel defaults and local examples before distributing the VI.</div>
                 <div class="warning-card mt-block"><strong>Instructor screenshots still required:</strong> ThingsBoard account registration; Devices page; Add Device dialog; device access-token screen using a disposable/redacted token; Latest Telemetry tab; Shared Attributes tab; dashboard creation page; entity alias selection; telemetry widget configuration; shared-attribute switch configuration; completed dashboard; LabVIEW ThingsBoard MQTT configuration; LabVIEW JSON telemetry construction; LabVIEW telemetry publish case; and LabVIEW shared-attribute/startup-sync wiring.</div>
+                <label class="response-field evidence-upload mt-block"><span>Final Lab 7 LabVIEW VI file</span><input class="persist-file" data-key="final-lab7-vi" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-lab7-vi">No .vi file selected.</small></label>
             </article>
 
             <article class="section-card card border-gold">

@@ -283,7 +283,7 @@
         <section class="stage-panel stage-0" id="prepare" tabindex="-1">
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Prepare</p>
-                <h2>Scenario and safety setup</h2>
+                <h2>Scenario and setup</h2>
                 <p>You are building an IoT plant-monitoring node. Arduino Mega sends sensor voltage to LabVIEW through LINX. LabVIEW performs calibration and the primary low-moisture decision locally, then exchanges telemetry and a persistent threshold with ThingsBoard Cloud over MQTT.</p>
                 <div class="grid-layout two mt-block">
                     <div class="danger-card"><strong>Water-near-electronics caution:</strong> fill the cup only one-third with water. Keep hands dry. Do not spill water on Arduino, breadboard, laptop, or the top electronics of the sensor.</div>
@@ -298,16 +298,18 @@
                 </div>
             </article>
             <article class="section-card card border-gold">
-                <h2>Interactive setup checklist</h2>
-                <div class="grid-layout two">
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-sensor-wiring"><span>Sensor wiring path is understood: GND, VCC, SIG to A0.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-cup"><span>Cup will be filled only one-third with water.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-top"><span>Top electronics of the sensor are identified and will not be submerged.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-drywet"><span>V_dry and V_wet are ready to measure, not assumed.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-variables"><span>ThingsBoard telemetry keys and the shared moisture_threshold attribute are understood.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-topics"><span>ThingsBoard MQTT publish, live-attribute, and startup-response topics are ready to verify.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-stop"><span>Stop button behavior is understood: use Stop, not Abort, and reset maintained Stop before rerun.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="setup-cleanup"><span>End-of-lab cleanup is understood: stop cleanly, close references, power off, disconnect USB, remove the sensor, and let it dry.</span></label>
+                <p class="eyebrow">Materials Checklist</p>
+                <h2>Confirm the required materials</h2>
+                <p>Gather the following software, hardware, accounts, and course resources before beginning the lab.</p>
+                <div class="grid-layout two mt-block">
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-labview"><span>LabVIEW and NI-VISA are installed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-linx"><span>LabVIEW Hobbyist Toolkit / LINX and Arduino firmware for LINX are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-files"><span><code>Lab8_init.vi</code> and the required MQTT library are downloaded.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-account"><span>ThingsBoard Cloud registration and student-email verification are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-arduino"><span>Arduino Mega and a USB data cable are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-breadboard"><span>Breadboard and jumper wires are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-sensor"><span>Capacitive soil moisture sensor is available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-cup"><span>Cup and water are available for the wet calibration measurement.</span></label>
                 </div>
             </article>
         </section>
@@ -626,6 +628,7 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                     <div class="danger-card"><h3>Final cleanup warning</h3><ol><li>Stop the VI with its Stop control, not Abort.</li><li>Disconnect MQTT and close MQTT, LINX/NI-VISA, queue, event, and other references.</li><li>Keep the most recently valid threshold or documented safe default active during disconnect.</li><li>Turn off power, disconnect Arduino USB, remove the sensor, and let it dry.</li><li>Remove real credentials from local examples and clear saved front-panel token defaults before distributing a VI.</li></ol></div>
                 </div>
                 <div class="warning-card mt-block"><strong>Credential hygiene:</strong> if a configuration file is provided, distribute only <code>thingsboard-config.example.json</code> containing <code>YOUR_DEVICE_ACCESS_TOKEN</code>. Keep the real local configuration file in <code>.gitignore</code>. Never export, submit, or screenshot a real token.</div>
+                <label class="response-field evidence-upload mt-block"><span>Final Lab 8 LabVIEW VI file</span><input class="persist-file" data-key="final-lab8-vi" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-lab8-vi">No .vi file selected.</small></label>
             </article>
             <article class="section-card card border-gold">
                 <h2>Submission questions</h2>

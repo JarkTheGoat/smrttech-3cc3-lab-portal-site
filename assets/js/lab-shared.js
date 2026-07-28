@@ -143,6 +143,17 @@
             const fileKey = evidenceFileStorageKey(input);
             const saved = localStorage.getItem(fileKey);
             const output = document.querySelector(`[data-file-name-for="${input.dataset.key}"]`);
+            const uploadLabel = input.closest('label');
+            let helper = uploadLabel && [...uploadLabel.querySelectorAll('small')]
+                .find(small => !small.matches('.file-name-preview'));
+            if (!helper && uploadLabel) {
+                helper = document.createElement('small');
+                helper.className = 'text-gray-500';
+                output?.after(helper);
+            }
+            if (helper) {
+                helper.textContent = `Accepted: ${evidenceAcceptDescription(input)}. The selected file stays available while this page remains open and will be included with completion.json in the submission ZIP. If you reload or reopen the page, select the file again.`;
+            }
             if (output) {
                 if (!output.id) output.id = `file-status-${input.dataset.key}`;
                 input.setAttribute('aria-describedby', output.id);
@@ -360,7 +371,7 @@
         const unansweredQuiz = [...panel.querySelectorAll('.auto-question')]
             .filter(question => !question.classList.contains('correct'));
         const orderChecks = [...panel.querySelectorAll('.order-grid[data-dnd-order]')]
-            .filter(grid => !isOrderGridCorrect(grid));
+            .filter((grid, index) => !isOrderGridConfirmed(grid, panel, index));
 
         function hasRequiredValue(field) {
             if (field.matches('input[type="file"]')) {
@@ -437,6 +448,18 @@
     function isOrderGridCorrect(grid) {
         const selects = [...grid.querySelectorAll('.order-item select')];
         return selects.length > 0 && selects.every((select, index) => select.value === String(index + 1));
+    }
+
+    function orderFeedbackForGrid(grid, panel, index) {
+        const selector = '[data-order-feedback], [data-monitor-feedback], [data-control-feedback]';
+        const localFeedback = [...(grid.parentElement?.querySelectorAll(selector) || [])];
+        if (localFeedback.length === 1) return localFeedback[0];
+        return [...panel.querySelectorAll(selector)][index] || null;
+    }
+
+    function isOrderGridConfirmed(grid, panel, index) {
+        const feedback = orderFeedbackForGrid(grid, panel, index);
+        return isOrderGridCorrect(grid) && /^Correct\b/i.test(feedback?.textContent.trim() || '');
     }
 
     function panelControls(panel) {

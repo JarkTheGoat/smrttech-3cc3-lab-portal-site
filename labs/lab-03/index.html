@@ -709,20 +709,18 @@
             </article>
 
             <article class="section-card card border-warning">
-                <p class="eyebrow">Material Check</p>
-                <h2>Materials and pre-power check</h2>
-                <div class="danger-card"><strong>STOP - Check the circuit before connecting Arduino to USB or running the VI.</strong><p>This checklist supports safe work, but it does not replace instructor approval when approval is required.</p></div>
+                <p class="eyebrow">Materials Checklist</p>
+                <h2>Confirm the required materials</h2>
+                <p>Gather the following software, hardware, and course resources before beginning the lab.</p>
                 <div class="grid-layout two mt-block">
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-power"><span>USB or power is disconnected before wiring changes.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-rails"><span>5 V and GND rails are verified before powering.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-short"><span>5 V is not shorted to GND.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-buzzer"><span>Buzzer polarity is checked.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-noise"><span>The buzzer is not held close to anyone's ear.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-wires"><span>Wires are secure and clear of accidental shorts.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-port"><span>Arduino board type and serial port are confirmed.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-linx"><span>LINX firmware is loaded.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-stop"><span>The VI will be stopped using the Stop button, not Abort.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="safety-help"><span>I will ask for help if the Arduino heats up, disconnects repeatedly, or the buzzer remains on unexpectedly.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-labview"><span>LabVIEW and the NI LabVIEW LINX Toolkit are installed.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-firmware"><span>Arduino firmware for LINX is available to load.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-arduino"><span>Arduino Mega and a USB data cable are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-breadboard"><span>Breadboard and jumper wires are available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-switch"><span>Tilt ball switch is available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-resistor"><span>10 kΩ resistor is available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-buzzer"><span>Active buzzer is available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-files"><span>Required course files are downloaded.</span></label>
                 </div>
             </article>
         </section>
@@ -1062,6 +1060,10 @@
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-shift"><span>Explanation of both shift registers and tilt-counting logic.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-extension"><span>Extension implementation for inverted buzzer behaviour.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-names"><span>Student names and numbers included as required.</span></label>
+                </div>
+                <div class="grid-layout two mt-block">
+                    <label class="response-field evidence-upload"><span>Final tilt display and buzzer VI file</span><input class="persist-file" data-key="final-tilt-buzzer-vi" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-tilt-buzzer-vi">No .vi file selected.</small></label>
+                    <label class="response-field evidence-upload"><span>Final <code>lab3_tilt_counter.vi</code> file</span><input class="persist-file" data-key="final-tilt-counter-vi" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-tilt-counter-vi">No .vi file selected.</small></label>
                 </div>
             </article>
 
