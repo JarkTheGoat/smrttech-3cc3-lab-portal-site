@@ -148,18 +148,9 @@
             <span class="stage-btn page-current" aria-current="page">Design Project</span>
             <span class="stage-label lab-stage-label">Project Phases</span>
             <button class="stage-btn active" id="btn-stage-0" type="button" data-stage="0">Requirements</button>
-            <button class="stage-btn" id="btn-stage-1" type="button" data-stage="1">Idea</button>
-            <button class="stage-btn" id="btn-stage-2" type="button" data-stage="2">Consult</button>
-            <button class="stage-btn" id="btn-stage-3" type="button" data-stage="3">Proposal</button>
-            <button class="stage-btn" id="btn-stage-4" type="button" data-stage="4">Prototype</button>
-            <button class="stage-btn" id="btn-stage-5" type="button" data-stage="5">Local HMI</button>
-            <button class="stage-btn" id="btn-stage-6" type="button" data-stage="6">Cloud HMI</button>
-            <button class="stage-btn" id="btn-stage-7" type="button" data-stage="7">Test</button>
-            <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Demo</button>
-            <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Video</button>
-            <button class="stage-btn" id="btn-stage-10" type="button" data-stage="10">Submit</button>
-            <button class="stage-btn" id="btn-stage-11" type="button" data-stage="11">Reflect</button>
-            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/12</strong></div>
+            <button class="stage-btn" id="btn-stage-1" type="button" data-stage="1">Grading Breakdown</button>
+            <button class="stage-btn" id="btn-stage-2" type="button" data-stage="2">Notes &amp; Help</button>
+            <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/3</strong></div>
         </div>
     </nav>
 
@@ -243,7 +234,7 @@
                     <span class="stage-summary-chip">Teams: lab groups</span>
                 </div>
                 <div class="warning-card mt-4">
-                    <strong>Instructor confirmation needed:</strong> the PDF states a project weight of 15 marks, but the marking table totals 12.5 marks. The top due-date table also includes "9th-Nov-21" for the proposal, while the deliverables section uses 09-Nov-25. This page treats 09-Nov-25 as the intended proposal date and flags both inconsistencies for confirmation.
+                    <strong>Assessment note:</strong> confirm the official project weighting and proposal due date in the course LMS before submitting. The dates shown above are planning targets for this project workspace.
                 </div>
             </div>
         </header>
@@ -613,7 +604,24 @@
     <script>
         (function () {
             const STORAGE_KEY = 'smrttech-design-project';
-            const TOTAL_STAGES = 12;
+
+            function simplifyProjectTabs() {
+                const panels = [...document.querySelectorAll('.stage-panel')];
+                const retained = [panels[0], panels[10], panels[11]];
+                panels.forEach((panel, index) => {
+                    if (!retained.includes(panel)) panel.remove();
+                });
+                retained.forEach((panel, index) => {
+                    [...panel.classList].filter(name => /^stage-\d+$/.test(name)).forEach(name => panel.classList.remove(name));
+                    panel.classList.add(`stage-${index}`);
+                    panel.dataset.stageTitle = ['Requirements & Success Criteria', 'Grading Breakdown', 'Notes, Guide & Help'][index];
+                    const heading = panel.querySelector('h2');
+                    if (heading) heading.textContent = panel.dataset.stageTitle;
+                });
+            }
+
+            simplifyProjectTabs();
+            const TOTAL_STAGES = 3;
             document.body.classList.add('js-enabled');
 
             const state = loadState();
@@ -622,7 +630,12 @@
 
             function loadState() {
                 try {
-                    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"stage":0,"completed":[],"fields":{},"assessment":{}}');
+                    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"stage":0,"completed":[],"fields":{},"assessment":{}}');
+                    return {
+                        ...saved,
+                        stage: Math.max(0, Math.min(2, Number(saved.stage) || 0)),
+                        completed: Array.isArray(saved.completed) ? saved.completed.filter(stage => Number.isInteger(stage) && stage >= 0 && stage < 3) : []
+                    };
                 } catch {
                     return { stage: 0, completed: [], fields: {}, assessment: {} };
                 }

@@ -382,15 +382,15 @@
                 <div class="grid-layout three">
                     <figure class="diagram-card">
                         <img src="../../assets/lab4-pdf-load-cell-photo.jpg" alt="Source PDF photo of the load cell mounted at the edge of a table.">
-                        <figcaption>Source PDF load-cell setup: pin one end and apply force gently in the indicated direction.</figcaption>
+                        <figcaption>Pin one end of the load cell and apply force gently in the indicated direction.</figcaption>
                     </figure>
                     <figure class="diagram-card">
                         <img src="../../assets/lab4-pdf-raw-circuit.png" alt="Source PDF schematic for the initial load-cell circuit connected to Arduino 5 volts and ground.">
-                        <figcaption>Source PDF raw circuit: Arduino 5 V and GND excite the load-cell bridge before amplification.</figcaption>
+                        <figcaption>Arduino 5 V and GND excite the load-cell bridge before amplification.</figcaption>
                     </figure>
                     <figure class="diagram-card">
                         <img src="../../assets/lab4-pdf-opamp-pinout.png" alt="Source PDF LMC6484 op-amp pinout diagram showing four op-amps and pin numbers.">
-                        <figcaption>Source PDF LMC6484 pinout: use this pin reference before wiring amplifier stages.</figcaption>
+                        <figcaption>Use the LMC6484 pin reference before wiring the amplifier stages.</figcaption>
                     </figure>
                 </div>
                 <div class="grid-layout two mt-block">
@@ -450,7 +450,7 @@
                 <p>Add the first-stage amplifier using the LMC6484. Use pin 2 for SIG-, pin 3 for SIG+, and pin 1 for output V2. Use R3 = R4 = 1 MΩ and R1 = R2 = 10 kΩ. The ideal gain is AV = R3 / R1 = 100.</p>
                 <figure class="diagram-card">
                     <img src="../../assets/lab4-pdf-stage1-circuit.png" alt="Source PDF schematic showing the first LMC6484 amplifier stage for the load-cell signal.">
-                    <figcaption>Source PDF first-stage amplifier: R3/R1 sets the ideal gain of 100 for the V2 output.</figcaption>
+                    <figcaption>In the first-stage amplifier, R3/R1 sets the ideal gain of 100 for the V2 output.</figcaption>
                 </figure>
                 <div class="danger-card"><strong>Before connecting V2 to Arduino A0, verify that V2 remains within the Arduino analog input range.</strong></div>
                 <div class="briefing-card mt-block">
@@ -487,7 +487,7 @@
                 <p>Add the second-stage amplifier using op-amp number three on the LMC6484 chip, pins 8, 9, and 10. Use R5 = 10 kΩ and R6 = 100 kΩ. The additional ideal gain is AV = 1 + R6 / R5 = 11.</p>
                 <figure class="diagram-card">
                     <img src="../../assets/lab4-pdf-stage2-circuit.png" alt="Source PDF schematic showing the complete two-stage LMC6484 amplifier circuit connected to Arduino analog input.">
-                    <figcaption>Source PDF second-stage amplifier: the non-inverting stage increases V2 to V3 before Arduino A0 reads it.</figcaption>
+                    <figcaption>The non-inverting second stage increases V2 to V3 before Arduino A0 reads it.</figcaption>
                 </figure>
                 <p class="warning-card">V3 should be about 11 times greater than V2, subject to supply and saturation limits. Verify V3 is safe before connecting it to Arduino A0.</p>
                 <div class="table-wrap">
@@ -520,7 +520,7 @@
                 <p>Create a LabVIEW VI that reads the amplified signal on Arduino A0 and displays it with a numeric indicator named <code>Voltage Reading</code>.</p>
                 <figure class="diagram-card">
                     <img src="../../assets/lab4-pdf-labview-analog-read.png" alt="Source PDF LabVIEW block diagram showing LINX Open, Analog Read channel 0, timing, stop control, and voltage reading indicator.">
-                    <figcaption>Source PDF LabVIEW analog-read VI: read Arduino analog channel 0 and display the amplified voltage.</figcaption>
+                    <figcaption>Read Arduino analog channel 0 and display the amplified voltage.</figcaption>
                 </figure>
                 <div class="logic-flow" aria-label="LabVIEW analog read flow"><span>V3</span><b>-&gt;</b><span>Arduino A0</span><b>-&gt;</b><span>LINX Analog Read</span><b>-&gt;</b><span>LabVIEW Voltage Reading</span></div>
                 <div class="grid-layout three mt-block">
@@ -627,21 +627,6 @@
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="del-report"><span>Report follows REPORT WRITING For IoT.pdf from Avenue to Learn.</span></label>
                 </div>
                 <label class="response-field evidence-upload mt-block"><span>Final load-cell voltage-reading LabVIEW VI file</span><input class="persist-file" data-key="final-load-cell-vi" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-load-cell-vi">No .vi file selected.</small></label>
-            </article>
-
-            <article class="section-card card border-gold" hidden>
-                <p class="eyebrow">Assessment Guide</p>
-                <h2>Suggested weighting</h2>
-                <div class="table-wrap"><table><thead><tr><th>Category</th><th>Weight</th><th>Assessment type</th></tr></thead><tbody>
-                    <tr><td>Pre-lab and gain predictions</td><td>10%</td><td>Structured evidence</td></tr>
-                    <tr><td>Raw load-cell construction and measurements</td><td>15%</td><td>Instructor assessed</td></tr>
-                    <tr><td>First-stage amplifier construction and explanation</td><td>15%</td><td>Instructor assessed</td></tr>
-                    <tr><td>Second-stage amplifier construction and explanation</td><td>15%</td><td>Instructor assessed</td></tr>
-                    <tr><td>LabVIEW voltage-reading VI</td><td>15%</td><td>Structured and instructor assessed</td></tr>
-                    <tr><td>Data tables and gain comparison</td><td>10%</td><td>Structured evidence</td></tr>
-                    <tr><td>Gain-halving extension</td><td>10%</td><td>Instructor assessed</td></tr>
-                    <tr><td>Report explanations and reflection</td><td>10%</td><td>Instructor assessed</td></tr>
-                </tbody></table></div>
             </article>
 
             <article class="section-card card border-success">

@@ -102,6 +102,17 @@
         }
 
         .stage-btn:hover { background: var(--mac-grey-20); }
+        .stage-btn.instructor-access {
+            color: var(--mac-maroon);
+            background: #fbf7f9;
+            border-color: rgba(122, 0, 60, 0.32);
+        }
+        .stage-btn.instructor-access:hover,
+        .stage-btn.instructor-access:focus-visible {
+            color: #fff;
+            background: var(--mac-maroon);
+            border-color: var(--mac-maroon);
+        }
         .stage-btn.active {
             color: white;
             background: var(--mac-maroon);
@@ -293,6 +304,8 @@
         }
 
         .portal-button.secondary:hover { background: var(--mac-grey-20); }
+        .portal-button.danger { background: #FFF3F2; color: #9F1239; border-color: #F3B4BF; }
+        .portal-button.danger:hover { background: #FFE4E8; border-color: #9F1239; }
         .portal-button:hover { background: var(--mac-maroon-80); color: white; }
 
         .architecture-map {
@@ -536,6 +549,7 @@
             <a class="stage-btn" href="#architecture" data-home-section="architecture">Architecture</a>
             <a class="stage-btn" href="#labs" data-home-section="labs">Labs</a>
             <a class="stage-btn" href="#knowledge" data-home-section="knowledge">Knowledge Database</a>
+            <a class="stage-btn instructor-access" href="instructor-ta-notes.html">Instructor / TA</a>
         </div>
     </nav>
 
@@ -694,6 +708,16 @@
             </div>
         </section>
 
+        <section class="section-grid" aria-labelledby="reset-lab-data-heading">
+            <article class="card border-maroon">
+                <p class="eyebrow">Browser data</p>
+                <h2 id="reset-lab-data-heading">Reset lab progress</h2>
+                <p>This clears all saved lab progress, answers, checklists, stage confirmations, cached filenames, and completion details from this browser. It does not delete files on your computer or change submitted work.</p>
+                <button class="portal-button danger" type="button" data-clear-all-lab-data>Clear all saved lab data</button>
+                <p class="text-sm mt-3" data-clear-all-lab-data-status role="status" aria-live="polite"></p>
+            </article>
+        </section>
+
         <section id="knowledge" class="section-grid">
             <article class="card border-gold">
                 <p class="eyebrow">Knowledge Database</p>
@@ -793,9 +817,33 @@
             setActive('home');
         }
 
+        function setupMasterLabReset() {
+            const button = document.querySelector('[data-clear-all-lab-data]');
+            const status = document.querySelector('[data-clear-all-lab-data-status]');
+            if (!button) return;
+
+            button.addEventListener('click', () => {
+                if (!window.confirm('Clear all saved lab progress and cached lab data from this browser? This cannot be undone.')) return;
+
+                const clearStore = store => {
+                    for (let index = store.length - 1; index >= 0; index -= 1) {
+                        const key = store.key(index);
+                        if (key !== null) store.removeItem(key);
+                    }
+                };
+
+                clearStore(window.localStorage);
+                clearStore(window.sessionStorage);
+                if (status) status.textContent = 'All saved lab data has been cleared. The lab manuals will start from stage 1 when opened again.';
+                button.disabled = true;
+                button.textContent = 'Lab data cleared';
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             setupKnowledgeFilters();
             setupHomeScrollSpy();
+            setupMasterLabReset();
         });
 
     </script>

@@ -301,6 +301,17 @@
             padding: 16px;
         }
 
+        /* Keep the evidence dropbox below the complete two-card submission row. */
+        #labview-submit .submission-intro {
+            align-items: stretch;
+        }
+
+        #labview-submit .submission-intro > .success-card,
+        #labview-submit .submission-intro > .warning-card {
+            height: 100%;
+            box-sizing: border-box;
+        }
+
         .code-header {
             background: #EEF1F4;
             padding: 8px 14px;
@@ -1057,7 +1068,8 @@ void loop()
 
     <main class="max-w-6xl mx-auto px-6 lg:px-8">
 
-        <section class="stage-panel stage-0 space-y-8">
+        <section class="stage-panel stage-0 space-y-8 relative pl-8 border-l-2 border-gray-200">
+            <span class="checkpoint-marker">1</span>
             <div class="card p-7 border-l-4 border-[#7A003C]">
                 <div class="flex flex-col lg:flex-row lg:justify-between gap-6">
                     <div>
@@ -1223,7 +1235,7 @@ void loop()
 
         <section class="stage-panel stage-1">
             <div class="relative pl-8 border-l-2 border-gray-200">
-                <span class="checkpoint-marker">1</span>
+                <span class="checkpoint-marker">2</span>
 
                 <div class="card p-7">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -1341,12 +1353,12 @@ void loop()
                                 <div class="screenshot-placeholder__box">
                                     Provide a screenshot that shows how to place and configure a While Loop in the LabVIEW block diagram.
                                 </div>
-                                <figcaption>Instructor-provided screenshot required.</figcaption>
+                                <figcaption>Configure the While Loop and timing functions shown in this reference.</figcaption>
                             </figure>
                         </div>
 
                         <div id="labview-submit" class="tab-content p-6">
-                            <div class="grid lg:grid-cols-2 gap-5">
+                            <div class="grid lg:grid-cols-2 gap-5 submission-intro">
                                 <div class="success-card">
                                     <h3 class="font-bold mb-2">Submit the LabVIEW VI</h3>
                                     <ol class="list-decimal ml-5 space-y-2 text-sm">
@@ -1407,7 +1419,7 @@ void loop()
 
         <section class="stage-panel stage-2">
             <div class="relative pl-8 border-l-2 border-gray-200">
-                <span class="checkpoint-marker">2</span>
+                <span class="checkpoint-marker">3</span>
 
                 <div class="card p-7">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -1484,7 +1496,7 @@ void loop()
 
         <section class="stage-panel stage-3">
             <div class="relative pl-8 border-l-2 border-gray-200">
-                <span class="checkpoint-marker">3</span>
+                <span class="checkpoint-marker">4</span>
 
                 <div class="card p-7">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -1500,6 +1512,7 @@ void loop()
                             <button class="code-tab active" data-tabs="divider" data-target="divider-purpose" onclick="switchTab(this)">Purpose</button>
                             <button class="code-tab" data-tabs="divider" data-target="divider-build" onclick="switchTab(this)">Build</button>
                             <button class="code-tab" data-tabs="divider" data-target="divider-table" onclick="switchTab(this)">Table 2</button>
+                            <button class="code-tab" data-tabs="divider" data-target="divider-submit" onclick="switchTab(this)">Submission</button>
                         </div>
 
                         <div id="divider-purpose" class="tab-content active p-6">
@@ -1550,7 +1563,8 @@ void loop()
                         </div>
                     </div>
 
-                    <div class="quiz-stack mt-6">
+                    <div id="divider-submit" class="tab-content p-6"><h3 class="text-xl font-bold mb-4">Submission questions</h3></div>
+                    <div class="quiz-stack mt-6" data-submission-quiz="divider-submit" style="display:none">
                         <fieldset class="quiz-card auto-question" data-question-id="divider-fixed-resistor">
                             <legend class="quiz-title">What resistor value is used in the simulated divider?<span class="quiz-points">1 point</span></legend>
                             <label class="quiz-option"><input type="radio" name="divider-fixed-resistor" value="a"><span>220 Ω</span></label>
@@ -1588,7 +1602,7 @@ void loop()
 
         <section id="exercise-4-automatic-lighting" class="stage-panel stage-4">
             <div class="relative pl-8 border-l-2 border-gray-200">
-                <span class="checkpoint-marker">4</span>
+                <span class="checkpoint-marker">5</span>
 
                 <div class="card p-7">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -1604,6 +1618,7 @@ void loop()
                             <button class="code-tab active" data-tabs="arduino" data-target="arduino-wiring" onclick="switchTab(this)">Wiring</button>
                             <button class="code-tab" data-tabs="arduino" data-target="arduino-code" onclick="switchTab(this)">Code</button>
                             <button class="code-tab" data-tabs="arduino" data-target="arduino-test" onclick="switchTab(this)">Test</button>
+                            <button class="code-tab" data-tabs="arduino" data-target="arduino-submit" onclick="switchTab(this)">Submission</button>
                         </div>
 
                         <div id="arduino-wiring" class="tab-content active p-6">
@@ -1665,7 +1680,8 @@ void loop()
                         </div>
                     </div>
 
-                    <div class="quiz-stack mt-6">
+                    <div id="arduino-submit" class="tab-content p-6"><h3 class="text-xl font-bold mb-4">Submission questions</h3></div>
+                    <div class="quiz-stack mt-6" data-submission-quiz="arduino-submit" style="display:none">
                         <fieldset class="quiz-card auto-question" data-question-id="arduino-pin-map">
                             <legend class="quiz-title">Which pin map matches Exercise 3?<span class="quiz-points">1 point</span></legend>
                             <label class="quiz-option"><input type="radio" name="arduino-pin-map" value="a"><span>J7 to A0, LED output to digital pin 7.</span></label>
@@ -2261,6 +2277,16 @@ void loop()
             });
         }
 
+        function moveSubmissionQuizzes() {
+            document.querySelectorAll('[data-submission-quiz]').forEach(quiz => {
+                const target = document.getElementById(quiz.dataset.submissionQuiz);
+                if (target) {
+                    target.appendChild(quiz);
+                    quiz.style.display = '';
+                }
+            });
+        }
+
         function toggleSidebar(id) {
             const selected = document.getElementById(id);
             const wasOpen = selected.classList.contains('active');
@@ -2329,6 +2355,7 @@ void loop()
             restorePersistentInputs();
             restoreQuizState();
             setupTabs();
+            moveSubmissionQuizzes();
 
             const savedStage = Number(
                 localStorage.getItem(storageKey('current-stage')) ?? 0

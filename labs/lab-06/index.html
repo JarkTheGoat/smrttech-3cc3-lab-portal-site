@@ -187,7 +187,7 @@
                     <dt class="text-gray-500">Steps/rev</dt><dd class="font-semibold text-right">2048</dd>
                 </dl>
             </div>
-            <div class="danger-card text-sm"><strong>Motor power:</strong> do not power the stepper from Arduino 5 V. Use the external supply and driver circuit from the PDF.</div>
+            <div class="danger-card text-sm"><strong>Motor power:</strong> do not power the stepper from Arduino 5 V. Use the external supply and motor-driver circuit specified for this lab.</div>
         </div>
     </aside>
 
@@ -261,8 +261,8 @@
                 <h2>Scenario and objectives</h2>
                 <p>You are building a local motion-control node that receives commands from a LabVIEW HMI, sends those commands over serial to Arduino firmware, and uses a motor driver plus external power supply to move a stepper motor in controlled increments.</p>
                 <div class="grid-layout three mt-block">
-                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-stepper-model.jpg" alt="Source PDF model of a stepper motor with windings and permanent magnet rotor."><figcaption>Source PDF Figure 1: basic stepper motor model with windings and permanent magnet core.</figcaption></figure>
-                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-step-sequence.jpg" alt="Source PDF sequence showing four winding states that produce stepper motor motion."><figcaption>Source PDF Figure 2: sequential winding states produce incremental shaft steps.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-stepper-model.jpg" alt="Stepper motor model with windings and a permanent-magnet rotor."><figcaption>Stepper motor model: energized windings act on the permanent-magnet rotor.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-step-sequence.jpg" alt="Four winding states that produce stepper motor motion."><figcaption>Sequential winding states produce controlled, incremental shaft steps.</figcaption></figure>
                     <div class="mini-card"><h3>Learning goals</h3><ul><li>Build and drive a stepper motor with Arduino and LabVIEW.</li><li>Compile and upload Arduino firmware.</li><li>Send and parse serial data between LabVIEW and Arduino.</li><li>Explain the motor driver and external power supply.</li></ul></div>
                 </div>
                 <div class="danger-card mt-block"><strong>WARNING:</strong> the stepper motor may heat up during operation. This can be normal, but use caution before touching the motor after it has been energized.</div>
@@ -326,16 +326,16 @@
                 <h2>Prepare the external power system</h2>
                 <p>Use a screwdriver to adjust the power adaptor output to 9 V. Mount the breadboard power supply board correctly and use its regulated 5 V output to power the motor driver circuit.</p>
                 <div class="grid-layout four">
-                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-power-adapter.jpg" alt="Source PDF photo of the external power adaptor with adjustable voltage selector."><figcaption>Source PDF: adjust the external adaptor to 9 V before connecting it to the breadboard supply board.</figcaption></figure>
-                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-breadboard-power-board.jpg" alt="Source PDF close-up of the breadboard power supply board and yellow jumper positions."><figcaption>Source PDF: confirm the breadboard power supply board orientation and jumper positions.</figcaption></figure>
-                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-power-board-breadboard.jpg" alt="Source PDF photo of the breadboard power supply board installed on a breadboard."><figcaption>Source PDF: align positive pins with the red rail and negative pins with the blue rail.</figcaption></figure>
-                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-external-power-connected.jpg" alt="Source PDF photo showing the external adaptor connected to the breadboard power supply board."><figcaption>Source PDF: connect the adaptor barrel jack to the breadboard power supply board before motor testing.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-power-adapter.jpg" alt="External power adapter with an adjustable voltage selector."><figcaption>Set the external adapter to 9 V before connecting it to the breadboard power board.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-breadboard-power-board.jpg" alt="Breadboard power board with yellow jumper positions shown."><figcaption>Confirm the breadboard power-board orientation and jumper positions.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-power-board-breadboard.jpg" alt="Breadboard power board installed on a breadboard."><figcaption>Align positive pins with the red rail and negative pins with the blue rail.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-external-power-connected.jpg" alt="External power adapter connected to the breadboard power board."><figcaption>Connect the adapter barrel jack to the breadboard power board before motor testing.</figcaption></figure>
                 </div>
                 <div class="danger-card mt-block"><strong>STOP - verify polarity before powering.</strong> Reversing the breadboard power supply board can reverse project power and damage hardware.</div>
                 <div class="grid-layout two mt-block">
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="power-adapter-9v"><span>Adaptor output adjusted to 9 V.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="power-board-align"><span>Power board positive and negative pins aligned with breadboard rails.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="power-jumpers"><span>Yellow jumpers match the source PDF configuration.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="power-jumpers"><span>Yellow jumpers match the required power-board configuration.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="power-on-led"><span>Power board switch and LED behavior understood.</span></label>
                 </div>
             </article>
@@ -347,8 +347,8 @@
                 <h2>Build the stepper motor driver circuit</h2>
                 <p>Build the circuit using the stepper motor, stepper motor driver, external power supply, breadboard power supply board, Arduino Mega, and jumper wires.</p>
                 <div class="grid-layout two">
-                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-stepper-circuit-schematic.png" alt="Source PDF schematic showing Arduino Mega digital pins 8 through 11 connected to the stepper motor driver and external supply."><figcaption>Source PDF Figure 1: Arduino pins 8-11 connect to driver inputs IN1-IN4. The driver receives motor power from the external 5 V rail.</figcaption></figure>
-                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-stepper-circuit-photo.jpg" alt="Source PDF photo of the completed stepper motor, motor driver, power board, breadboard, and Arduino wiring."><figcaption>Source PDF hardware view: compare driver wiring, motor connector, red and blue rails, and Arduino ground.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-stepper-circuit-schematic.png" alt="Schematic showing Arduino Mega pins 8 through 11 connected to the stepper driver and external supply."><figcaption>Connect Arduino pins 8–11 to driver inputs IN1–IN4. The driver receives motor power from the external 5 V rail.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-stepper-circuit-photo.jpg" alt="Completed stepper motor, driver, power board, breadboard, and Arduino wiring."><figcaption>Verify the driver wiring, motor connector, supply rails, and Arduino ground.</figcaption></figure>
                 </div>
                 <div class="table-wrap mt-block">
                     <table>
@@ -375,7 +375,7 @@
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 3</p>
                 <h2>Compile and upload the Arduino firmware</h2>
-                <figure class="diagram-card"><img src="../../assets/lab6-pdf-arduino-ide-code.png" alt="Source PDF screenshot of Arduino IDE with stepper motor code."><figcaption>Source PDF Arduino IDE: create a new sketch, paste the provided firmware, verify, and upload to Arduino Mega.</figcaption></figure>
+                <figure class="diagram-card"><img src="../../assets/lab6-pdf-arduino-ide-code.png" alt="Arduino IDE with stepper motor firmware."><figcaption>Create a new sketch, paste the provided firmware, verify it, and upload it to the Arduino Mega.</figcaption></figure>
                 <p>The firmware uses the standard Arduino <code>Stepper.h</code> library, initializes serial communication at 9600 baud, reads a command string until newline, parses comma-separated values, and commands the stepper motor.</p>
                 <pre><code>#include &lt;Stepper.h&gt;
 String command;
@@ -421,8 +421,8 @@ void loop() {
             <article class="section-card card border-success">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 4</p>
                 <h2>Test command parsing with Arduino Serial Monitor</h2>
-                <figure class="diagram-card"><img src="../../assets/lab6-pdf-serial-monitor.png" alt="Source PDF screenshot of Arduino Serial Monitor window for sending stepper motor commands."><figcaption>Source PDF Serial Monitor: set baud rate to 9600, type a command such as 10,1.5,1, and send it to the Arduino.</figcaption></figure>
-                <p>Use the syntax <code>RPM,Number Revolutions,Direction</code>. The PDF example <code>10,1.5,1</code> means RPM = 10, revolutions = 1.5, direction = clockwise.</p>
+                <figure class="diagram-card"><img src="../../assets/lab6-pdf-serial-monitor.png" alt="Arduino Serial Monitor for sending stepper motor commands."><figcaption>Set the baud rate to 9600, enter a command such as <code>10,1.5,1</code>, and send it to the Arduino.</figcaption></figure>
+                <p>Use the syntax <code>RPM,Number Revolutions,Direction</code>. For example, <code>10,1.5,1</code> requests 10 RPM, 1.5 revolutions, and clockwise direction.</p>
                 <div class="warning-card">Close the Serial Monitor before running the LabVIEW VI. By default, only one client can use the same serial port at one time.</div>
                 <div class="table-wrap mt-block">
                     <table>
@@ -442,7 +442,7 @@ void loop() {
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 5</p>
                 <h2>Build the LabVIEW serial-command HMI</h2>
-                <figure class="diagram-card"><img src="../../assets/lab6-pdf-labview-front-panel.png" alt="Source PDF LabVIEW front panel with RPM meter, Revolutions control, Direction toggle, Message Arduino button, sent message indicator, and Stop button."><figcaption>Source PDF LabVIEW front panel: user controls RPM, revolutions, and direction, then sends the command to Arduino.</figcaption></figure>
+                <figure class="diagram-card"><img src="../../assets/lab6-pdf-labview-front-panel.png" alt="LabVIEW front panel with RPM meter, Revolutions control, Direction toggle, Message Arduino button, sent-message indicator, and Stop button."><figcaption>The user selects RPM, revolutions, and direction, then sends the command to Arduino.</figcaption></figure>
                 <div class="grid-layout two mt-block">
                     <div class="mini-card"><h3>Front-panel elements</h3><ul><li>OK Button named <code>Message Arduino</code>.</li><li>Stop button.</li><li>String control named <code>Revolutions</code>.</li><li>Vertical toggle named <code>Direction</code> with Clockwise and Counter clockwise labels.</li><li>RPM meter with scale 5 to 20.</li><li>Sent Msg indicator for the exact command string.</li></ul></div>
                     <div class="mini-card"><h3>Reasoning prompts</h3><ul><li>Why should students see the exact string sent to Arduino?</li><li>Why is direction represented as 1 or -1?</li><li>Why does RPM have a practical range?</li><li>What might happen if RPM is too low or too high?</li></ul></div>
@@ -456,8 +456,8 @@ void loop() {
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 6</p>
                 <h2>Use LabVIEW VISA Serial to write commands</h2>
                 <div class="grid-layout two">
-                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-labview-basic-block.png" alt="Source PDF LabVIEW block diagram showing serial configure, buffer, write, close, while loop, wait, and case structure."><figcaption>Source PDF block diagram base: configure the serial port, use a loop and Case Structure, and close VISA after the loop.</figcaption></figure>
-                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-labview-complete-block.png" alt="Source PDF complete LabVIEW block diagram showing string concatenation, number conversion, direction select, sent message indicator, VISA Write, and close functions."><figcaption>Source PDF complete block diagram: concatenate RPM, comma, revolutions, comma, and direction into the string written to Arduino.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-labview-basic-block.png" alt="LabVIEW block diagram with serial configuration, buffer, write, close, while loop, wait, and case structure."><figcaption>Configure the serial port, use a loop and Case Structure, and close VISA after the loop.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab6-pdf-labview-complete-block.png" alt="Complete LabVIEW block diagram with string concatenation, number conversion, direction selection, sent-message indicator, VISA Write, and close functions."><figcaption>Concatenate RPM, a comma, revolutions, a comma, and direction into the string written to Arduino.</figcaption></figure>
                 </div>
                 <div class="grid-layout three mt-block">
                     <details open><summary>A. Serial functions</summary><div><p>Add Configure Port, Set Buffer Size, Write, and Close from Data Communication - Protocols - Serial. Set VISA Resource Name to the Arduino serial port.</p></div></details>
@@ -485,7 +485,7 @@ void loop() {
             <article class="section-card card border-success">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Extend</p>
                 <h2>Replace revolutions with an angle command</h2>
-                <p>The PDF extension asks you to replace the Revolutions control with an Angle control. Instead of typing 0.5, 1, or 2 revolutions, the user types 180, 360, or 720 degrees.</p>
+                <p>Replace the Revolutions control with an Angle control. Instead of entering 0.5, 1, or 2 revolutions, the user enters 180, 360, or 720 degrees.</p>
                 <div class="briefing-card">
                     <p class="font-mono">revolutions = angleDegrees / 360</p>
                     <p class="font-mono">steps = angleDegrees / 360 * STEPS_PER_REV * direction</p>
@@ -513,8 +513,7 @@ void loop() {
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Reflect</p>
                 <h2>Deliverables and assessment</h2>
                 <div class="grid-layout two">
-                    <div class="mini-card"><h3>Submit</h3><ol><li>Completed stepper motor, driver, power supply, and Arduino circuit.</li><li>Arduino IDE sketch with provided firmware uploaded.</li><li>Serial Monitor tests using several command strings.</li><li>LabVIEW front panel screenshot/export.</li><li>LabVIEW block diagram screenshot/export.</li><li>Evidence of VISA serial command sent to Arduino.</li><li>Explanation of Arduino code and parsing logic.</li><li>Extension showing revolutions replaced by angle control.</li><li>Answers to report questions from the PDF.</li></ol></div>
-                    <div class="mini-card"><h3>Suggested weighting</h3><table><tbody><tr><td>Power and hardware setup</td><td>15%</td></tr><tr><td>Arduino firmware upload and explanation</td><td>20%</td></tr><tr><td>Serial Monitor testing</td><td>10%</td></tr><tr><td>LabVIEW HMI and VISA Write</td><td>25%</td></tr><tr><td>Extension</td><td>15%</td></tr><tr><td>Troubleshooting and reflection</td><td>15%</td></tr></tbody></table></div>
+                    <div class="mini-card"><h3>Submit</h3><ol><li>Completed stepper motor, driver, power supply, and Arduino circuit.</li><li>Arduino IDE sketch with provided firmware uploaded.</li><li>Serial Monitor tests using several command strings.</li><li>LabVIEW front panel screenshot/export.</li><li>LabVIEW block diagram screenshot/export.</li><li>Evidence of VISA serial command sent to Arduino.</li><li>Explanation of Arduino code and parsing logic.</li><li>Extension showing revolutions replaced by angle control.</li><li>Answers to the reflection questions.</li></ol></div>
                 </div>
             </article>
 
@@ -557,7 +556,7 @@ void loop() {
                     <details><summary>RPM</summary><div>Revolutions per minute, used as the stepper speed command.</div></details>
                     <details><summary>Direction</summary><div>Command field where 1 indicates clockwise and -1 indicates counter-clockwise.</div></details>
                     <details><summary>Firmware</summary><div>Program uploaded to Arduino to parse commands and actuate the motor.</div></details>
-                    <details><summary>Micro-stepping</summary><div>Finer step control by partially energizing windings; mentioned in the PDF but not covered in detail.</div></details>
+                    <details><summary>Micro-stepping</summary><div>Finer step control achieved by partially energizing the windings; it is included here for optional exploration.</div></details>
                 </div>
             </article>
         </section>

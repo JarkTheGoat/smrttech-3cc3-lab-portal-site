@@ -836,10 +836,6 @@
                 <p class="eyebrow">Checkpoint 2</p>
                 <h2>Display tilt status in LabVIEW</h2>
                 <p>Create a VI that opens a LINX connection, reads Digital Pin 2, displays the tilt state using a Round LED labelled <code>Tilted</code>, runs inside a while loop, waits 100 ms per loop, stops with a Stop button, and closes LINX after the loop ends.</p>
-                <figure class="diagram-card">
-                    <img src="../../assets/lab3-pdf-labview-digital-read-write.png" alt="Source PDF LabVIEW block diagram showing LINX digital read, digital write, wait timing, stop control, and close logic.">
-                    <figcaption>Source PDF LabVIEW VI: read Digital Pin 2, write the buzzer command on Digital Pin 3, and close LINX after the loop.</figcaption>
-                </figure>
                 <div class="grid-layout four">
                     <details open><summary>A. Front Panel</summary><div><p>Add a Round LED labelled <code>Tilted</code> and a Stop button.</p></div></details>
                     <details><summary>B. Block Diagram</summary><div><p>Arrange dataflow left to right: LINX Open, Digital Read, display logic, loop timing, Stop, LINX Close.</p></div></details>
@@ -929,10 +925,6 @@
                         <span>Loop k-1: previous state</span><b>-&gt;</b><span>Loop k: current state</span><b>-&gt;</b><span>previous upright and current tilted?</span><b>-&gt;</b><span>count = count + 1</span>
                     </div>
                 </div>
-                <figure class="diagram-card mt-block">
-                    <img src="../../assets/lab3-pdf-tilt-counter-block-diagram.jpg" alt="Source PDF LabVIEW block diagram showing shift-register-based tilt counting logic.">
-                    <figcaption>Source PDF counter logic: shift registers carry previous values so one physical tilt is counted as an event rather than repeated loop iterations.</figcaption>
-                </figure>
                 <div class="grid-layout two mt-block">
                     <div class="mini-card">
                         <h3>Required LabVIEW elements</h3>
@@ -969,10 +961,10 @@
             <article class="section-card card border-gold">
                 <p class="eyebrow">Checkpoint 5</p>
                 <h2>Visualize events over time</h2>
-                <p>Add a Waveform Chart from Controls - Modern - Graph. Enable digital display, rename it <code>Number of Tilts vs Time</code>, change the Y-axis label to <code>Number of Tilts</code>, and wire it to the output of the Add function. Save the final VI as <code>lab3_tilt_counter.vi</code>.</p>
+                <p>Add a Waveform Chart from Controls - Modern - Graph inside the while loop. Enable digital display, rename it <code>Number of Tilts vs Time</code>, change the Y-axis label to <code>Number of Tilts</code>, and wire it to the output of the Add function. Save the final VI as <code>lab3_tilt_counter.vi</code>.</p>
                 <figure class="diagram-card">
                     <img src="../../assets/lab3-pdf-tilt-front-panel.png" alt="Source PDF final front panel with Stop button, Tilted indicator, Number of Tilts vs Time chart, and count display.">
-                    <figcaption>Source PDF final front panel: the chart and numeric display show the tilt count over time.</figcaption>
+                    <figcaption>The chart and numeric display show the tilt count over time.</figcaption>
                 </figure>
                 <div class="table-wrap">
                     <table>

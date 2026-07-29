@@ -690,14 +690,14 @@
         addDetailField(grid, {
             labelText: 'Student Names',
             key: 'name_or_team',
-            placeholder: 'e.g., Alex Chen, Jordan Lee',
+            placeholder: 'e.g., Tony Stark, Steve Rogers',
             helper: 'Required. Use comma-separated student names for an approved team submission.',
             required: true
         });
         addDetailField(grid, {
             labelText: 'Student Numbers',
             key: 'student_numbers',
-            placeholder: 'e.g., 400123456, 400789012',
+            placeholder: 'e.g., 400012345, 400678901',
             helper: 'Required. Use comma-separated student numbers for an approved team submission.',
             required: true
         });
@@ -717,7 +717,7 @@
         addDetailField(grid, {
             labelText: 'Lab Instructor',
             key: 'instructor_or_ta',
-            placeholder: 'e.g., Dr. Chen',
+            placeholder: 'e.g., Ahmed "The Big Scary Egyptian" Fakhr',
             helper: 'Required.',
             required: true
         });

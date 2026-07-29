@@ -1175,6 +1175,13 @@
         });
     }
 
+    function setupCheckpointMarkers() {
+        document.querySelectorAll('.stage-panel').forEach((panel, index) => {
+            if (panel.querySelector('.checkpoint-marker')) return;
+            panel.dataset.checkpointNumber = String(index + 1);
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         restoreStageFromUrl();
         setupSkillTreeReturnLinks();
@@ -1187,6 +1194,7 @@
         setupSidebarAccessibility();
         setupDragOrder();
         removeRedundantStageCompleteButtons();
+        setupCheckpointMarkers();
         setupStageGate();
         setupStageNavigationViewport();
         setupCodeCopyButtons();

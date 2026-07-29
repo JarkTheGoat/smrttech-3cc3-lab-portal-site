@@ -1,8 +1,6 @@
 # SMRTTECH 3CC3 Unified Lab Portal
 
-This repository contains the student-facing GitHub Pages build of the SMRTTECH 3CC3 interactive laboratory portal. Instructor and TA tools remain in the private source repository.
-
-Live site: https://jarkthegoat.github.io/smrttech-3cc3-lab-portal-site/
+This generated portal places the lab manuals and the knowledge database in the same student-facing space.
 
 ## Routes
 
@@ -17,6 +15,7 @@ Live site: https://jarkthegoat.github.io/smrttech-3cc3-lab-portal-site/
 - `labs/lab-08/index.html` - active interactive Lab 8 ThingsBoard soil-moisture monitoring manual
 - `project/index.html` - active 3CC3 design project manual for the final smart-system prototype
 - `labs/lab-09/index.html` - blank lab manual space retained for future course content
+- `instructor/autograder/index.html` - local-only instructor/TA autograder for completion JSON packages
 - `knowledge/index.html` - searchable shared knowledge database
 - `knowledge/skill-tree.html` - the single Master Skill Tree used throughout the portal
 - `knowledge/curriculum.json` - data source for the radial skill tree

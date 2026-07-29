@@ -368,11 +368,11 @@
                     <table>
                         <thead><tr><th>Prompt</th><th>Your answer</th><th>Expected check</th></tr></thead>
                         <tbody>
-                            <tr><td>Publish topic for telemetry</td><td><input class="persist-text topic-input" data-key="topic-publish" data-expected="v1/devices/me/telemetry" data-case-sensitive></td><td data-topic-result="topic-publish"></td></tr>
+                            <tr><td>Publish topic for telemetry</td><td><input class="persist-text topic-input" data-key="topic-publish" data-expected="v1/devices/me/telemetry" data-case-sensitive value="v1/devices/me/telemetry" aria-label="Publish topic for telemetry"></td><td data-topic-result="topic-publish">Correct.</td></tr>
                             <tr><td>Subscribe topic for live shared-attribute changes</td><td><input class="persist-text topic-input" data-key="topic-subscribe" data-expected="v1/devices/me/attributes" data-case-sensitive></td><td data-topic-result="topic-subscribe"></td></tr>
                             <tr><td>Subscribe topic for startup-request responses</td><td><input class="persist-text topic-input" data-key="topic-attribute-response" data-expected="v1/devices/me/attributes/response/+" data-case-sensitive></td><td data-topic-result="topic-attribute-response"></td></tr>
                             <tr><td>Publish topic for startup request ID 1</td><td><input class="persist-text topic-input" data-key="topic-attribute-request" data-expected="v1/devices/me/attributes/request/1" data-case-sensitive></td><td data-topic-result="topic-attribute-request"></td></tr>
-                            <tr><td>Which pin sends the ultrasonic pulse?</td><td><input class="persist-text topic-input" data-key="topic-trig" data-expected="trig"></td><td data-topic-result="topic-trig"></td></tr>
+                            <tr><td>Which pin sends the ultrasonic pulse?</td><td><input class="persist-text topic-input" data-key="topic-trig" data-expected="trig" data-expected-alt="trigger"></td><td data-topic-result="topic-trig"></td></tr>
                             <tr><td>Which pin returns timing information?</td><td><input class="persist-text topic-input" data-key="topic-echo" data-expected="echo"></td><td data-topic-result="topic-echo"></td></tr>
                         </tbody>
                     </table>
@@ -394,10 +394,10 @@
                     <li>Never enter the token into a response field on this page. Use the placeholder <code>YOUR_DEVICE_ACCESS_TOKEN</code> in documentation.</li>
                 </ol>
                 <div class="grid-layout four mt-block">
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for a ThingsBoard Cloud account registration screenshot">Provide a screenshot that shows ThingsBoard Cloud account registration.</div><figcaption>Instructor capture required: account registration and email-verification entry point.</figcaption></figure>
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for the ThingsBoard Devices page screenshot">Provide a screenshot that shows the ThingsBoard Entities &rarr; Devices page.</div><figcaption>Instructor capture required: Devices navigation and device list.</figcaption></figure>
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for the ThingsBoard Add Device dialog screenshot">Provide a screenshot that shows the ThingsBoard Add Device dialog.</div><figcaption>Instructor capture required: device name and default device-profile fields.</figcaption></figure>
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for the ThingsBoard device access-token screen screenshot">Provide a screenshot that shows the ThingsBoard device access-token screen.</div><figcaption>Instructor capture required using a disposable demonstration token; never expose a real student or instructor credential.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for a ThingsBoard Cloud account registration screenshot">Provide a screenshot that shows ThingsBoard Cloud account registration.</div><figcaption>Account registration and email-verification entry point.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for the ThingsBoard Devices page screenshot">Provide a screenshot that shows the ThingsBoard Entities &rarr; Devices page.</div><figcaption>Devices navigation and device list.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for the ThingsBoard Add Device dialog screenshot">Provide a screenshot that shows the ThingsBoard Add Device dialog.</div><figcaption>Device name and default device-profile fields.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for the ThingsBoard device access-token screen screenshot">Provide a screenshot that shows the ThingsBoard device access-token screen.</div><figcaption>Use a disposable demonstration token and never expose a real credential.</figcaption></figure>
                 </div>
             </article>
 
@@ -423,7 +423,7 @@
                 <h2>Configure LabVIEW MQTT and test publish/subscribe</h2>
                 <p>Download <code>Lab7.zip</code> from Avenue to Learn, extract it, and open <code>Lab7_init.vi</code>. On the MQTT tab, configure ThingsBoard authentication and topics. Use 64-bit LabVIEW 2026 Q1 unless your installed MQTT library requires otherwise.</p>
                 <div class="grid-layout two">
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW ThingsBoard MQTT configuration screenshot">Provide a screenshot that shows the LabVIEW MQTT tab configured for ThingsBoard.</div><figcaption>Instructor capture required: show the broker, port, unique client ID, QoS, and ThingsBoard topics with the token redacted.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW ThingsBoard MQTT configuration screenshot">Provide a screenshot that shows the LabVIEW MQTT tab configured for ThingsBoard.</div><figcaption>Show the broker, port, unique client ID, QoS, and ThingsBoard topics with the token redacted.</figcaption></figure>
                     <div class="mini-card">
                         <h3>MQTT tab settings</h3>
                         <ul>
@@ -454,7 +454,7 @@
                     <li>Use Stop, not Abort, so MQTT, LINX/VISA, queues, events, and other references can close cleanly.</li>
                 </ol>
                 <div class="grid-layout two mt-block">
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Latest Telemetry tab screenshot">Provide a screenshot that shows the ThingsBoard Latest Telemetry tab.</div><figcaption>Instructor capture required: <code>distance_cm</code> and <code>led_state</code> visible for the Lab 7 device.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Latest Telemetry tab screenshot">Provide a screenshot that shows the ThingsBoard Latest Telemetry tab.</div><figcaption>Show <code>distance_cm</code> and <code>led_state</code> for the Lab 7 device.</figcaption></figure>
                     <label class="response-field evidence-upload"><span>Local evidence reference: Latest Telemetry showing both keys and no access token (image or PDF)</span><input class="persist-file" data-key="mqtt-latest-telemetry-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="mqtt-latest-telemetry-screenshot">No local evidence file selected.</small><small>Accepted: image file or PDF. This chooser records only the filename; it does not upload or submit the artifact.</small></label>
                 </div>
                 <label class="response-field mt-block"><span>Record one <code>distance_cm</code> value successfully published to ThingsBoard</span><input class="persist-text" data-key="mqtt-published-value" data-stage-required></label>
@@ -467,8 +467,8 @@
                 <h2>Create the ultrasonic sensor and LED circuit</h2>
                 <p>Wire the local sensing and actuation hardware. The ultrasonic sensor provides distance measurement; the LED provides a visible actuator controlled locally and from the cloud.</p>
                 <div class="grid-layout two">
-                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-ultrasonic-led-schematic.png" alt="Source PDF schematic showing Arduino Mega connected to HC-SR04 ultrasonic sensor and LED with resistor."><figcaption>Source PDF circuit: Echo to D9, Trig to D8, LED output on D12 through 220 Ω resistor.</figcaption></figure>
-                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-ultrasonic-led-photo.jpg" alt="Source PDF photo of Arduino Mega breadboard ultrasonic sensor and LED circuit."><figcaption>Source PDF hardware photo: compare breadboard placement, Arduino wiring, sensor orientation, and LED path.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-ultrasonic-led-schematic.png" alt="Schematic showing an Arduino Mega, HC-SR04 ultrasonic sensor, and LED with resistor."><figcaption>Connect Echo to D9, Trig to D8, and the LED output to D12 through a 220 Ω resistor.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-ultrasonic-led-photo.jpg" alt="Arduino Mega breadboard circuit with an ultrasonic sensor and LED."><figcaption>Verify breadboard placement, Arduino wiring, sensor orientation, and the LED path.</figcaption></figure>
                 </div>
                 <div class="grid-layout two mt-block">
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-led-resistor"><span>Digital 12 connects to LED in series with a 220 Ω resistor.</span></label>
@@ -487,8 +487,8 @@
                 <h2>Build the LabVIEW HMI and local sensor read</h2>
                 <p>On the HMI tab, add a Waveform Chart labelled <code>Distance (cm)</code> and a Push Button labelled <code>LED</code>. In the block diagram, use LINX Open, LINX Close, Digital Write, and the provided <code>Ultrasonic Read Fixed.vi</code> from the Lab7 folder. Keep sensing and actuation local; the cloud is not the inner loop of the controller.</p>
                 <div class="grid-layout two">
-                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-labview-hmi.png" alt="Source PDF LabVIEW front panel with Distance chart and LED push button."><figcaption>Source PDF front panel: add a Distance (cm) waveform chart and LED push button.</figcaption></figure>
-                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-labview-ultrasonic-block.png" alt="Source PDF LabVIEW block diagram showing LINX, ultrasonic read, and digital write logic."><figcaption>Source PDF block diagram: wire Centimetres to Distance (cm) and Digital Write Output Value to LED.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-labview-hmi.png" alt="LabVIEW front panel with a Distance chart and LED push button."><figcaption>Add a Distance (cm) waveform chart and an LED push button.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab7-pdf-labview-ultrasonic-block.png" alt="LabVIEW block diagram with LINX, ultrasonic-read, and digital-write logic."><figcaption>Wire Centimetres to Distance (cm) and Digital Write Output Value to the LED.</figcaption></figure>
                 </div>
                 <div class="grid-layout two mt-block">
                     <label class="response-field"><span>Local LED front-panel test result</span><input class="persist-text" data-key="hmi-led-test" placeholder="Example: LED toggles from the front panel"></label>
@@ -511,8 +511,8 @@
 }</code></pre>
                 <p>If you use Format Into String, a format string may resemble <code>{"distance_cm":%.2f,"led_state":%s}</code>. Feed the final placeholder a lowercase JSON Boolean string (<code>true</code> or <code>false</code>), not quoted text and not LabVIEW's capitalized display form. Validate the complete payload before publishing.</p>
                 <div class="grid-layout two">
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW JSON telemetry construction screenshot">Provide a screenshot that shows LabVIEW JSON construction for <code>distance_cm</code> and <code>led_state</code>.</div><figcaption>Instructor capture required: native LabVIEW or the course JSON utility building a valid object.</figcaption></figure>
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW telemetry publish case screenshot">Provide a screenshot that shows the LabVIEW publish case using <code>v1/devices/me/telemetry</code>.</div><figcaption>Instructor capture required: telemetry topic, payload source, and one-second publish timing.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW JSON telemetry construction screenshot">Provide a screenshot that shows LabVIEW JSON construction for <code>distance_cm</code> and <code>led_state</code>.</div><figcaption>Show a valid object built with native LabVIEW or the course JSON utility.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW telemetry publish case screenshot">Provide a screenshot that shows the LabVIEW publish case using <code>v1/devices/me/telemetry</code>.</div><figcaption>Show the telemetry topic, payload source, and one-second publish timing.</figcaption></figure>
                 </div>
                 <div class="warning-card mt-block"><strong>Timing:</strong> keep the local Arduino/LabVIEW loop at approximately 100&ndash;250 ms, but publish ThingsBoard telemetry only about once per second. Do not publish every ultrasonic sample. Dashboard commands are event-driven.</div>
                 <label class="response-field mt-block"><span>Why must the MQTT payload be a labelled JSON object rather than an unlabelled number?</span><textarea class="persist-text" data-key="publish-format-why"></textarea></label>
@@ -546,8 +546,8 @@
 }</code></pre>
                 <p>This request ensures LabVIEW receives the current dashboard state even if the switch changed while LabVIEW was offline. On reconnect, recreate the connection if needed, resubscribe to both topics, and request the current value again.</p>
                 <div class="grid-layout two">
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Shared Attributes tab screenshot">Provide a screenshot that shows the ThingsBoard Shared Attributes tab with <code>led_switch</code>.</div><figcaption>Instructor capture required: a Boolean shared attribute with no credential visible.</figcaption></figure>
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW shared attribute receive and startup synchronization screenshot">Provide a screenshot that shows LabVIEW shared-attribute receive, JSON parsing, and the startup request.</div><figcaption>Instructor capture required: both subscriptions, request topic/payload, Boolean validation, and Digital Write path.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Shared Attributes tab screenshot">Provide a screenshot that shows the ThingsBoard Shared Attributes tab with <code>led_switch</code>.</div><figcaption>Show a Boolean shared attribute with no credential visible.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW shared attribute receive and startup synchronization screenshot">Provide a screenshot that shows LabVIEW shared-attribute receive, JSON parsing, and the startup request.</div><figcaption>Show both subscriptions, the request topic and payload, Boolean validation, and the Digital Write path.</figcaption></figure>
                 </div>
                 <div class="briefing-card mt-block"><h3>Desired state versus actual state</h3><p><code>led_switch</code> is the desired state selected in ThingsBoard. <code>led_state</code> is the actual state after LabVIEW applies local rules and writes Arduino Digital 12; report it back as telemetry. Repeated QoS 1 messages must be idempotent and must not toggle the LED accidentally.</p></div>
                 <div class="warning-card mt-block">If JSON is malformed or <code>led_switch</code> is not a Boolean, display a readable error and retain the last valid command unless the documented design requires a safer fallback. Local sensing and control must continue during cloud loss; an intentional shutdown should turn the LED off.</div>
@@ -580,11 +580,11 @@
                     <li>Optionally add a device-activity or last-update indicator, save the dashboard, and exit edit mode.</li>
                 </ol>
                 <div class="grid-layout four mt-block">
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard dashboard creation page screenshot">Provide a screenshot that shows the ThingsBoard dashboard creation page.</div><figcaption>Instructor capture required: create and name <code>Lab 7 Ultrasonic Dashboard</code>.</figcaption></figure>
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard entity alias selection screenshot">Provide a screenshot that shows ThingsBoard entity alias selection.</div><figcaption>Instructor capture required: alias bound to one Lab 7 device.</figcaption></figure>
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard telemetry widget configuration screenshot">Provide a screenshot that shows ThingsBoard telemetry widget configuration.</div><figcaption>Instructor capture required: <code>distance_cm</code> gauge/time-series and <code>led_state</code> indicator bindings.</figcaption></figure>
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard shared attribute switch configuration screenshot">Provide a screenshot that shows ThingsBoard shared-attribute switch configuration.</div><figcaption>Instructor capture required: get/set shared attribute <code>led_switch</code> with Boolean values.</figcaption></figure>
-                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for the completed Lab 7 ThingsBoard dashboard screenshot">Provide a screenshot that shows the completed Lab 7 ThingsBoard dashboard.</div><figcaption>Instructor capture required: distance value/gauge, time-series chart, LED switch, actual-state indicator, and optional activity indicator together.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard dashboard creation page screenshot">Provide a screenshot that shows the ThingsBoard dashboard creation page.</div><figcaption>Create and name <code>Lab 7 Ultrasonic Dashboard</code>.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard entity alias selection screenshot">Provide a screenshot that shows ThingsBoard entity alias selection.</div><figcaption>Bind the alias to one Lab 7 device.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard telemetry widget configuration screenshot">Provide a screenshot that shows ThingsBoard telemetry widget configuration.</div><figcaption>Bind the <code>distance_cm</code> gauge or time series and the <code>led_state</code> indicator.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard shared attribute switch configuration screenshot">Provide a screenshot that shows ThingsBoard shared-attribute switch configuration.</div><figcaption>Configure get/set access to the Boolean shared attribute <code>led_switch</code>.</figcaption></figure>
+                    <figure class="diagram-card"><div class="screenshot-placeholder" role="img" aria-label="Placeholder for the completed Lab 7 ThingsBoard dashboard screenshot">Provide a screenshot that shows the completed Lab 7 ThingsBoard dashboard.</div><figcaption>Show the distance value or gauge, time-series chart, LED switch, actual-state indicator, and optional activity indicator together.</figcaption></figure>
                 </div>
                 <div class="success-card mt-block"><strong>Verify cloud configuration first:</strong> toggle the dashboard switch and confirm that <code>led_switch</code> changes under the device's <strong>Shared Attributes</strong> tab. Complete this check before troubleshooting LabVIEW.</div>
                 <details><summary>If the dashboard has no value or the switch has no effect</summary><div><ul><li>Confirm the entity alias points to the Lab 7 device and each widget uses the exact <code>distance_cm</code>, <code>led_state</code>, or <code>led_switch</code> key.</li><li>Confirm the switch sets a shared attribute, not telemetry, RPC, or a server attribute.</li><li>Verify <code>led_switch</code> changes in the Shared Attributes tab before inspecting the LabVIEW subscription and JSON path.</li></ul></div></details>
@@ -633,9 +633,8 @@
                     <li>Build and test a dashboard that distinguishes desired <code>led_switch</code> from reported <code>led_state</code>.</li>
                 </ul>
                 <h2 class="mt-block">Deliverables</h2>
-                <div class="grid-layout two">
+                <div>
                     <div class="mini-card"><h3>Submit or demonstrate</h3><ol><li>ThingsBoard account and Lab 7 device created.</li><li>Device token entered privately into LabVIEW and excluded from submitted evidence.</li><li>Test <code>distance_cm</code>/<code>led_state</code> telemetry visible under Latest Telemetry.</li><li>LabVIEW MQTT configuration with the token redacted.</li><li>Sensor/LED circuit and local LabVIEW HMI evidence.</li><li>JSON telemetry updating about once per second.</li><li>Manual shared <code>led_switch</code> update and startup request response.</li><li>Dashboard switch changes <code>led_switch</code>; LabVIEW receives it; Arduino LED responds.</li><li>Actual <code>led_state</code> returns to ThingsBoard separately from desired state.</li><li>Final dashboard screenshot or instructor demonstration.</li><li>Reconnect, malformed-message, safe-shutdown, and internet-loss behaviour.</li><li>System explanation, local extension, reflection, and suggestions.</li></ol></div>
-                    <div class="mini-card"><h3>Suggested weighting</h3><table><tbody><tr><td>ThingsBoard account, device, and credential safety</td><td>15%</td></tr><tr><td>MQTT/JSON configuration and evidence</td><td>20%</td></tr><tr><td>Sensor/LED hardware and local LabVIEW HMI</td><td>20%</td></tr><tr><td>Telemetry, shared-attribute, and startup-sync loop</td><td>20%</td></tr><tr><td>Dashboard and remote demo</td><td>15%</td></tr><tr><td>Extension, reliability, and reflection</td><td>10%</td></tr></tbody></table></div>
                 </div>
                 <div class="danger-card mt-block"><strong>Safe cleanup:</strong> stop with the VI Stop control, turn the LED off, close MQTT, LINX/VISA, queue, event, and other references, then disconnect Arduino USB before changing or storing the circuit. Remove real tokens from saved front-panel defaults and local examples before distributing the VI.</div>
                 <div class="warning-card mt-block"><strong>Instructor screenshots still required:</strong> ThingsBoard account registration; Devices page; Add Device dialog; device access-token screen using a disposable/redacted token; Latest Telemetry tab; Shared Attributes tab; dashboard creation page; entity alias selection; telemetry widget configuration; shared-attribute switch configuration; completed dashboard; LabVIEW ThingsBoard MQTT configuration; LabVIEW JSON telemetry construction; LabVIEW telemetry publish case; and LabVIEW shared-attribute/startup-sync wiring.</div>
@@ -903,9 +902,11 @@
                         target.textContent = 'Enter a value.';
                         return;
                     }
-                    const matches = input.hasAttribute('data-case-sensitive')
-                        ? actual === expected
-                        : actual.toLowerCase() === expected.toLowerCase();
+                    const alternate = input.dataset.expectedAlt?.trim();
+                    const matchesValue = candidate => input.hasAttribute('data-case-sensitive')
+                        ? actual === candidate
+                        : actual.toLowerCase() === candidate.toLowerCase();
+                    const matches = matchesValue(expected) || (alternate && matchesValue(alternate));
                     target.textContent = matches ? 'Correct.' : 'Incorrect.';
                 });
             }

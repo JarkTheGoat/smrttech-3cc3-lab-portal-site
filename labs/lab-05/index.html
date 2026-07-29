@@ -411,15 +411,15 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                 <div class="grid-layout three">
                     <figure class="diagram-card">
                         <img src="../../assets/lab5-pdf-servo-coupling.jpg" alt="Source PDF photo of a servo motor with the white plastic coupling attached to the shaft.">
-                        <figcaption>Source PDF setup detail: attach the white plastic coupling before testing servo motion.</figcaption>
+                        <figcaption>Attach the white plastic coupling before testing servo motion.</figcaption>
                     </figure>
                     <figure class="diagram-card">
                         <img src="../../assets/lab5-pdf-servo-circuit-schematic.jpg" alt="Source PDF schematic showing Arduino Mega connected to a potentiometer and servo motor.">
-                        <figcaption>Source PDF circuit schematic: potentiometer connects to A0 and the servo signal connects to Digital Pin 7.</figcaption>
+                        <figcaption>Connect the potentiometer to A0 and the servo signal to Digital Pin 7.</figcaption>
                     </figure>
                     <figure class="diagram-card">
                         <img src="../../assets/lab5-pdf-servo-circuit-photo.jpg" alt="Source PDF breadboard photo showing the Arduino Mega, potentiometer, and servo motor wiring.">
-                        <figcaption>Source PDF hardware view: compare your wiring against this Arduino, breadboard, potentiometer, and servo layout.</figcaption>
+                        <figcaption>Compare your wiring with this Arduino, breadboard, potentiometer, and servo layout.</figcaption>
                     </figure>
                 </div>
                 <div class="grid-layout three mt-block">
@@ -448,7 +448,7 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                 <p>Build the main VI that communicates with Arduino and the servo. Begin with a basic fixed pulse-width test before scaling.</p>
                 <figure class="diagram-card">
                     <img src="../../assets/lab5-pdf-arduino-interface.png" alt="Source PDF LabVIEW block diagram for opening LINX, opening servo channel 7, reading analog channel 0, writing pulse width, and closing connections.">
-                    <figcaption>Source PDF Arduino interface: LINX Open, Servo Open, Analog Read, Set Pulse Width, Servo Close, and LINX Close are wired in sequence.</figcaption>
+                    <figcaption>Wire LINX Open, Servo Open, Analog Read, Set Pulse Width, Servo Close, and LINX Close in sequence.</figcaption>
                 </figure>
                 <div class="grid-layout three">
                     <details open><summary>A. LINX Open</summary><div>Add LINX Open, create the Serial Port constant, and set it to COM3 or the correct Arduino COM port.</div></details>
@@ -478,11 +478,11 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                 <h2>Build the Manual/Automatic front panel and scale voltage to angle</h2>
                 <p>Add the front-panel HMI controls, then create the Manual case that turns potentiometer voltage into an angle command.</p>
                 <figure class="diagram-card">
-                    <img src="../../assets/lab5-pdf-front-panel.jpg" alt="Source PDF LabVIEW front panel with Choice combo box, Angle gauge, Speed and NumberOfWaves controls, GO button, Stop button, and Voltage indicator.">
-                    <figcaption>Source PDF front panel: use this as the visual reference for the Manual/Automatic HMI controls.</figcaption>
+                    <img src="../../assets/lab5-pdf-front-panel.jpg" alt="LabVIEW front panel with Choice Enum, Angle gauge, Speed and NumberOfWaves controls, GO button, Stop button, and Voltage indicator.">
+                    <figcaption>Use this front panel as the visual reference for the Manual/Automatic HMI controls.</figcaption>
                 </figure>
                 <div class="grid-layout three">
-                    <div class="mini-card"><h3>Combo Box</h3><p>Name it <code>Choice</code>. Add items <code>Manual</code> and <code>Automatic</code>.</p></div>
+                    <div class="mini-card"><h3>Enum</h3><p>Name it <code>Choice</code>. Add items <code>Manual</code> and <code>Automatic</code>.</p></div>
                     <div class="mini-card"><h3>Gauge</h3><p>Name it <code>Angle</code>. Set range to 0-180.</p></div>
                     <div class="mini-card"><h3>Controls</h3><p>Add <code>Speed</code>, <code>NumberOfWaves</code>, <code>GO</code>, and keep the Voltage indicator.</p></div>
                 </div>
@@ -490,7 +490,7 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                 <h3>Manual Formula Node</h3>
                     <figure class="diagram-card">
                         <img src="../../assets/lab5-pdf-manual-case.png" alt="Reference block diagram for the manual voltage-to-angle calculation.">
-                        <figcaption>Source PDF Manual case: voltage from Analog Read becomes a commanded angle.</figcaption>
+                        <figcaption>In the Manual case, Analog Read voltage becomes the commanded angle.</figcaption>
                     </figure>
                     <pre><code>Angle = V / 5 * 180;</code></pre>
                     <p>Add input <code>V</code> from Analog Read voltage. Add output <code>Angle</code> and connect it to the Angle gauge and the output of the Manual case.</p>
@@ -514,11 +514,8 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 5</p>
                 <h2>Convert angle into servo pulse width</h2>
-                <p>Add a Formula Node below the Case Structure so both Manual and Automatic angle commands pass through the same pulse-width mapping. Review the <a class="concept-link" href="https://www.ni.com/docs/en-US/bundle/labview/page/formula-node-syntax.html" target="_blank" rel="noopener">NI Formula Node syntax reference</a> as needed.</p>
-                <figure class="diagram-card">
-                    <img src="../../assets/lab5-pdf-pulse-width-node.png" alt="Reference block diagram for the shared angle-to-pulse-width calculation below the Case Structure.">
-                    <figcaption>Source PDF pulse-width calculation: the angle output maps to a microsecond pulse command for Set Pulse Width.</figcaption>
-                </figure>
+                <p>Place a Formula Node below the Case Structure so the Manual and Automatic cases share one angle-to-pulse-width conversion. The Case Structure should produce one numeric <code>Angle</code> value; the Formula Node should receive that value, apply the calibrated lower and upper pulse limits, and produce one numeric <code>PW</code> output for Set Pulse Width.</p>
+                <p>The mapping should preserve the endpoints: 0 degrees corresponds to the lower limit, 180 degrees corresponds to the upper limit, and intermediate angles scale proportionally between them. Use input and output terminals on the Formula Node border with names that match the block-diagram wiring. Review the <a class="concept-link" href="https://www.ni.com/docs/en-US/bundle/labview/page/formula-node-syntax.html" target="_blank" rel="noopener">NI Formula Node syntax reference</a> for statement endings, numeric expressions, and terminal naming conventions.</p>
                 <pre><code>URV = 2400;
 LRV = 600;
 PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
@@ -543,10 +540,6 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">HMI integration</p>
                 <h2>Route Manual and Automatic choices through one Case Structure</h2>
                 <p>Place <code>Choice</code>, <code>GO</code>, <code>Speed</code>, and <code>NumberOfWaves</code> inside the loop. Connect <code>Choice</code> to the Case Structure selector. Create cases named <code>Manual</code>, <code>Automatic</code>, and <code>Default</code>.</p>
-                <figure class="diagram-card">
-                    <img src="../../assets/lab5-pdf-manual-case.png" alt="Source PDF Manual Case Structure in LabVIEW, showing Choice selecting Manual logic and outputting Angle.">
-                    <figcaption>Source PDF Case Structure reference: Manual and Automatic cases should both output an angle command.</figcaption>
-                </figure>
                 <div class="logic-flow" aria-label="Case structure command flow"><span>Choice</span><b>-&gt;</b><span>Manual or Automatic case</span><b>-&gt;</b><span>Angle command</span><b>-&gt;</b><span>Pulse-width scaling</span><b>-&gt;</b><span>Servo Write</span></div>
                 <div class="grid-layout two mt-block">
                     <div class="mini-card"><h3>Manual case output</h3><p>Angle from potentiometer voltage.</p></div>
@@ -554,7 +547,7 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
                 </div>
                 <label class="response-field mt-block"><span>How does the Case Structure support both modes without duplicating pulse-width scaling?</span><textarea class="persist-text" data-key="hmi-case-explain"></textarea></label>
                 <div class="grid-layout two">
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-choice"><span>Combo Box named Choice has Manual and Automatic items.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-choice"><span>Enum named Choice has Manual and Automatic items.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-angle"><span>Angle gauge range is 0-180.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-speed"><span>Speed and NumberOfWaves controls are present.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-go"><span>GO button is present.</span></label>
@@ -570,11 +563,11 @@ PW = Angle / 180 * (URV - LRV) + LRV;</code></pre>
                 <div class="grid-layout three">
                     <figure class="diagram-card">
                         <img src="../../assets/lab5-pdf-subvi-front-panel.png" alt="Source PDF SubVI front panel with Go, NumberOfWaves, Speed, Waving, Direction, Wave Count, and Angle.">
-                        <figcaption>Source PDF SubVI front panel: these controls and indicators define the automatic waving state.</figcaption>
+                        <figcaption>These controls and indicators define the automatic waving state.</figcaption>
                     </figure>
                     <figure class="diagram-card">
                         <img src="../../assets/lab5-pdf-wave-servo-icon.png" alt="Source PDF Wave Servo icon for the automatic waving SubVI.">
-                        <figcaption>Source PDF icon example: edit the SubVI icon so it is recognizable when placed in the main VI.</figcaption>
+                        <figcaption>Edit the SubVI icon so it remains recognizable when placed in the main VI.</figcaption>
                     </figure>
                     <div class="diagram-card">
                         <h3>Formula Node starter architecture</h3>
@@ -626,7 +619,7 @@ Waving = WavingLast;
                 <p>Return to the main VI from the <a class="concept-link" href="?stage=6#build-hmi">Build HMI stage, “Route Manual and Automatic choices through one Case Structure”</a>. Place the saved SubVI in the Automatic case, remove the temporary DBL constant, and connect the SubVI output to the Case Structure output.</p>
                 <figure class="diagram-card">
                     <img src="../../assets/lab5-pdf-final-program.png" alt="Source PDF final LabVIEW program showing the automatic-wave SubVI inserted into the Automatic case and connected to the pulse-width calculation.">
-                    <figcaption>Source PDF final program: the Automatic case calls the SubVI, then the shared pulse-width mapping commands the servo.</figcaption>
+                    <figcaption>The Automatic case calls the SubVI, then the shared pulse-width mapping commands the servo.</figcaption>
                 </figure>
                 <div class="grid-layout two">
                     <div class="mini-card"><h3>Inputs</h3><ul><li>GO to top SubVI input.</li><li>NumberOfWaves to middle input.</li><li>Speed to bottom input.</li></ul></div>

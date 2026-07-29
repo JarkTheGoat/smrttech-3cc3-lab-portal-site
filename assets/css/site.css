@@ -3,6 +3,18 @@ html {
     scroll-padding-top: 88px;
 }
 
+.concept-link {
+    color: var(--mac-maroon, #7A003C);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
+
+.concept-link:hover {
+    color: #5A002D;
+}
+
 /* These structural regions receive programmatic focus when a view opens.
    Suppress the browser's large default outline without affecting controls. */
 .stage-panel[tabindex="-1"]:focus,
@@ -122,6 +134,31 @@ html {
     font-weight: 800 !important;
     letter-spacing: -0.015em;
     line-height: 1.18;
+}
+
+/* Number every lab stage from the first visible Prepare/Overview page onward. */
+.stage-panel[data-checkpoint-number] {
+    position: relative;
+}
+
+.stage-panel[data-checkpoint-number]::before {
+    content: attr(data-checkpoint-number);
+    position: absolute;
+    left: -17px;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid white;
+    border-radius: 999px;
+    color: white;
+    background: var(--mac-maroon, #7A003C);
+    font-size: 0.84rem;
+    font-weight: 700;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.18);
 }
 
 .activity-heading {
@@ -515,10 +552,21 @@ details[data-gated-hint].is-locked summary {
 }
 
 .evidence-upload {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    clear: both;
     border: 1px dashed rgba(122, 0, 60, 0.32);
     border-radius: 12px;
     background: #fff;
     padding: 0.85rem;
+}
+
+.evidence-upload > small {
+    display: block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    line-height: 1.45;
 }
 
 .evidence-upload input[type="file"] {

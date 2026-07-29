@@ -709,6 +709,18 @@
             background: var(--mac-maroon-20);
         }
 
+        .skill-reference-list a {
+            color: var(--mac-maroon);
+            font-weight: 700;
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 3px;
+        }
+
+        .skill-reference-list a:hover {
+            color: #5a002d;
+        }
+
         .optional-card {
             border-left: 5px solid var(--mac-gold);
         }
@@ -1142,7 +1154,7 @@
                 <div class="grid two">
                     <div class="mini-card">
                         <h3>Skill map references</h3>
-                        <ul>
+                        <ul class="compact-list text-gray-600 list-disc ml-5 skill-reference-list">
                             <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=voltage-divider">Voltage divider</a></li>
                             <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=analog-input">Arduino analog input</a></li>
                             <li><a class="concept-link" href="../../knowledge/skill-tree.html?topic=measure-voltage">Measuring voltage</a></li>
@@ -1273,17 +1285,8 @@
             <article class="section-card card border-gold">
                 <p class="eyebrow">Checkpoint 7</p>
                 <h2>Add a Kelvin display</h2>
-                <p>Add an additional thermometer or numeric indicator showing Kelvin. Use <code>K = C + 273.15</code>.</p>
-                <div class="compare-grid">
-                    <div class="mini-card">
-                        <h3>Option A: Create a C-to-K SubVI</h3>
-                        <p>Use this when the conversion will be reused or when hiding details improves the main diagram.</p>
-                    </div>
-                    <div class="mini-card">
-                        <h3>Option B: Add direct block logic</h3>
-                        <p>Use this when the conversion is simple and keeping it visible helps classmates or the instructor review it.</p>
-                    </div>
-                </div>
+                <p>Add an additional third option thermometer or numeric indicator showing Kelvin. Use <code>K = C + 273.15</code>.</p>
+                <br>
                 <div class="grid two">
                     <label class="response-field"><span>Which option did you choose?</span><select class="persist-text" data-key="kelvin-option"><option value="">Choose...</option><option>Option A: SubVI</option><option>Option B: Direct logic</option></select></label>
                     <label class="response-field"><span>How did you test that Kelvin is correct?</span><textarea class="persist-text" data-key="kelvin-test"></textarea></label>
@@ -1341,27 +1344,6 @@
                     <label class="response-field evidence-upload"><span>Final <code>Thermometer.vi</code> file</span><input class="persist-file" data-key="final-thermometer-vi" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-thermometer-vi">No .vi file selected.</small></label>
                     <label class="response-field evidence-upload"><span>Final Celsius-to-Fahrenheit SubVI file</span><input class="persist-file" data-key="final-c-to-f-subvi" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-c-to-f-subvi">No .vi file selected.</small></label>
                 </div>
-            </article>
-
-            <article class="section-card card border-gold" hidden>
-                <p class="eyebrow">Assessment Guide</p>
-                <h2>Suggested weighting</h2>
-                <div class="table-wrap">
-                    <table>
-                        <thead><tr><th>Category</th><th>Weight</th><th>Assessment type</th></tr></thead>
-                        <tbody>
-                            <tr><td>Pre-lab readiness and predictions</td><td>10%</td><td>Structured evidence</td></tr>
-                            <tr><td>Arduino-LabVIEW communication evidence</td><td>10%</td><td>Structured evidence</td></tr>
-                            <tr><td>Celsius-to-Fahrenheit VI</td><td>10%</td><td>Structured and instructor assessed</td></tr>
-                            <tr><td>SubVI creation and explanation</td><td>15%</td><td>Instructor assessed</td></tr>
-                            <tr><td>Thermistor circuit explanation</td><td>15%</td><td>Instructor assessed</td></tr>
-                            <tr><td>Thermometer VI implementation</td><td>20%</td><td>Structured and instructor assessed</td></tr>
-                            <tr><td>Kelvin extension</td><td>10%</td><td>Structured evidence</td></tr>
-                            <tr><td>Troubleshooting and reflection</td><td>10%</td><td>Instructor assessed</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p class="callout">This page does not grade automatically. It helps collect checkable evidence such as file names, screenshots, test values, explanations, and checklist completion.</p>
             </article>
 
             <article class="section-card card border-success">

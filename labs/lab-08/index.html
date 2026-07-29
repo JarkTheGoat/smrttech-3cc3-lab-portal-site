@@ -421,8 +421,8 @@
                 <h2>Create the capacitive soil moisture sensor circuit</h2>
                 <p>Review the capacitive sensor datasheet, then build the circuit. Connect sensor GND to Arduino GND, VCC to Arduino 5 V, and SIG to Arduino A0.</p>
                 <div class="grid-layout two">
-                    <figure class="diagram-card"><img src="../../assets/lab8-pdf-moisture-circuit.png" alt="Source PDF circuit diagram showing capacitive soil moisture sensor connected to Arduino Mega A0, 5 V, and GND."><figcaption>Source PDF Figure 1: moisture sensor SIG connects to Arduino analog channel A0.</figcaption></figure>
-                    <figure class="diagram-card"><img src="../../assets/lab8-pdf-sensor-depth-warning.png" alt="Source PDF sensor image showing warning line and recommended water depth."><figcaption>Source PDF: do not submerge the top circuitry; use the recommended depth region only.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab8-pdf-moisture-circuit.png" alt="Circuit diagram showing a capacitive soil-moisture sensor connected to Arduino Mega A0, 5 V, and GND."><figcaption>Connect the moisture-sensor SIG pin to Arduino analog channel A0.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab8-pdf-sensor-depth-warning.png" alt="Soil-moisture sensor showing the safe insertion-depth region."><figcaption>Do not submerge the top circuitry; insert only the recommended sensing region.</figcaption></figure>
                 </div>
                 <div class="grid-layout two mt-block">
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="circuit-gnd"><span>Sensor GND is connected to Arduino GND.</span></label>
@@ -440,7 +440,7 @@
                 <h2>Flash LINX and measure V_dry and V_wet</h2>
                 <p>Flash LINX firmware using Tools - MakerHub - LINX - LINX Firmware Wizard. Add LINX Open, LINX Close, and LINX Analog Read in the Control and Data Acquisition loop. Configure the serial port and set analog channel to 0.</p>
                 <div class="grid-layout two">
-                    <figure class="diagram-card"><img src="../../assets/lab8-pdf-analog-read-block.png" alt="Source PDF LabVIEW block diagram with LINX Open, LINX Analog Read, and LINX Close."><figcaption>Source PDF: first read sensor voltage without pressing Connect in the MQTT tab.</figcaption></figure>
+                    <figure class="diagram-card"><img src="../../assets/lab8-pdf-analog-read-block.png" alt="LabVIEW block diagram with LINX Open, LINX Analog Read, and LINX Close."><figcaption>First read the sensor voltage without pressing Connect in the MQTT tab.</figcaption></figure>
                     <div class="mini-card">
                         <h3>Calibration steps</h3>
                         <ol>
