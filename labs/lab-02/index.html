@@ -1112,6 +1112,16 @@
                     </div>
                 </details>
                 <div class="grid two">
+                    <figure class="diagram-card">
+                        <img src="../../assets/lab2-subvi-edit-icon.png" alt="LabVIEW VI icon context menu with Edit Icon selected" loading="lazy">
+                        <figcaption>Right-click the VI icon in the upper-right corner of the front panel and select <strong>Edit Icon</strong>.</figcaption>
+                    </figure>
+                    <figure class="diagram-card">
+                        <img src="../../assets/lab2-subvi-connector-pattern.png" alt="LabVIEW connector pane Patterns menu with a two-terminal pattern selected" loading="lazy">
+                        <figcaption>Open the connector pane Patterns menu and choose a two-terminal layout for the Celsius input and Fahrenheit output.</figcaption>
+                    </figure>
+                </div>
+                <div class="grid two">
                     <div class="mini-card">
                         <h3>Core actions</h3>
                         <ol>
@@ -1205,6 +1215,10 @@
                 <p class="eyebrow">Checkpoint 5</p>
                 <h2>Read the sensor through LabVIEW LINX</h2>
                 <p>Create a main VI that opens a LINX connection, reads Arduino analog channel 0, sends the voltage to the course-provided thermistor conversion VI, reuses your C-to-F SubVI, lets the user select Celsius or Fahrenheit, displays the result on a thermometer indicator, repeats inside a while loop, stops with a Stop button, and closes LINX after the loop ends.</p>
+                <figure class="diagram-card">
+                    <img src="../../assets/lab2-display-block-diagram.png" alt="Annotated LabVIEW LINX block diagram identifying the serial connection, analog read, digital write, timing, stop control, error wire, while loop, and close function" loading="lazy">
+                    <figcaption>Use this annotated dataflow reference to distinguish connection setup, repeated measurement and output logic, controlled stopping, and resource cleanup.</figcaption>
+                </figure>
                 <div class="diagram-card">
                     <div class="logic-flow" aria-label="LabVIEW thermometer conceptual block diagram">
                         <span>Arduino A0 voltage</span><b>-&gt;</b><span>LINX Analog Read</span><b>-&gt;</b><span>Thermistor voltage-to-Celsius VI</span><b>-&gt;</b><span>C-to-F SubVI</span><b>-&gt;</b><span>Select scale</span><b>-&gt;</b><span>Thermometer display</span>

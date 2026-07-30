@@ -920,6 +920,10 @@
                 <p class="eyebrow">Checkpoint 4</p>
                 <h2>Count events, not loop iterations</h2>
                 <p>A loop running every 100 ms sees the same tilted state many times. If the program adds 1 every time it sees <code>tilted</code>, one physical tilt could be counted many times. To count events properly, compare current state with previous state and count only the desired transition.</p>
+                <figure class="diagram-card">
+                    <img src="../../assets/lab3-shift-register-event-counter.png" alt="Annotated LabVIEW block diagram showing an initialized shift register carrying a tilt count between While Loop iterations" loading="lazy">
+                    <figcaption>The left shift-register terminal receives the initialized count, and the right terminal stores the updated value for the next loop iteration.</figcaption>
+                </figure>
                 <div class="diagram-card">
                     <div class="logic-flow" aria-label="Shift register event logic">
                         <span>Loop k-1: previous state</span><b>-&gt;</b><span>Loop k: current state</span><b>-&gt;</b><span>previous upright and current tilted?</span><b>-&gt;</b><span>count = count + 1</span>
