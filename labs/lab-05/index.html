@@ -628,8 +628,8 @@ Waving = WavingLast;
                 <h2>Insert the automatic-wave SubVI into the main VI</h2>
                 <p>Return to the main VI from the <a class="concept-link" href="?stage=5#scale-pulse-width">Scale Pulse Width stage</a>. Place the saved SubVI in the Automatic case, remove the temporary pass-through connection, and connect the SubVI output to the Case Structure output.</p>
                 <figure class="diagram-card">
-                    <img src="../../assets/lab5-pdf-final-program.png" alt="LabVIEW block diagram showing the Automatic case, Wave Servo SubVI, angle-to-pulse-width Formula Node, servo output, and resource cleanup.">
-                    <figcaption>The Automatic case calls the SubVI, then the shared pulse-width mapping commands the servo.</figcaption>
+                    <img src="../../assets/lab5-automatic-control-case.png" alt="LabVIEW Automatic Case Structure with Choice set to Automatic, an OK button, Speed and NumberOfWaves numeric controls wired to the Wave Servo SubVI, and the Angle output routed to the shared pulse-width Formula Node." loading="lazy">
+                    <figcaption>In the Automatic case, wire GO, Speed, and NumberOfWaves into the Wave Servo SubVI. Route its Angle output through the Case Structure tunnel to the shared pulse-width mapping below; use the pulse-width limits you recorded during Manual Control.</figcaption>
                 </figure>
                 <div class="grid-layout two">
                     <div class="mini-card"><h3>Inputs</h3><ul><li>GO to top SubVI input.</li><li>NumberOfWaves to middle input.</li><li>Speed to bottom input.</li></ul></div>
