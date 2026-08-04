@@ -426,9 +426,9 @@
                     <table>
                         <thead><tr><th>Condition</th><th>Measurement point</th><th>Voltage</th><th>Notes</th></tr></thead>
                         <tbody>
-                            <tr><td>No load</td><td>SIG+ to SIG-</td><td><input class="persist-text" data-key="raw-no-load" data-stage-required></td><td><input class="persist-text" data-key="raw-no-load-notes"></td></tr>
-                            <tr><td>Gentle load</td><td>SIG+ to SIG-</td><td><input class="persist-text" data-key="raw-gentle"></td><td><input class="persist-text" data-key="raw-gentle-notes"></td></tr>
-                            <tr><td>Maximum safe load</td><td>SIG+ to SIG-</td><td><input class="persist-text" data-key="raw-max"></td><td><input class="persist-text" data-key="raw-max-notes"></td></tr>
+                            <tr><td>No load</td><td>SIG+ to SIG-</td><td><input class="persist-text" data-key="raw-no-load" data-stage-required></td><td><input class="persist-text" data-key="raw-no-load-notes" data-stage-optional></td></tr>
+                            <tr><td>Gentle load</td><td>SIG+ to SIG-</td><td><input class="persist-text" data-key="raw-gentle"></td><td><input class="persist-text" data-key="raw-gentle-notes" data-stage-optional></td></tr>
+                            <tr><td>Maximum safe load</td><td>SIG+ to SIG-</td><td><input class="persist-text" data-key="raw-max"></td><td><input class="persist-text" data-key="raw-max-notes" data-stage-optional></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -461,9 +461,9 @@
                     <table>
                         <thead><tr><th>Condition</th><th>Measurement point</th><th>Expected relationship</th><th>Voltage</th><th>Notes</th></tr></thead>
                         <tbody>
-                            <tr><td>No load</td><td>V2 to GND</td><td>Amplified output</td><td><input class="persist-text" data-key="v2-no-load" data-stage-required></td><td><input class="persist-text" data-key="v2-no-load-notes"></td></tr>
-                            <tr><td>Gentle load</td><td>V2 to GND</td><td>Larger or smaller depending on force direction</td><td><input class="persist-text" data-key="v2-gentle"></td><td><input class="persist-text" data-key="v2-gentle-notes"></td></tr>
-                            <tr><td>Maximum safe load</td><td>V2 to GND</td><td>Within Arduino input range</td><td><input class="persist-text" data-key="v2-max"></td><td><input class="persist-text" data-key="v2-max-notes"></td></tr>
+                            <tr><td>No load</td><td>V2 to GND</td><td>Amplified output</td><td><input class="persist-text" data-key="v2-no-load" data-stage-required></td><td><input class="persist-text" data-key="v2-no-load-notes" data-stage-optional></td></tr>
+                            <tr><td>Gentle load</td><td>V2 to GND</td><td>Larger or smaller depending on force direction</td><td><input class="persist-text" data-key="v2-gentle"></td><td><input class="persist-text" data-key="v2-gentle-notes" data-stage-optional></td></tr>
+                            <tr><td>Maximum safe load</td><td>V2 to GND</td><td>Within Arduino input range</td><td><input class="persist-text" data-key="v2-max"></td><td><input class="persist-text" data-key="v2-max-notes" data-stage-optional></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -494,9 +494,9 @@
                     <table>
                         <thead><tr><th>Condition</th><th>V2 measured</th><th>V3 measured</th><th>V3/V2 ratio</th><th>Notes</th></tr></thead>
                         <tbody>
-                            <tr><td>No load</td><td><input class="persist-text" data-key="ratio-v2-no"></td><td><input class="persist-text" data-key="ratio-v3-no"></td><td><input class="persist-text" data-key="ratio-no"></td><td><input class="persist-text" data-key="ratio-no-notes"></td></tr>
-                            <tr><td>Gentle load</td><td><input class="persist-text" data-key="ratio-v2-gentle"></td><td><input class="persist-text" data-key="ratio-v3-gentle"></td><td><input class="persist-text" data-key="ratio-gentle"></td><td><input class="persist-text" data-key="ratio-gentle-notes"></td></tr>
-                            <tr><td>Maximum safe load</td><td><input class="persist-text" data-key="ratio-v2-max"></td><td><input class="persist-text" data-key="ratio-v3-max"></td><td><input class="persist-text" data-key="ratio-max"></td><td><input class="persist-text" data-key="ratio-max-notes"></td></tr>
+                            <tr><td>No load</td><td><input class="persist-text" data-key="ratio-v2-no"></td><td><input class="persist-text" data-key="ratio-v3-no"></td><td><input class="persist-text" data-key="ratio-no"></td><td><input class="persist-text" data-key="ratio-no-notes" data-stage-optional></td></tr>
+                            <tr><td>Gentle load</td><td><input class="persist-text" data-key="ratio-v2-gentle"></td><td><input class="persist-text" data-key="ratio-v3-gentle"></td><td><input class="persist-text" data-key="ratio-gentle"></td><td><input class="persist-text" data-key="ratio-gentle-notes" data-stage-optional></td></tr>
+                            <tr><td>Maximum safe load</td><td><input class="persist-text" data-key="ratio-v2-max"></td><td><input class="persist-text" data-key="ratio-v3-max"></td><td><input class="persist-text" data-key="ratio-max"></td><td><input class="persist-text" data-key="ratio-max-notes" data-stage-optional></td></tr>
                         </tbody>
                     </table>
                 </div>

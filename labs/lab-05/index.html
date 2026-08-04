@@ -187,7 +187,7 @@
             <div class="card p-5">
                 <h4 class="font-bold text-[#7A003C] uppercase text-sm mb-4">Setup Checklist</h4>
                 <ul class="text-sm text-gray-600 list-disc ml-5">
-                    <li>Attach the white plastic coupling before testing motion.</li>
+                    <li>Attach the servo motor plastic arm attachment before testing motion.</li>
                     <li>Confirm brown servo wire to GND, red to 5 V, orange to Digital Pin 7.</li>
                     <li>Confirm potentiometer middle terminal to Analog Pin 0.</li>
                     <li>Confirm LINX firmware, board type, and serial port before running.</li>
@@ -330,7 +330,7 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                 <p class="briefing-card mt-block">This lab focuses on the local motion-control and HMI layer of an IoT system. It does not yet upload motion data or commands to the cloud.</p>
                 <div class="grid-layout three mt-block">
                     <div class="mini-card"><h3>Software</h3><p>LabVIEW, NI LabVIEW LINX Toolkit, and LINX firmware loaded to Arduino.</p></div>
-                    <div class="mini-card"><h3>Hardware</h3><p>Arduino Mega, USB cable, breadboard, servo motor, potentiometer, 8 jumper wires, and white plastic coupling.</p></div>
+                    <div class="mini-card"><h3>Hardware</h3><p>Arduino Mega, USB cable, breadboard, servo motor, potentiometer, 8 jumper wires, and the servo motor plastic arm attachment.</p></div>
                     <div class="mini-card"><h3>Required pins</h3><p>Analog Pin 0 for potentiometer input. Digital Pin 7 for the servo signal.</p></div>
                 </div>
             </article>
@@ -360,7 +360,7 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-breadboard"><span>Breadboard and jumper wires are available.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-potentiometer"><span>Potentiometer is available.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-servo"><span>Servo motor is available.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-coupling"><span>White plastic servo coupling is available.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-coupling"><span>Servo motor plastic arm attachment is available.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="material-port"><span>The Arduino serial port can be identified on this computer.</span></label>
                 </div>
             </article>
@@ -398,7 +398,6 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                         </tbody>
                     </table>
                 </div>
-                <label class="response-field mt-block"><span>C. What does the Case Structure decide?</span><textarea class="persist-text" data-key="predict-case"></textarea></label>
             </article>
         </section>
 
@@ -408,8 +407,8 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                 <h2>Build the physical command-and-motion circuit</h2>
                 <div class="grid-layout two">
                     <figure class="diagram-card">
-                        <img src="../../assets/lab5-pdf-servo-coupling.jpg" alt="Source PDF photo of a servo motor with the white plastic coupling attached to the shaft.">
-                        <figcaption>Attach the white plastic coupling before testing servo motion.</figcaption>
+                        <img src="../../assets/lab5-pdf-servo-coupling.jpg" alt="Photo of a servo motor with the plastic arm attachment fitted to the shaft.">
+                        <figcaption>Attach the servo motor plastic arm attachment before testing servo motion.</figcaption>
                     </figure>
                     <figure class="diagram-card">
                         <img src="../../assets/lab5-pdf-servo-circuit-schematic.jpg" alt="Source PDF schematic showing Arduino Mega connected to a potentiometer and servo motor.">
@@ -445,11 +444,11 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-a0"><span>Potentiometer input recorded as Analog Pin 0.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-power"><span>Servo power and ground checked.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-middle"><span>Potentiometer middle terminal checked.</span></label>
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-coupling"><span>Coupling attached.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-coupling"><span>Servo motor plastic arm attachment installed.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="build-clear"><span>Wires clear of servo motion.</span></label>
                 </div>
                 <label class="response-field mt-block"><span>What evidence tells you the circuit is safe to power?</span><textarea class="persist-text" data-key="build-safe-evidence"></textarea></label>
-                <p class="danger-card mt-block"><strong>If a wiring check fails:</strong> disconnect power before correcting it, then recheck servo polarity, D7, A0, common ground, the coupling, and clearance around the moving shaft before powering again.</p>
+                <p class="danger-card mt-block"><strong>If a wiring check fails:</strong> disconnect power before correcting it, then recheck servo polarity, D7, A0, common ground, the arm attachment, and clearance around the moving shaft before powering again.</p>
             </article>
         </section>
 
@@ -476,8 +475,8 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                 <div class="grid-layout two mt-block">
                     <label class="response-field"><span>Arduino COM port selected</span><input class="persist-text" data-key="manual-com"></label>
                     <label class="response-field"><span>Pulse width test value</span><input class="persist-text" data-key="manual-pw-test" value=""></label>
-                    <label class="response-field"><span>Lowest safe pulse width for approximately 0 degrees</span><input type="number" step="1" class="persist-text" data-key="manual-pw-lower" data-stage-required-group="manual-pulse-limits"></label>
-                    <label class="response-field"><span>Highest safe pulse width for approximately 180 degrees</span><input type="number" step="1" class="persist-text" data-key="manual-pw-upper" data-stage-required-group="manual-pulse-limits"></label>
+                    <label class="response-field"><span>Highest pulse width for approximately 0 degrees</span><input type="number" step="1" class="persist-text" data-key="manual-pw-lower" data-stage-required-group="manual-pulse-limits"></label>
+                    <label class="response-field"><span>Lowest pulse width for approximately 180 degrees</span><input type="number" step="1" class="persist-text" data-key="manual-pw-upper" data-stage-required-group="manual-pulse-limits"></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="manual-servo7"><span>Servo channel set to 7.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="manual-analog0"><span>Analog channel set to 0.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="manual-voltage"><span>Voltage indicator visible.</span></label>
@@ -487,9 +486,9 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                     <table>
                         <thead><tr><th>Target servo angle</th><th>Your pulse-width value (microseconds)</th><th>Observed response / notes</th></tr></thead>
                         <tbody>
-                            <tr><td>0 degrees</td><td><input type="number" step="1" class="persist-text" data-key="manual-map-0" data-stage-required-group="manual-angle-map"></td><td><input class="persist-text" data-key="manual-map-note-0"></td></tr>
-                            <tr><td>90 degrees</td><td><input type="number" step="1" class="persist-text" data-key="manual-map-90" data-stage-required-group="manual-angle-map"></td><td><input class="persist-text" data-key="manual-map-note-90"></td></tr>
-                            <tr><td>180 degrees</td><td><input type="number" step="1" class="persist-text" data-key="manual-map-180" data-stage-required-group="manual-angle-map"></td><td><input class="persist-text" data-key="manual-map-note-180"></td></tr>
+                            <tr><td>0 degrees</td><td><input type="number" step="1" class="persist-text" data-key="manual-map-0" data-stage-required-group="manual-angle-map"></td><td><input class="persist-text" data-key="manual-map-note-0" data-stage-optional></td></tr>
+                            <tr><td>90 degrees</td><td><input type="number" step="1" class="persist-text" data-key="manual-map-90" data-stage-required-group="manual-angle-map"></td><td><input class="persist-text" data-key="manual-map-note-90" data-stage-optional></td></tr>
+                            <tr><td>180 degrees</td><td><input type="number" step="1" class="persist-text" data-key="manual-map-180" data-stage-required-group="manual-angle-map"></td><td><input class="persist-text" data-key="manual-map-note-180" data-stage-optional></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -502,6 +501,7 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 3 and 4</p>
                 <h2>Build the Manual/Automatic front panel and scale voltage to angle</h2>
                 <p>Add the front-panel HMI controls, then create the Manual case that turns potentiometer voltage into an angle command. For this first introduction to the structures, review the <a class="concept-link" href="../../knowledge/skill-tree.html?topic=case-structure">Case Structure skill</a> and <a class="concept-link" href="../../knowledge/skill-tree.html?topic=formula-node">Formula Node skill</a> in the course skill tree.</p>
+                <label class="response-field mt-block"><span>What does the Case Structure decide?</span><textarea class="persist-text" data-key="predict-case"></textarea></label>
                 <figure class="diagram-card">
                     <img src="../../assets/lab5-pdf-front-panel.jpg" alt="LabVIEW front panel with Choice Enum, Angle gauge, Speed and NumberOfWaves controls, GO button, Stop button, and Voltage indicator.">
                     <figcaption>Use this front panel as the visual reference for the Manual/Automatic HMI controls.</figcaption>
@@ -521,7 +521,7 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                     <div class="grid-layout three mt-block">
                         <div class="mini-card"><h4>Inputs</h4><p>The Manual case receives the potentiometer voltage from <code>Analog Read</code>. The <code>Choice</code> Enum is the selector input that determines which case is shown and executed.</p></div>
                         <div class="mini-card"><h4>Processing</h4><p>Inside the Manual case, the Formula Node maps the 0-5 V input to a 0-180 degree command using <code>Angle = V / 5 * 180;</code>.</p></div>
-                        <div class="mini-card"><h4>Output</h4><p>Wire the Formula Node's <code>Angle</code> output to the Angle indicator and through the Case Structure output tunnel. The single angle output can then continue to the shared pulse-width scaling and servo command.</p></div>
+                        <div class="mini-card"><h4>Output</h4><p>Wire the Formula Node's <code>Angle</code> output to the Angle indicator and through the Case Structure output tunnel. This single angle output will then continue, on the next stage of this lab, to the shared pulse-width scaling and servo command.</p></div>
                     </div>
                     <p class="mt-block"><strong>Build sequence:</strong> create the <code>Manual</code> and <code>Automatic</code> Enum items, wire <code>Choice</code> to the Case Structure selector, place the Formula Node in the Manual case, connect the voltage input and Angle output, then confirm that the Manual case produces one clean angle value for the next stage.</p>
                 </div>
@@ -547,16 +547,16 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                     <table>
                         <thead><tr><th>Angle</th><th>Your measured or adjusted value</th><th>Notes</th></tr></thead>
                         <tbody>
-                            <tr><td>0 degrees</td><td><input type="number" step="1" class="persist-text" data-key="pw-measured-0" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-0"><small class="pulse-width-range-note" data-pulse-range-note-for="pw-measured-0" aria-live="polite"></small></td></tr>
-                            <tr><td>90 degrees</td><td><input type="number" step="1" class="persist-text" data-key="pw-measured-90" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-90"><small class="pulse-width-range-note" data-pulse-range-note-for="pw-measured-90" aria-live="polite"></small></td></tr>
-                            <tr><td>180 degrees</td><td><input type="number" step="1" class="persist-text" data-key="pw-measured-180" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-180"><small class="pulse-width-range-note" data-pulse-range-note-for="pw-measured-180" aria-live="polite"></small></td></tr>
+                            <tr><td>0 degrees</td><td><input type="number" step="1" class="persist-text" data-key="pw-measured-0" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-0" data-stage-optional><small class="pulse-width-range-note" data-pulse-range-note-for="pw-measured-0" aria-live="polite"></small></td></tr>
+                            <tr><td>90 degrees</td><td><input type="number" step="1" class="persist-text" data-key="pw-measured-90" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-90" data-stage-optional><small class="pulse-width-range-note" data-pulse-range-note-for="pw-measured-90" aria-live="polite"></small></td></tr>
+                            <tr><td>180 degrees</td><td><input type="number" step="1" class="persist-text" data-key="pw-measured-180" data-stage-required-group="pw-measured-values"></td><td><input class="persist-text" data-key="pw-note-180" data-stage-optional><small class="pulse-width-range-note" data-pulse-range-note-for="pw-measured-180" aria-live="polite"></small></td></tr>
                         </tbody>
                     </table>
                 </div>
                 <details><summary>Think it through</summary><div><ul><li>Why does the servo need pulse width rather than only an angle number?</li><li>What does 1500 microseconds usually represent?</li><li>Why might a different servo require different limits?</li><li>What could happen if the pulse-width range is too wide?</li><li>How could you test safe limits cautiously?</li><li>What is the difference between commanded angle and actual servo position?</li><li>Why should pulse width be bounded?</li></ul></div></details>
                 <label class="response-field mt-block"><span>Why should both cases provide one Angle output before the shared pulse-width conversion?</span><textarea class="persist-text" data-key="hmi-case-explain" data-stage-required></textarea></label>
                 <div class="grid-layout two mt-block">
-                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-choice"><span>Choice Enum is wired to the Case Structure selector and has Manual, Automatic, and Default cases.</span></label>
+                    <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-choice"><span>Choice Enum is wired to the Case Structure selector and has Manual and Automatic cases.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-angle"><span>Angle gauge range is 0–180 degrees.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-speed"><span>Speed and NumberOfWaves Numeric controls are present for the upcoming Automatic mode.</span></label>
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="hmi-go"><span>GO is an OK button and the calibrated pulse-width conversion is outside the Case Structure.</span></label>
@@ -580,12 +580,12 @@ scaled = 0.0;</code></pre><p>Floating-point types: <code>float</code>, <code>flo
                         <figcaption>Edit the SubVI icon so it remains recognizable when placed in the main VI.</figcaption>
                     </figure>
                 </div>
+                <div class="mini-card mt-block"><h3>Connector pane</h3><p>Set a pattern with three inputs and one output. Top input to GO, middle to NumberOfWaves, bottom to Speed, output to Angle.</p></div>
                 <div class="section-card card border-gold mt-block">
                         <h3>Formula Node starter architecture</h3>
                         <p>Copy this structure into the Formula Node after creating the listed terminals. The TODO comments deliberately leave the automatic-wave behaviour for you to implement and test.</p>
                         <pre><code>/*
-Inputs: GO, NumberOfWaves, Speed,
-        AngleLast, DirectionLast, WaveCountLast, WavingLast
+Inputs: GO, NumberOfWaves, Speed
 Outputs: Angle, Direction, WaveCount, Waving
 */
 
@@ -596,7 +596,7 @@ WaveCount = WaveCountLast;
 Waving = WavingLast;
 
 // TODO: Start a new sequence when GO is pressed.
-// TODO: Move Angle using Speed and Direction.
+// TODO: Increment/Decrement Angle using Speed and Direction.
 // TODO: Reverse Direction at your safe angle limits.
 // TODO: Update WaveCount after each completed pass.
 // TODO: Stop waving when the requested count reaches zero.</code></pre>
@@ -608,10 +608,7 @@ Waving = WavingLast;
                 </div>
                 <div class="briefing-card mt-block"><strong>Logic requirements:</strong> initialize state from the previous values; use <code>GO</code> to begin a wave sequence; advance or reverse the angle according to direction; reverse at the safe limits; decrement the wave count at each completed pass; and stop when the requested count reaches zero. Document your own implementation.</div>
                 <div class="logic-flow mt-block" aria-label="Automatic waving state diagram"><span>Idle</span><b>-&gt;</b><span>GO pressed</span><b>-&gt;</b><span>Waving forward</span><b>-&gt;</b><span>Boundary reached</span><b>-&gt;</b><span>Waving backward</span><b>-&gt;</b><span>Count decreases</span><b>-&gt;</b><span>Idle</span></div>
-                <div class="grid-layout two mt-block">
-                    <div class="mini-card"><h3>Connector pane</h3><p>Set a pattern with three inputs and one output. Top input to GO, middle to NumberOfWaves, bottom to Speed, output to Angle.</p></div>
-                    <div class="mini-card"><h3>Timing and icon</h3><p>Add Wait with constant 10. Edit the icon, for example <code>Wave Servo</code>. Save the SubVI.</p></div>
-                </div>
+                <div class="mini-card mt-block"><h3>Timing and icon</h3><p>Add Wait with constant 10. Edit the icon, for example <code>Wave Servo</code>. Save the SubVI.</p></div>
                 <details><summary>Think it through</summary><div><ul><li>Why does automatic mode need memory of the previous angle?</li><li>What do Waving, Direction, and WaveCount represent?</li><li>What happens when GO becomes true?</li><li>What condition causes direction to reverse?</li><li>What does <code>==</code> mean?</li><li>What does <code>|</code> mean?</li><li>Why does the code stop when WaveCount reaches 0?</li><li>Why are local variables used here?</li><li>What are the risks of using local variables carelessly?</li></ul></div></details>
                 <div class="grid-layout two mt-block">
                     <label class="response-field evidence-upload"><span>SubVI front panel evidence file</span><input class="persist-file" data-key="subvi-front" type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="subvi-front">No file selected.</small><small class="text-gray-500">Accepted: PNG, JPG/JPEG, WebP, GIF, or PDF. Filename only; the file is not uploaded or embedded.</small></label>
@@ -626,7 +623,7 @@ Waving = WavingLast;
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Checkpoint 7</p>
                 <h2>Insert the automatic-wave SubVI into the main VI</h2>
-                <p>Return to the main VI from the <a class="concept-link" href="?stage=5#scale-pulse-width">Scale Pulse Width stage</a>. Place the saved SubVI in the Automatic case, remove the temporary pass-through connection, and connect the SubVI output to the Case Structure output.</p>
+                <p>Return to the main VI from the <a class="concept-link" href="?stage=5#scale-pulse-width">Scale Pulse Width stage</a>. Place the saved <a class="concept-link" href="../../knowledge/skill-tree.html?topic=vi-subvi">SubVI</a> in the Automatic case, remove the temporary pass-through connection, and connect the SubVI output to the Case Structure output.</p>
                 <figure class="diagram-card">
                     <img src="../../assets/lab5-automatic-control-case.png" alt="LabVIEW Automatic Case Structure with Choice set to Automatic, an OK button, Speed and NumberOfWaves numeric controls wired to the Wave Servo SubVI, and the Angle output routed to the shared pulse-width Formula Node." loading="lazy">
                     <figcaption>In the Automatic case, wire GO, Speed, and NumberOfWaves into the Wave Servo SubVI. Route its Angle output through the Case Structure tunnel to the shared pulse-width mapping below; use the pulse-width limits you recorded during Manual Control.</figcaption>
@@ -699,7 +696,7 @@ Waving = WavingLast;
                 <div class="grid-layout three">
                     <details><summary>Servo motor</summary><div>A motor assembly that moves to a commanded position using an internal control circuit.</div></details>
                     <details><summary>Servo horn</summary><div>The attachment on the servo shaft that transfers motion to a mechanism.</div></details>
-                    <details><summary>Coupling</summary><div>The white plastic piece attached to the motor shaft before testing.</div></details>
+                    <details><summary>Servo motor plastic arm attachment</summary><div>The plastic arm fitted to the servo motor shaft before testing motion.</div></details>
                     <details><summary>Potentiometer</summary><div>A variable resistor used here to create a changing voltage.</div></details>
                     <details><summary>Analog input</summary><div>A microcontroller input that reads a voltage range.</div></details>
                     <details><summary>Arduino A0</summary><div>Analog Pin 0, used for the potentiometer voltage.</div></details>
