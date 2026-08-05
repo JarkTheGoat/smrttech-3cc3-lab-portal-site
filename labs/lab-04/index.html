@@ -204,7 +204,7 @@
             </div>
             <div class="warning-card text-sm">
                 <h4 class="font-bold uppercase mb-2">Component Note</h4>
-                <p>The PDF prelab names LMC6482, while the materials and procedure use LMC6484. Use the component in your kit and confirm the datasheet with your instructor.</p>
+                <p>Some component lists identify LMC6482 while the procedure uses LMC6484. Use the component in your kit and confirm the correct datasheet with your instructor.</p>
             </div>
         </div>
     </aside>
@@ -381,15 +381,15 @@
                 <p>Use Arduino 5 V and GND, connect the load cell through screw terminals, and construct the initial circuit at the far end of the breadboard because later amplifier stages will be added.</p>
                 <div class="grid-layout three">
                     <figure class="diagram-card">
-                        <img src="../../assets/lab4-pdf-load-cell-photo.jpg" alt="Source PDF photo of the load cell mounted at the edge of a table.">
+                        <img src="../../assets/lab4-pdf-load-cell-photo.jpg" alt="Load cell mounted at the edge of a table.">
                         <figcaption>Pin one end of the load cell and apply force gently in the indicated direction.</figcaption>
                     </figure>
                     <figure class="diagram-card">
-                        <img src="../../assets/lab4-pdf-raw-circuit.png" alt="Source PDF schematic for the initial load-cell circuit connected to Arduino 5 volts and ground.">
+                        <img src="../../assets/lab4-pdf-raw-circuit.png" alt="Initial load-cell circuit connected to Arduino 5 volts and ground.">
                         <figcaption>Arduino 5 V and GND excite the load-cell bridge before amplification.</figcaption>
                     </figure>
                     <figure class="diagram-card">
-                        <img src="../../assets/lab4-pdf-opamp-pinout.png" alt="Source PDF LMC6484 op-amp pinout diagram showing four op-amps and pin numbers.">
+                        <img src="../../assets/lab4-pdf-opamp-pinout.png" alt="LMC6484 op-amp pinout diagram showing four op-amps and pin numbers.">
                         <figcaption>Use the LMC6484 pin reference before wiring the amplifier stages.</figcaption>
                     </figure>
                 </div>
@@ -449,7 +449,7 @@
                 <h2>Amplify the load-cell signal with the first op-amp stage</h2>
                 <p>Add the first-stage amplifier using the LMC6484. Use pin 2 for SIG-, pin 3 for SIG+, and pin 1 for output V2. Use R3 = R4 = 1 MΩ and R1 = R2 = 10 kΩ. The ideal gain is AV = R3 / R1 = 100.</p>
                 <figure class="diagram-card">
-                    <img src="../../assets/lab4-pdf-stage1-circuit.png" alt="Source PDF schematic showing the first LMC6484 amplifier stage for the load-cell signal.">
+                    <img src="../../assets/lab4-pdf-stage1-circuit.png" alt="First LMC6484 amplifier stage for the load-cell signal.">
                     <figcaption>In the first-stage amplifier, R3/R1 sets the ideal gain of 100 for the V2 output.</figcaption>
                 </figure>
                 <div class="danger-card"><strong>Before connecting V2 to Arduino A0, verify that V2 remains within the Arduino analog input range.</strong></div>
@@ -486,7 +486,7 @@
                 <h2>Add a non-inverting second-stage amplifier</h2>
                 <p>Add the second-stage amplifier using op-amp number three on the LMC6484 chip, pins 8, 9, and 10. Use R5 = 10 kΩ and R6 = 100 kΩ. The additional ideal gain is AV = 1 + R6 / R5 = 11.</p>
                 <figure class="diagram-card">
-                    <img src="../../assets/lab4-pdf-stage2-circuit.png" alt="Source PDF schematic showing the complete two-stage LMC6484 amplifier circuit connected to Arduino analog input.">
+                    <img src="../../assets/lab4-pdf-stage2-circuit.png" alt="Complete two-stage LMC6484 amplifier circuit connected to Arduino analog input.">
                     <figcaption>The non-inverting second stage increases V2 to V3 before Arduino A0 reads it.</figcaption>
                 </figure>
                 <p class="warning-card">V3 should be about 11 times greater than V2, subject to supply and saturation limits. Verify V3 is safe before connecting it to Arduino A0.</p>
@@ -519,7 +519,7 @@
                 <h2>Display amplified voltage in LabVIEW</h2>
                 <p>Create a LabVIEW VI that reads the amplified signal on Arduino A0 and displays it with a numeric indicator named <code>Voltage Reading</code>.</p>
                 <figure class="diagram-card">
-                    <img src="../../assets/lab4-pdf-labview-analog-read.png" alt="Source PDF LabVIEW block diagram showing LINX Open, Analog Read channel 0, timing, stop control, and voltage reading indicator.">
+                    <img src="../../assets/lab4-pdf-labview-analog-read.png" alt="LabVIEW block diagram showing LINX Open, Analog Read channel 0, timing, stop control, and voltage reading indicator.">
                     <figcaption>Read Arduino analog channel 0 and display the amplified voltage.</figcaption>
                 </figure>
                 <div class="logic-flow" aria-label="LabVIEW analog read flow"><span>V3</span><b>-&gt;</b><span>Arduino A0</span><b>-&gt;</b><span>LINX Analog Read</span><b>-&gt;</b><span>LabVIEW Voltage Reading</span></div>

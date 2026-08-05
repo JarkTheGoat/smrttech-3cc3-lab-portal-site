@@ -513,7 +513,7 @@
             <article class="section-card card border-gold">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Measure</p>
                 <h2>Receive <code>led_switch</code> and synchronize at startup</h2>
-                <p>Use <code>led_switch</code> as the desired dashboard state. Subscribe to live shared-attribute changes, request the current value after every connection, parse the string with , and apply the Boolean through local logic.</p>
+                <p>Use <code>led_switch</code> as the desired dashboard state. Subscribe to live shared-attribute changes, request the current value after every connection, and decode each received JSON string with LabVIEW's <strong>Unflatten From JSON</strong> function before applying the Boolean through local logic.</p>
                 <div class="grid-layout one">
                     <div class="mini-card">
                         <h3>Live update</h3>
@@ -527,8 +527,10 @@
 </code></pre>
                 <div class="grid-layout two">
                     <figure class="diagram-card"><img src="../../assets/lab7-thingsboard-shared-attributes.png" alt="ThingsBoard Shared attributes tab showing the Boolean led_switch attribute." loading="lazy"><figcaption>Confirm that <code>led_switch</code> is a Boolean shared attribute and that no credential is visible.</figcaption></figure>
-                    <div class="mini-card"><h3>LabVIEW receive path</h3><p>Subscribe to both the live-attribute and response topics. Parse the received JSON, accept only Boolean <code>led_switch</code> values, then route the validated command through the local Digital Write path. Request the current shared value immediately after every connection or reconnection.</p></div>
+                    <div class="mini-card"><h3>LabVIEW receive path</h3><p>Subscribe to the live-attribute topic, pass the received JSON string into <strong>Unflatten From JSON</strong>, and wire a typed cluster constant that contains the expected <code>led_switch</code> Boolean field. The function returns the populated brown cluster wire; connect that wire to an <strong>Unbundle by Name</strong> block, select <code>led_switch</code>, and use the resulting typed Boolean in the local Digital Write logic. For a numeric field such as <code>moisture_threshold</code>, select that numeric field instead and wire its numeric output into the comparison or indicator that uses it. Request the current shared value immediately after every connection or reconnection.</p></div>
                 </div>
+                <figure class="diagram-card mt-block"><img src="../../assets/lab7-unflatten-from-json.png" alt="LabVIEW Unflatten From JSON function converting a JSON string containing moisture_percent into a typed output cluster and numeric indicator." loading="lazy"><figcaption>Use <strong>Unflatten From JSON</strong> to decode the cloud message. Wire the incoming JSON string to the function, create a typed cluster constant or control with the expected field name and data type (for example, <code>led_switch</code> as Boolean), then connect the function's brown cluster output wire to an <strong>Unbundle by Name</strong> block. Select the field you need, such as <code>led_switch</code> or a numeric <code>moisture_threshold</code>, and wire that typed output into the indicator, comparison, or Digital Write logic that manipulates the value. The field names in the type definition must match the JSON keys exactly; simply displaying the cluster does not extract or apply the variable.
+                </figcaption></figure>
                 <div class="grid-layout two mt-block">
                     <label class="response-field"><span>What can the JSON payloads contain, and how does LabVIEW validate <code>led_switch</code>?</span><textarea class="persist-text" data-key="rx-value-meaning"></textarea></label>
                     <label class="response-field"><span>Explain how ThingsBoard desired <code>led_switch</code>, local LabVIEW logic, Arduino output, and reported <code>led_state</code> differ.</span><textarea class="persist-text" data-key="led-control-source" data-stage-required></textarea></label>
@@ -646,8 +648,8 @@
                     <details><summary>Echo</summary><div>Sensor output pin whose pulse width represents return time.</div></details>
                     <details><summary>LINX</summary><div>LabVIEW toolkit used to communicate with Arduino hardware.</div></details>
                     <details><summary>Local variable</summary><div>LabVIEW object used here to read Distance or RX Value inside another structure.</div></details>
-                    <details><summary>RX Value</summary><div>Received MQTT JSON that must be parsed and type-checked before applying <code>led_switch</code>.</div></details>
-                    <details><summary>Format Into String</summary><div>LabVIEW string function that can build a JSON telemetry object when values, braces, quotes, and Boolean text are formatted correctly.</div></details>
+                    <details><summary>RX Value</summary><div>Received MQTT JSON string that is decoded with <strong>Unflatten From JSON</strong> and type-checked before applying <code>led_switch</code>.</div></details>
+                    <details><summary>Unflatten From JSON</summary><div>LabVIEW function that converts a JSON string into a typed cluster or data structure. The expected field names and data types must match the JSON keys and values.</div></details>
                     <details><summary>Cloud monitoring</summary><div>Viewing local sensor data through ThingsBoard telemetry and dashboard widgets.</div></details>
                     <details><summary>Remote control</summary><div>Using a cloud command to affect local hardware behavior.</div></details>
                 </div>

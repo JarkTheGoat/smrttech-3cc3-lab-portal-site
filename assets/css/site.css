@@ -15,6 +15,20 @@ html {
     color: #5A002D;
 }
 
+/* Student-facing references use the same visual treatment whether they
+   point to the skill tree or an external documentation page. */
+main a[href] {
+    color: var(--mac-maroon, #7A003C);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
+
+main a[href]:hover {
+    color: #5A002D;
+}
+
 /* These structural regions receive programmatic focus when a view opens.
    Suppress the browser's large default outline without affecting controls. */
 .stage-panel[tabindex="-1"]:focus,

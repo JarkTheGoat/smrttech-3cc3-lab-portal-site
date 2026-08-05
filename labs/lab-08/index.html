@@ -68,8 +68,7 @@
         .js-enabled.stage-8 .stage-panel.stage-8,
         .js-enabled.stage-9 .stage-panel.stage-9,
         .js-enabled.stage-10 .stage-panel.stage-10,
-        .js-enabled.stage-11 .stage-panel.stage-11,
-        .js-enabled.stage-12 .stage-panel.stage-12 { display: block; }
+        .js-enabled.stage-11 .stage-panel.stage-11 { display: block; }
         .grid-layout { display: grid; gap: 1rem; }
         .grid-layout.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .grid-layout.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -167,8 +166,7 @@
             <button class="stage-btn" id="btn-stage-8" type="button" data-stage="8">Threshold</button>
             <button class="stage-btn" id="btn-stage-9" type="button" data-stage="9">Dashboard</button>
             <button class="stage-btn" id="btn-stage-10" type="button" data-stage="10">Reliability</button>
-            <button class="stage-btn" id="btn-stage-11" type="button" data-stage="11">Analytics</button>
-            <button class="stage-btn" id="btn-stage-12" type="button" data-stage="12">Reflect</button>
+            <button class="stage-btn" id="btn-stage-11" type="button" data-stage="11">Reflect</button>
             <div class="auto-score-chip" aria-live="polite">Progress <strong data-progress-status>0/13</strong></div>
         </div>
     </nav>
@@ -212,7 +210,6 @@
                 <p><strong>Port:</strong> <code>1883</code> (classroom) or <code>8883</code> with verified TLS support</p>
                 <p><strong>Publish:</strong> <code>v1/devices/me/telemetry</code></p>
                 <p><strong>Subscribe:</strong> <code>v1/devices/me/attributes</code></p>
-                <p><strong>Startup response:</strong> <code>v1/devices/me/attributes/response/+</code></p>
                 <p><strong>Shared key:</strong> <code>moisture_threshold</code></p>
             </div>
             <div class="card p-5">
@@ -339,7 +336,6 @@
                         <tbody>
                             <tr><td>Publish topic for telemetry</td><td><input class="persist-text topic-input" data-key="topic-publish" data-expected="v1/devices/me/telemetry" data-case-sensitive></td><td data-topic-result="topic-publish"></td></tr>
                             <tr><td>Subscribe topic for live shared-attribute changes</td><td><input class="persist-text topic-input" data-key="topic-subscribe" data-expected="v1/devices/me/attributes" data-case-sensitive></td><td data-topic-result="topic-subscribe"></td></tr>
-                            <tr><td>Subscribe topic for startup-request responses</td><td><input class="persist-text topic-input" data-key="topic-response" data-expected="v1/devices/me/attributes/response/+" data-case-sensitive></td><td data-topic-result="topic-response"></td></tr>
                             <tr><td>If moisture_percent is 18 and threshold is 25, should the LabVIEW Low Moisture LED indicator be on?</td><td><input class="persist-text topic-input" data-key="topic-threshold" data-expected="yes"></td><td data-topic-result="topic-threshold"></td></tr>
                         </tbody>
                     </table>
@@ -353,19 +349,12 @@
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Build</p>
                 <h2>Create and Configure Your ThingsBoard Cloud Account</h2>
                 <ol>
-                    <li>Open <a href="https://thingsboard.cloud" target="_blank" rel="noopener noreferrer">ThingsBoard Cloud</a> and create an individual account with your student email address.</li>
-                    <li>Complete email verification if requested, sign in, and confirm you are viewing your own tenant account.</li>
+                    <li>Open <a href="https://thingsboard.cloud" target="_blank" rel="noopener noreferrer">ThingsBoard Cloud</a></li>
                     <li>Open <strong>Entities &rarr; Devices</strong>, select <strong>Add Device</strong>, and name the device <code>Lab8-Soil-Moisture-StudentName</code>.</li>
-                    <li>Leave the device profile as the default unless the instructor supplies a different profile, then save.</li>
+                    <li>Leave the device profile as the default, then save.</li>
                     <li>Open the device details or connectivity information and copy its access token to a private local location.</li>
                 </ol>
                 <div class="warning-card mt-block"><strong>One physical project normally equals one ThingsBoard device.</strong> Do not create a separate device for every sensor or actuator. Never paste the real token into this page. Use <code>YOUR_DEVICE_ACCESS_TOKEN</code> in examples and redact credentials from evidence.</div>
-                <div class="grid-layout four mt-block">
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Cloud account registration screenshot"><span>Provide a screenshot that shows ThingsBoard Cloud account registration.</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Devices page screenshot"><span>Provide a screenshot that shows the Entities &rarr; Devices page.</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Add Device dialog screenshot"><span>Provide a screenshot that shows the Add Device dialog.</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard device access-token screen screenshot"><span>Provide a screenshot that shows the device credential/access-token screen.</span></figure>
-                </div>
                 <div class="grid-layout two mt-block">
                     <label class="response-field"><span>ThingsBoard device name</span><input class="persist-text" data-key="thingsboard-device-name" placeholder="Lab8-Soil-Moisture-StudentName" data-stage-required></label>
                     <label class="response-field"><span>How did you verify this is your own tenant?</span><input class="persist-text" data-key="thingsboard-tenant-check" placeholder="Describe the account/device check" data-stage-required></label>
@@ -388,26 +377,25 @@
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Build</p>
                 <h2>Configure and test LabVIEW MQTT with ThingsBoard</h2>
                 <p>Download <code>Lab8.zip</code> from Avenue to Learn, extract it, and open <code>Lab8_init.vi</code>. Configure the existing MQTT tab without changing the portal's LabVIEW/LINX architecture.</p>
-                <div class="grid-layout two">
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for revised LabVIEW ThingsBoard MQTT configuration screenshot"><span>Provide a screenshot that shows the LabVIEW MQTT tab configured for ThingsBoard Cloud with the access token redacted.</span></figure>
+                <div class="grid-layout one">
                     <div class="mini-card">
                         <h3>Initial classroom configuration</h3>
                         <ul>
                             <li>Broker: <code>mqtt.thingsboard.cloud</code>; port: <code>1883</code>.</li>
                             <li>Username: the device access token; password: blank.</li>
                             <li>Client ID: <code>SMRTTECH3CC3-STUDENTNAME-LAB8</code>.</li>
-                            <li>QoS: <strong>1 / At least once</strong>.</li>
+                            <li>QoS: <strong>At least once</strong>.</li>
                             <li>Publish: <code>v1/devices/me/telemetry</code> (no leading slash).</li>
-                            <li>Subscribe: <code>v1/devices/me/attributes</code> and <code>v1/devices/me/attributes/response/+</code>.</li>
+                            <li>Subscribe: <code>v1/devices/me/attributes</code>.</li>
                         </ul>
                     </div>
                 </div>
                 <div class="warning-card mt-block"><strong>Transport security:</strong> port 1883 is unencrypted and is only for the controlled laboratory setup or initial connectivity testing. Use port 8883 only when the MQTT library explicitly supports TLS and certificate verification; entering 8883 alone does not enable TLS. Every simultaneously connected client must use a unique client ID.</div>
                 <details><summary>If the MQTT connection or first publish fails</summary><div><ul><li>Confirm <code>mqtt.thingsboard.cloud</code>, the intended port, a unique client ID, the device token as Username, and a blank password.</li><li>Use the exact topic <code>v1/devices/me/telemetry</code> with no leading slash and validate the labelled JSON payload.</li><li>Confirm the token belongs to the same ThingsBoard device whose Latest Telemetry tab you are viewing; check whether the network blocks MQTT.</li></ul></div></details>
+                <div class="briefing-card mt-block"><strong>Connection and first-test sequence:</strong> Run the VI, select <strong>Connect</strong>, and wait for the connection-success indication before publishing. Send one labelled JSON object such as <code>{"raw_voltage":2.81,"moisture_percent":34.6,"low_moisture_alarm":true}</code> to <code>v1/devices/me/telemetry</code>; do not publish an unlabelled number. Open <strong>Entities &rarr; Devices &rarr; your Lab 8 device &rarr; Latest Telemetry</strong> and confirm that all three keys appear. Subscribe to <code>v1/devices/me/attributes</code> for live threshold changes and configure the response listener for requested attributes. After the VI is running, open <strong>Attributes &rarr; Shared Attributes</strong>, add <code>moisture_threshold</code> as a numeric value, change it once, and confirm the updated value is received by LabVIEW. Use <strong>Stop</strong>, not <strong>Abort</strong>, so MQTT, LINX/VISA, queues, events, and other references close cleanly.</div>
                 <h3 class="mt-block">Send a labelled JSON test</h3>
                 <pre><code>{"raw_voltage":2.81,"moisture_percent":34.6,"low_moisture_alarm":true}</code></pre>
-                <p>Use LabVIEW <strong>Format Into String</strong> or the existing course JSON utility. Do not publish an unlabelled number such as <code>42</code>. Connect, publish once, subscribe, and confirm the JSON keys appear in the device's <strong>Latest Telemetry</strong> tab.</p>
-                <figure class="diagram-card screenshot-placeholder mt-block" role="img" aria-label="Placeholder for ThingsBoard Latest Telemetry tab screenshot"><span>Provide a screenshot that shows Device &rarr; Latest Telemetry with raw_voltage, moisture_percent, and low_moisture_alarm.</span></figure>
+                <p>Build the payload in LabVIEW with <strong>Concatenate Strings</strong>: place the key names, quotation marks, braces, commas, and formatted values in the required order to create one labelled JSON string. Do not publish an unlabelled number such as <code>42</code>. Connect, publish once, subscribe, and confirm the JSON keys appear in the device's <strong>Latest Telemetry</strong> tab.</p>
                 <div class="grid-layout two mt-block">
                     <label class="completion-box"><input type="checkbox" class="persist-check" data-key="mqtt-test-confirmed"><span>MQTT connection, JSON telemetry publish, and both subscriptions were tested successfully.</span></label>
                     <label class="response-field evidence-upload"><span>Local evidence reference: Latest Telemetry with no credential visible (image or PDF)</span><input class="persist-file" data-key="latest-telemetry-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="latest-telemetry-screenshot">No local evidence file selected.</small><small>Accepted: image file or PDF. This chooser records only the filename; it does not upload or submit the artifact.</small></label>
@@ -474,18 +462,17 @@
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Measure</p>
                 <h2>Convert voltage to percent moisture</h2>
                 <p>Add a numeric <code>moisture_threshold</code> indicator, a LabVIEW front-panel Low Moisture round LED indicator, a <code>moisture_percent</code> numeric indicator, and a <code>moisture_percent</code> waveform chart. Build the calibration and alarm with native LabVIEW arithmetic, comparison functions, Boolean logic, and Case Structures as needed.</p>
-                <div class="grid-layout two">
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for revised LabVIEW HMI screenshot"><span>Provide a screenshot that shows the LabVIEW HMI with raw_voltage, moisture_percent, moisture_threshold, the front-panel Low Moisture LED indicator, and chart.</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for native LabVIEW calibration and alarm logic screenshot"><span>Provide a screenshot that shows native LabVIEW arithmetic, clamp, numeric validation, and the Less? comparison.</span></figure>
+                <div class="grid-layout one">
+                    <figure class="diagram-card"><img src="../../assets/lab8-in-range-coerce.png" alt="LabVIEW In Range and Coerce function with lower and upper limits, coerced output, and In Range Boolean output." loading="lazy"><figcaption>Use <strong>In Range and Coerce</strong> to keep the calculated moisture percentage within 0&ndash;100. Wire the scaled value to <code>x</code>, set the lower limit to 0 and upper limit to 100, use <code>coerced(x)</code> as <code>moisture_percent</code>, and use <strong>In Range?</strong> when you need to confirm whether the original value was already inside the limits.</figcaption></figure>
                 </div>
                 <pre><code>scaled_percent = (raw_voltage - V_dry) / (V_wet - V_dry) * 100
 moisture_percent = clamp(scaled_percent, 0, 100)
 low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                 <ol>
                     <li>Subtract <code>V_dry</code> from <code>raw_voltage</code>, divide by <code>V_wet - V_dry</code>, and multiply by 100.</li>
-                    <li>Use native minimum/maximum or <strong>In Range and Coerce</strong> functions to clamp the result from 0 to 100.</li>
-                    <li>Use the native <strong>Less?</strong> comparison to calculate <code>low_moisture_alarm</code>.</li>
-                    <li>Keep a documented safe local threshold until a valid cloud value arrives. The comparison must continue when the internet is unavailable.</li>
+                    <li>Use minimum/maximum or <strong>In Range and Coerce</strong> functions to clamp the result from 0 to 100.</li>
+                    <li>Use the <strong>Less?</strong> comparison to calculate <code>low_moisture_alarm</code>.</li>
+                    <li>Keep a documented safe local threshold until a valid cloud value arrives.</li>
                 </ol>
                 <div class="table-wrap mt-block">
                     <table>
@@ -504,12 +491,9 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
             <article class="section-card card border-success">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Measure</p>
                 <h2>Publish JSON telemetry to ThingsBoard</h2>
-                <p>In the Communication Loop, format the three current LabVIEW values as one JSON object and publish it to <code>v1/devices/me/telemetry</code> at approximately one-second intervals.</p>
+                <p>In the Communication Loop, use LabVIEW <strong>Concatenate Strings</strong> to assemble the three current values into one labelled JSON object, then publish it to <code>v1/devices/me/telemetry</code></p>
                 <pre><code>{"raw_voltage":2.81,"moisture_percent":34.6,"low_moisture_alarm":true}</code></pre>
-                <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW ThingsBoard JSON telemetry publish block screenshot"><span>Provide a screenshot that shows LabVIEW JSON formatting and the publish event for v1/devices/me/telemetry.</span></figure>
-                <div class="warning-card mt-block"><strong>Separate local and cloud timing:</strong> run Arduino/LabVIEW acquisition and alarm logic every 100&ndash;250 ms, but send ThingsBoard telemetry about once per second. Do not publish every sensor sample. Threshold changes are event-driven.</div>
-                <div class="grid-layout two mt-block">
-                    <label class="response-field"><span>Evidence that all three telemetry keys stream to ThingsBoard</span><textarea class="persist-text" data-key="publish-evidence" data-stage-required></textarea></label>
+                <div class="grid-layout one mt-block">
                     <label class="response-field evidence-upload"><span>Local evidence reference: streaming Latest Telemetry (image or PDF)</span><input class="persist-file" data-key="publish-telemetry-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="publish-telemetry-screenshot">No local evidence file selected.</small><small>Accepted: image file or PDF. This chooser records only the filename; it does not upload or submit the artifact.</small></label>
                 </div>
             </article>
@@ -524,19 +508,14 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                 <h3>Startup and reconnection synchronization</h3>
                 <ol>
                     <li>Subscribe to <code>v1/devices/me/attributes</code>.</li>
-                    <li>Subscribe to <code>v1/devices/me/attributes/response/+</code>.</li>
-                    <li>Publish to <code>v1/devices/me/attributes/request/1</code> with the payload below. Another positive request ID is acceptable if generated dynamically.</li>
+                    <li><p>The response may be <code>{"moisture_threshold":30}</code>. In LabVIEW, wire the received JSON string into <strong>Unflatten From JSON</strong> and provide a typed cluster constant containing a numeric <code>moisture_threshold</code> field. Connect the brown cluster output to <strong>Unbundle by Name</strong>, select <code>moisture_threshold</code>, and wire the resulting numeric value into the local setpoint logic. Until a valid response arrives, retain a documented safe default. On malformed JSON, show a readable error and preserve the last valid threshold instead of stopping the complete VI.</p>
+                </li>
                 </ol>
-                <pre><code>{"sharedKeys":"moisture_threshold"}</code></pre>
-                <p>The response may be <code>{"shared":{"moisture_threshold":30}}</code>. Parse and validate the number before updating the local setpoint. Until a valid response arrives, retain a documented safe default. On malformed JSON, show a readable error and preserve the last valid threshold instead of stopping the complete VI.</p>
-                <div class="success-card mt-block"><strong>Forced receive-path check:</strong> subscribe to <code>v1/devices/me/attributes/response/+</code>, then publish <code>{"sharedKeys":"moisture_threshold"}</code> to <code>v1/devices/me/attributes/request/1</code>. A response proves the LabVIEW receive path works. After every reconnect, recreate invalid references if needed, resubscribe, and request the current value again.</div>
-                <div class="grid-layout two">
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard Shared Attributes tab screenshot"><span>Provide a screenshot that shows Device &rarr; Shared Attributes with moisture_threshold.</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for LabVIEW shared-attribute startup synchronization screenshot"><span>Provide a screenshot that shows LabVIEW subscribe, request, response parsing, validation, and safe-default logic.</span></figure>
-                </div>
+                <div class="success-card mt-block"><strong>Forced receive-path check:</strong> keep the subscription on <code>v1/devices/me/attributes</code>, then publish <code>{"sharedKeys":"moisture_threshold"}</code> to <code>v1/devices/me/attributes/request/1</code>. Decode the received JSON with <strong>Unflatten From JSON</strong>, connect its brown cluster wire to <strong>Unbundle by Name</strong>, and validate the extracted numeric <code>moisture_threshold</code>. After every reconnect, recreate invalid references if needed, resubscribe to the attributes topic, and request the current value again.</div>
+                <figure class="diagram-card mt-block"><img src="../../assets/lab8-unflatten-from-json.png" alt="LabVIEW Unflatten From JSON function converting a JSON string into a typed cluster and numeric moisture_percent output." loading="lazy"><figcaption>Use this pattern for the Lab 8 threshold response: wire the JSON string into <strong>Unflatten From JSON</strong>, define the expected numeric field in a typed cluster, then connect the brown cluster wire to <strong>Unbundle by Name</strong>. Select <code>moisture_threshold</code> and use the numeric output in the comparison and threshold indicator.</figcaption></figure>
                 <div class="grid-layout two mt-block">
                     <label class="response-field"><span>What proves LabVIEW received both a live change and the startup-request response?</span><textarea class="persist-text" data-key="threshold-evidence" data-stage-required></textarea></label>
-                    <label class="response-field"><span>How does the VI validate JSON and preserve a safe or last-valid threshold?</span><textarea class="persist-text" data-key="attribute-parse-validation" data-stage-required></textarea></label>
+                    <label class="response-field"><span>How does the VI use Unflatten From JSON and Unbundle by Name to validate received JSON and preserve a safe or last-valid threshold?</span><textarea class="persist-text" data-key="attribute-parse-validation" data-stage-required></textarea></label>
                 </div>
                 <label class="response-field evidence-upload"><span>Local evidence reference: Shared Attributes (image or PDF)</span><input class="persist-file" data-key="shared-attributes-screenshot" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="shared-attributes-screenshot">No local evidence file selected.</small><small>Accepted: image file or PDF. This chooser records only the filename; it does not upload or submit the artifact.</small></label>
             </article>
@@ -555,12 +534,6 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                     <li>Add a numeric threshold control that reads and writes the shared attribute <code>moisture_threshold</code>.</li>
                     <li>Optionally add an alarm-history, event-history, device-activity, or last-update widget.</li>
                 </ol>
-                <div class="grid-layout four">
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard dashboard creation page screenshot"><span>Provide a screenshot that shows the dashboard creation page.</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard entity alias selection screenshot"><span>Provide a screenshot that shows entity alias selection for the Lab 8 device.</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard telemetry widget configuration screenshot"><span>Provide a screenshot that shows telemetry widget configuration.</span></figure>
-                    <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard shared-attribute threshold control screenshot"><span>Provide a screenshot that shows shared-attribute threshold control configuration.</span></figure>
-                </div>
                 <div class="warning-card mt-block"><strong>Threshold control action:</strong> initial state must read shared attribute <code>moisture_threshold</code>; changes must set that shared attribute to a numeric value. Do not write telemetry, set a server-side attribute, or execute RPC. After changing the control, first confirm the value changes under the device's <strong>Shared Attributes</strong> tab, then troubleshoot LabVIEW if needed.</div>
                 <details><summary>If a widget has no value or the threshold control has no effect</summary><div><ul><li>Confirm the entity alias points to the Lab 8 device and each widget uses the exact telemetry or shared-attribute key.</li><li>Confirm the threshold control sets numeric shared attribute <code>moisture_threshold</code>, not telemetry, RPC, or a server attribute.</li><li>Verify the value changes in the Shared Attributes tab before inspecting the LabVIEW subscription and JSON validation path.</li></ul></div></details>
                 <div class="grid-layout two mt-block">
@@ -593,25 +566,7 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
             </article>
         </section>
 
-        <section class="stage-panel stage-11" id="analytics" tabindex="-1">
-            <article class="section-card card border-success">
-                <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Revise</p>
-                <h2>Add useful ThingsBoard analytics</h2>
-                <p>Use <code>moisture_percent</code> from the Lab 8 device alias to create Minimum Today, Maximum Today, and Average Today cards. Arrange them around the required value, gauge, time-series, threshold, and alarm widgets.</p>
-                <figure class="diagram-card screenshot-placeholder" role="img" aria-label="Placeholder for ThingsBoard aggregate telemetry widgets screenshot"><span>Provide a screenshot that shows the ThingsBoard minimum, maximum, and average moisture_percent widgets.</span></figure>
-                <div class="grid-layout three mt-block">
-                    <div class="mini-card optional-card">Add a weather widget if it is relevant and available.</div>
-                    <div class="mini-card optional-card">Add average moisture over 24 hours.</div>
-                    <div class="mini-card optional-card">Add threshold history.</div>
-                    <div class="mini-card optional-card">Add low-moisture alarm or event history.</div>
-                    <div class="mini-card optional-card">Add sensor-noise smoothing.</div>
-                    <div class="mini-card optional-card">Add calibration-reset controls.</div>
-                </div>
-                <label class="completion-box mt-block"><input type="checkbox" class="persist-check" data-key="analytics-confirmed"><span>Minimum, maximum, and average moisture_percent widgets are configured for the correct Lab 8 device alias and verified.</span></label>
-            </article>
-        </section>
-
-        <section class="stage-panel stage-12" id="reflect" tabindex="-1">
+        <section class="stage-panel stage-11" id="reflect" tabindex="-1">
             <article class="section-card card border-maroon">
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Reflect</p>
                 <h2>Learning Outcomes Achieved</h2>
@@ -619,15 +574,14 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                     <li>Measure dry and wet reference voltages and implement a bounded native-LabVIEW moisture calibration.</li>
                     <li>Calculate a local low-moisture decision from a validated cloud-configured threshold.</li>
                     <li>Publish labelled telemetry and receive, validate, and resynchronize a persistent ThingsBoard shared attribute through MQTT.</li>
-                    <li>Build a dashboard that distinguishes measured moisture, configured threshold, locally calculated alarm, and aggregate analytics.</li>
+                    <li>Build a dashboard that distinguishes measured moisture, configured threshold, and the locally calculated alarm.</li>
                     <li>Verify that sensing and alarm logic remain safe during cloud loss, reconnection, and final hardware cleanup.</li>
                 </ul>
                 <h2 class="mt-block">Deliverables and cleanup</h2>
                 <div class="grid-layout two">
-                    <div class="mini-card"><h3>Submit</h3><ol><li>Sensor circuit evidence and measured V_dry/V_wet.</li><li>Native LabVIEW calibration and local-alarm explanation.</li><li>HMI screenshot with raw_voltage, moisture_percent, moisture_threshold, front-panel Low Moisture LED indicator, and chart.</li><li>ThingsBoard Latest Telemetry evidence for all three telemetry keys.</li><li>Shared moisture_threshold evidence and startup synchronization test.</li><li>Completed dashboard with measured moisture, configured threshold, and locally calculated alarm visibly distinguished.</li><li>Internet-loss and reconnect results.</li><li>Minimum, maximum, and average widgets.</li><li>System block diagram, sensor comparison, application, suggestions, and cleanup confirmation.</li></ol></div>
+                    <div class="mini-card"><h3>Submit</h3><ol><li>Sensor circuit evidence and measured V_dry/V_wet.</li><li>Native LabVIEW calibration and local-alarm explanation.</li><li>HMI screenshot with raw_voltage, moisture_percent, moisture_threshold, front-panel Low Moisture LED indicator, and chart.</li><li>ThingsBoard Latest Telemetry evidence for all three telemetry keys.</li><li>Shared moisture_threshold evidence and startup synchronization test.</li><li>Completed dashboard with measured moisture, configured threshold, and locally calculated alarm visibly distinguished.</li><li>Internet-loss and reconnect results.</li><li>System block diagram, sensor comparison, application, suggestions, and cleanup confirmation.</li></ol></div>
                     <div class="danger-card"><h3>Final cleanup warning</h3><ol><li>Stop the VI with its Stop control, not Abort.</li><li>Disconnect MQTT and close MQTT, LINX/NI-VISA, queue, event, and other references.</li><li>Keep the most recently valid threshold or documented safe default active during disconnect.</li><li>Turn off power, disconnect Arduino USB, remove the sensor, and let it dry.</li><li>Remove real credentials from local examples and clear saved front-panel token defaults before distributing a VI.</li></ol></div>
                 </div>
-                <div class="warning-card mt-block"><strong>Credential hygiene:</strong> if a configuration file is provided, distribute only <code>thingsboard-config.example.json</code> containing <code>YOUR_DEVICE_ACCESS_TOKEN</code>. Keep the real local configuration file in <code>.gitignore</code>. Never export, submit, or screenshot a real token.</div>
                 <label class="response-field evidence-upload mt-block"><span>Final Lab 8 LabVIEW VI file</span><input class="persist-file" data-key="final-lab8-vi" type="file" accept=".vi" data-stage-required><small class="file-name-preview" data-file-name-for="final-lab8-vi">No .vi file selected.</small></label>
             </article>
             <article class="section-card card border-gold">
@@ -671,8 +625,8 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
     <script>
         (() => {
             const STORAGE_PREFIX = 'smrttech-lab8-soil-moisture';
-            const STAGE_COUNT = 13;
-            const STAGE_NAMES = ['Prepare', 'Predict', 'ThingsBoard', 'MQTT', 'Circuit', 'Calibrate', 'Percent', 'Publish', 'Threshold', 'Dashboard', 'Reliability', 'Analytics', 'Reflect'];
+            const STAGE_COUNT = 12;
+            const STAGE_NAMES = ['Prepare', 'Predict', 'ThingsBoard', 'MQTT', 'Circuit', 'Calibrate', 'Percent', 'Publish', 'Threshold', 'Dashboard', 'Reliability', 'Reflect'];
             const ORDER_KEYS = ['chain-sensor','chain-a0','chain-calibration','chain-percent','chain-publish','chain-variable','chain-dashboard'];
             const RETIRED_INCOMPATIBLE_DATA_KEYS = ['ubidots-vars', 'ubidots-color', 'str2double-why', 'dashboard-tank'];
             const LEGACY_DATA_MIGRATION_MARKER = `${STORAGE_PREFIX}:legacy-data-v2`;
@@ -693,11 +647,11 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
                 const currentStageKey = storageKey('current-stage');
                 const oldCurrentStage = Number(localStorage.getItem(currentStageKey));
                 if (oldCurrentStage === 12 || oldCurrentStage === 13) {
-                    localStorage.setItem(currentStageKey, '12');
+                    localStorage.setItem(currentStageKey, '11');
                 }
 
                 const oldReflectCompletionKey = storageKey('stage-13-complete');
-                const newReflectCompletionKey = storageKey('stage-12-complete');
+                const newReflectCompletionKey = storageKey('stage-11-complete');
                 const oldReflectWasComplete = localStorage.getItem(oldReflectCompletionKey) === 'true';
                 localStorage.removeItem(newReflectCompletionKey);
                 localStorage.removeItem(oldReflectCompletionKey);
@@ -705,7 +659,7 @@ low_moisture_alarm = moisture_percent &lt; moisture_threshold</code></pre>
 
                 const oldTroubleshootConfirmationKey = 'smrttech:stage-confirmed:v1:lab-08:12';
                 const oldReflectConfirmationKey = 'smrttech:stage-confirmed:v1:lab-08:13';
-                const newReflectConfirmationKey = 'smrttech:stage-confirmed:v1:lab-08:12';
+                const newReflectConfirmationKey = 'smrttech:stage-confirmed:v1:lab-08:11';
                 const oldReflectWasConfirmed = localStorage.getItem(oldReflectConfirmationKey) === 'true';
                 localStorage.removeItem(oldTroubleshootConfirmationKey);
                 localStorage.removeItem(oldReflectConfirmationKey);

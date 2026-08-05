@@ -486,13 +486,9 @@ void loop() {
                 <p class="uppercase tracking-[0.18em] text-xs font-bold text-[#7A003C] mb-2">Extend</p>
                 <h2>Replace revolutions with an angle command</h2>
                 <p>Replace the Revolutions control with an Angle control. Instead of entering 0.5, 1, or 2 revolutions, the user enters 180, 360, or 720 degrees.</p>
-                <div class="briefing-card">
-                    <p class="font-mono">revolutions = angleDegrees / 360</p>
-                    <p class="font-mono">steps = angleDegrees / 360 * STEPS_PER_REV * direction</p>
-                </div>
                 <div class="table-wrap mt-block">
                     <table>
-                        <thead><tr><th>Angle command</th><th>Equivalent revolutions</th><th>Expected steps at 2048 steps/rev</th><th>How you modified code or LabVIEW</th></tr></thead>
+                        <thead><tr><th>Angle command</th><th>Equivalent revolutions</th><th>Expected steps at 2048 steps/rev</th><th>How you modified LabVIEW</th></tr></thead>
                         <tbody>
                             <tr><td>180 degrees</td><td>0.5</td><td>1024</td><td><input class="persist-text" data-key="ext-180" data-stage-required></td></tr>
                             <tr><td>360 degrees</td><td>1</td><td>2048</td><td><input class="persist-text" data-key="ext-360"></td></tr>
@@ -500,10 +496,8 @@ void loop() {
                         </tbody>
                     </table>
                 </div>
-                <div class="grid-layout three mt-block">
-                    <div class="mini-card optional-card">Add an angle control in LabVIEW and convert to revolutions before concatenating the serial string.</div>
-                    <div class="mini-card optional-card">Modify Arduino firmware to parse degrees directly and calculate steps internally.</div>
-                    <div class="mini-card optional-card">Add bounds so the user cannot request unsafe speeds or excessive motion.</div>
+                <div class="grid-layout one mt-block">
+                    <div class="mini-card optional-card">Convert angle to revloutions in LabVIEW before concatenating the serial string.</div>
                 </div>
             </article>
         </section>
