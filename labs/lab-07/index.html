@@ -425,12 +425,12 @@
                         <h3>MQTT tab settings</h3>
                         <ul>
                             <li>Client ID: unique to every simultaneous connection, such as <code>SMRTTECH3CC3-STUDENTNAME-LAB7</code>.</li>
-                            <li>Broker: <code>mqtt.thingsboard.cloud</code>.</li>
-                            <li>Port: <code>1883</code>.</li>
+                            <li>Broker: <code>mqtt.thingsboard.cloud</code></li>
+                            <li>Port: <code>1883</code></li>
                             <li>User Name: the ThingsBoard device access token.</li>
                             <li>Password: leave blank.</li>
                             <li>QoS: <code>1</code>, at least once.</li>
-                            <li>Publish topic: <code>v1/devices/me/telemetry</code>.</li>
+                            <li>Publish topic: <code>v1/devices/me/telemetry</code></li>
                             <li>Subscribe to the live shared-attribute topic <code>v1/devices/me/attributes</code> and configure the library's response listener for requested attributes.</li>
                         </ul>
                     </div>
@@ -504,7 +504,7 @@
 }</code></pre>
                 <p>Your final string should resemble the example above.</p>
                 <div class="warning-card mt-block"><strong>Timing:</strong> keep the local Arduino/LabVIEW loop at approximately 100&ndash;250 ms</div>
-                <figure class="diagram-card mt-block"><img src="../../assets/lab7-publish-json-local-variable.png" alt="LabVIEW Communication Loop publish event showing a JSON indicator, a JSON local variable read, value and valueSent wires, and the MQTT Publish API." loading="lazy"><figcaption>Wire the output JSON string to a string indicator named <code>JSON</code>. In the publish communication loop, create a local variable for <code>JSON</code>, right-click it, select <strong>Change to Read</strong>, and use its read value as the publish payload. Remove the old wire connection between <code>value</code> and the wire branch so the JSON local-variable read is the only payload source.</figcaption></figure>
+                <figure class="diagram-card mt-block"><img src="../../assets/lab7-publish-json-local-variable.png" alt="LabVIEW Communication Loop publish event showing a JSON indicator, a JSON local variable read, value and valueSent wires, and the MQTT Publish API." loading="lazy"><figcaption>Wire the output JSON string to a string indicator named <code>JSON</code>. In the publish communication loop, create a <strong>local variable</strong> for <code>JSON</code>, right-click it, select <strong>Change to Read</strong>, and use its read value as the publish payload. Remove the old wire connection between <code>value</code> and the wire branch so the JSON local-variable read is the only payload source.</figcaption></figure>
                 <label class="response-field evidence-upload mt-block"><span>Screenshot evidence: LabVIEW JSON conversion logic</span><input class="persist-file" data-key="publish-json-conversion" type="file" accept="image/*,.pdf" data-stage-required><small class="file-name-preview" data-file-name-for="publish-json-conversion">No local evidence file selected.</small><small>Upload a screenshot of the block diagram showing the <code>distance_cm</code> double and Boolean <code>led_state</code> being converted or formatted into one labelled JSON string before it is published. Keep the relevant wires, conversion nodes, and JSON output visible.</small></label>
             </article>
         </section>
@@ -523,7 +523,7 @@
                     </div>
                 </div>
                 <p>The response may resemble:</p>
-                <pre aria-label="ThingsBoard shared attribute response JSON"><code>{led_switch":true}
+                <pre aria-label="ThingsBoard shared attribute response JSON"><code>{"led_switch":true}
 </code></pre>
                 <div class="grid-layout two">
                     <figure class="diagram-card"><img src="../../assets/lab7-thingsboard-shared-attributes.png" alt="ThingsBoard Shared attributes tab showing the Boolean led_switch attribute." loading="lazy"><figcaption>Confirm that <code>led_switch</code> is a Boolean shared attribute and that no credential is visible.</figcaption></figure>
